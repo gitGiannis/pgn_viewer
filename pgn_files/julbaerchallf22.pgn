@@ -1,0 +1,210 @@
+[Event "Baer Challenge Final"]
+[Site "Tel Aviv ISR"]
+[Date "2022.12.11"]
+[Round "1.1"]
+[White "Pranav, V"]
+[Black "Praggnanandhaa, R"]
+[Result "0-1"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2545"]
+[BlackElo "2684"]
+[ECO "C70"]
+[Opening "Ruy Lopez"]
+[Variation "Classical defence deferred"]
+[WhiteFideId "25060783"]
+[BlackFideId "25059530"]
+[EventDate "2022.12.11"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Bc5 5. c3 Nge7 6. d4 exd4 7. cxd4 Bb4+ 8.
+Bd2 Bxd2+ 9. Nbxd2 d5 10. O-O dxe4 11. Nxe4 O-O 12. h3 Bf5 13. Re1 h6 14. Rc1
+Bxe4 15. Rxe4 Qd6 16. a3 Rad8 17. Qc2 Qf6 18. Rce1 Rd6 19. Ne5 b5 20. Bb3 Rxd4
+21. Ng4 Qg5 22. Rxd4 Nxd4 23. Qxc7 Ng6 24. Ba2 h5 25. Qc3 Rd8 26. Re4 Nf4 27.
+Qe3 hxg4 28. Bxf7+ Kh7 29. Kh2 Nf3+ 30. gxf3 gxh3 0-1
+
+[Event "Baer Challenge Final"]
+[Site "Tel Aviv ISR"]
+[Date "2022.12.11"]
+[Round "1.2"]
+[White "Praggnanandhaa, R"]
+[Black "Pranav, V"]
+[Result "1/2-1/2"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2684"]
+[BlackElo "2545"]
+[ECO "E12"]
+[Opening "Queen's Indian"]
+[Variation "Petrosian system"]
+[WhiteFideId "25059530"]
+[BlackFideId "25060783"]
+[EventDate "2022.12.11"]
+
+1. d4 Nf6 2. c4 e6 3. Nf3 b6 4. a3 Ba6 5. Qc2 Bb7 6. Nc3 c5 7. e4 cxd4 8. Nxd4
+Nc6 9. Nxc6 Bxc6 10. Bf4 d6 11. O-O-O Qc7 12. f3 Rc8 13. Kb1 Be7 14. g4 Nd7 15.
+h4 Ne5 16. Be2 a6 17. Be3 Bd7 18. Qb3 Nxc4 19. Bxc4 Qxc4 20. Qxc4 Rxc4 21. Bxb6
+h5 22. g5 f6 23. gxf6 gxf6 24. Ba5 Kf7 25. Bb4 Rc6 26. Ne2 Rb8 27. Rd2 a5 28.
+Bxa5 d5 29. Bb4 Bxb4 30. axb4 Rxb4 31. Ng3 d4 32. Nxh5 e5 33. Rg1 Be6 34. Rc2
+Bc4 35. Kc1 Ra6 36. Rg7+ Kf8 37. Rc7 Raa4 38. Nxf6 d3 39. Nh7+ Ke8 40. Nf6+ Kf8
+41. Nh7+ Ke8 42. Nf6+ Kf8 1/2-1/2
+
+[Event "Baer Challenge Final"]
+[Site "Tel Aviv ISR"]
+[Date "2022.12.11"]
+[Round "1.3"]
+[White "Pranav, V"]
+[Black "Praggnanandhaa, R"]
+[Result "0-1"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2545"]
+[BlackElo "2684"]
+[ECO "C70"]
+[Opening "Ruy Lopez"]
+[Variation "Classical defence deferred"]
+[WhiteFideId "25060783"]
+[BlackFideId "25059530"]
+[EventDate "2022.12.11"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Bc5 5. c3 Nge7 6. O-O Ng6 7. d4 Ba7 8. Bg5
+f6 9. Be3 O-O 10. Re1 Kh8 11. Nbd2 d6 12. h3 Bd7 13. Nf1 exd4 14. cxd4 d5 15.
+Ng3 dxe4 16. Nxe4 Nce7 17. Nc3 Bxa4 18. Qxa4 Nf5 19. Rad1 Re8 20. Qb3 Rb8 21.
+Nd5 Qd6 22. Bd2 Rxe1+ 23. Bxe1 Qd7 24. Qc4 c6 25. Nc3 b5 26. Qb3 Nxd4 27. Nxd4
+Bxd4 28. Ne2 c5 29. Bc3 Re8 30. Nxd4 cxd4 31. Rxd4 Re1+ 32. Bxe1 Qxd4 33. Qe6 h6
+34. Bc3 Qd3 35. g3 Ne5 36. Qxa6 Nf3+ 37. Kg2 Qd5 38. Qc8+ Kh7 39. Kf1 Qd1+ 40.
+Kg2 Qd5 41. h4 Nxh4+ 42. Kf1 Qd1+ 43. Be1 Qd3+ 44. Kg1 Nf3+ 0-1
+
+[Event "Baer Challenge Final"]
+[Site "Tel Aviv ISR"]
+[Date "2022.12.12"]
+[Round "2.1"]
+[White "Praggnanandhaa, R"]
+[Black "Pranav, V"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2684"]
+[BlackElo "2545"]
+[ECO "B90"]
+[Opening "Sicilian"]
+[Variation "Najdorf"]
+[WhiteFideId "25059530"]
+[BlackFideId "25060783"]
+[EventDate "2022.12.11"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Bd3 e5 7. Nde2 Nc6 8. O-O
+Be7 9. Nd5 O-O 10. c4 Be6 11. Be3 Nd7 12. Qd2 h6 13. Nxe7+ Qxe7 14. Nc3 Nc5 15.
+Be2 f5 16. exf5 Bxf5 17. Bf3 Ne6 18. Rad1 Rad8 19. Bd5 Kh8 20. Ne4 Ncd4 21. Rfe1
+Bg4 22. Rc1 b5 23. Ng3 Nf5 24. Nxf5 Bxf5 25. Qa5 Rb8 26. b3 Nc7 27. Bc6 bxc4 28.
+Rxc4 Bd3 29. Rc3 Bb5 30. Ba7 Nd5 31. Bxb8 Nxc3 32. Qxc3 Rc8 33. Qd2 Rxb8 34. Be4
+Rf8 35. Rd1 Qa7 36. h3 Be8 37. Qe3 Qc7 38. Rc1 Qd8 39. Bd3 a5 40. Qe4 g6 41. Qe3
+Kg7 42. Rd1 Bc6 43. Bc4 Qe7 44. Qb6 Rc8 45. Qxa5 h5 46. Bd5 Be8 47. Qd2 Qa7 48.
+a4 Qb6 49. Bc4 Rd8 50. a5 Qc7 51. Bd5 Bb5 52. Rc1 Qd7 53. b4 Rf8 54. Qe3 Qe7 55.
+Qb6 Bd7 56. Rc7 Kh6 57. Qe3+ g5 58. Bc6 1-0
+
+[Event "Baer Challenge Final"]
+[Site "Tel Aviv ISR"]
+[Date "2022.12.12"]
+[Round "2.2"]
+[White "Pranav, V"]
+[Black "Praggnanandhaa, R"]
+[Result "0-1"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2545"]
+[BlackElo "2684"]
+[ECO "A05"]
+[Opening "Reti opening"]
+[WhiteFideId "25060783"]
+[BlackFideId "25059530"]
+[EventDate "2022.12.11"]
+
+1. Nf3 Nf6 2. g3 c5 3. Bg2 Nc6 4. O-O e5 5. d3 d5 6. Nbd2 Bd6 7. e4 d4 8. Nh4
+O-O 9. Nf5 Bc7 10. a4 g6 11. Nh6+ Kg7 12. Nc4 Ng8 13. Nxg8 Rxg8 14. f4 exf4 15.
+Bxf4 Be6 16. Qd2 Bxf4 17. gxf4 Bxc4 18. dxc4 f6 19. Rf3 Qe7 20. Re1 Kh8 21. e5
+fxe5 22. Rg3 Qf6 23. fxe5 Nxe5 24. Qg5 Nd7 25. Re7 Rg7 26. Rxg7 Kxg7 27. Qd5 Qe7
+28. Qxb7 Qe1+ 29. Bf1 Rf8 30. Qxd7+ Rf7 31. Qh3 Qf2+ 32. Kh1 Qxf1+ 33. Qxf1
+Rxf1+ 34. Kg2 Rc1 35. c3 Rc2+ 36. Kh3 Kf6 37. cxd4 cxd4 38. b3 Ke5 39. Rg5+ Ke4
+40. Rg4+ Ke3 41. Rg3+ Ke4 42. Rg4+ Ke3 43. Rg3+ Kf4 44. Rg4+ Ke5 45. Rg5+ Ke6
+46. Rd5 Rc3+ 47. Kg4 d3 48. Kf4 Rxb3 49. Ke3 Rc3 50. Rc5 Kd6 51. Rc8 Ra3 52. Rh8
+d2+ 53. Kxd2 Rh3 54. Ra8 Kc5 55. Rxa7 Kxc4 56. Rb7 Kd4 57. Rb4+ Ke5 58. Rb7 h5
+59. a5 Rxh2+ 60. Ke3 Ra2 61. Rb5+ Kf6 62. Rb6+ Kf5 63. Rb5+ Kg4 64. Rb4+ Kg5 65.
+Rb5+ Kh6 66. Kf3 Ra3+ 67. Ke4 h4 68. Kf4 g5+ 69. Kg4 Ra4+ 70. Kh3 Kh5 71. Rc5
+Ra3+ 72. Kg2 h3+ 73. Kh2 Kh4 74. Rc8 Ra2+ 75. Kg1 Rxa5 0-1
+
+[Event "Baer Challenge Final"]
+[Site "Tel Aviv ISR"]
+[Date "2022.12.13"]
+[Round "3.1"]
+[White "Pranav, V"]
+[Black "Praggnanandhaa, R"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2545"]
+[BlackElo "2684"]
+[ECO "B31"]
+[Opening "Sicilian"]
+[Variation "Nimzovich-Rossolimo attack (with ...g6, without ...d6)"]
+[WhiteFideId "25060783"]
+[BlackFideId "25059530"]
+[EventDate "2022.12.11"]
+
+1. e4 c5 2. Nf3 Nc6 3. Bb5 g6 4. O-O Bg7 5. c3 Nf6 6. Qa4 O-O 7. d4 cxd4 8. cxd4
+d6 9. Bxc6 bxc6 10. Qxc6 Bg4 11. Nbd2 Qc8 12. Qa4 Bxf3 13. Nxf3 Nxe4 14. Re1 Qb7
+15. h3 Rfc8 16. Qd1 Rc7 17. Bf4 Rac8 18. Rc1 Rxc1 19. Bxc1 Nf6 20. Qa4 Nd5 21.
+b3 h6 22. Bd2 Kh7 23. h4 e6 24. b4 Rc4 25. Qb3 Qc8 26. b5 Kg8 27. a4 Bxd4 28.
+Bxh6 Bg7 29. Bd2 Qc5 30. a5 Rg4 31. b6 axb6 32. a6 b5 33. Rc1 Qb6 34. Rc8+ Kh7
+35. Ng5+ Kh6 36. Nxe6+ Kh7 37. Ng5+ Kh6 38. Qxd5 Rd4 39. Nf3+ 1-0
+
+[Event "Baer Challenge Final"]
+[Site "Tel Aviv ISR"]
+[Date "2022.12.13"]
+[Round "3.2"]
+[White "Praggnanandhaa, R"]
+[Black "Pranav, V"]
+[Result "1-0"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2684"]
+[BlackElo "2545"]
+[ECO "C55"]
+[Opening "Two knights defence (Modern bishop's opening)"]
+[WhiteFideId "25059530"]
+[BlackFideId "25060783"]
+[EventDate "2022.12.11"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 4. d3 h6 5. c3 d6 6. a4 g6 7. a5 a6 8. Qb3 Qe7 9.
+O-O Bg7 10. Re1 O-O 11. Nbd2 Rb8 12. d4 Nh5 13. dxe5 dxe5 14. Nf1 Bg4 15. N3d2
+Be6 16. Ne3 Kh7 17. Nf3 Qc5 18. Bxe6 fxe6 19. Qxe6 Nxa5 20. b4 Qxc3 21. Ra3 Qxb4
+22. Nd5 Qc5 23. Rc3 Qd6 24. Nxc7 Rbd8 25. Ba3 Qd7 26. Bxf8 Bxf8 27. Qxd7+ Rxd7
+28. Nxe5 Rd2 29. Ne6 Bd6 30. Rd3 Rxd3 31. Nxd3 Nc4 32. e5 Be7 33. Nec5 Ng7 34.
+Nxb7 Ne6 35. Nd6 Nb6 36. Nb4 a5 37. Nc6 Bg5 38. Rb1 Nd7 39. Rb7 Nc5 40. Ra7 Kg8
+41. e6 1-0
+
+[Event "Baer Challenge Final"]
+[Site "Tel Aviv ISR"]
+[Date "2022.12.13"]
+[Round "3.3"]
+[White "Pranav, V"]
+[Black "Praggnanandhaa, R"]
+[Result "0-1"]
+[WhiteTitle "GM"]
+[BlackTitle "GM"]
+[WhiteElo "2545"]
+[BlackElo "2684"]
+[ECO "B31"]
+[Opening "Sicilian"]
+[Variation "Nimzovich-Rossolimo attack (with ...g6, without ...d6)"]
+[WhiteFideId "25060783"]
+[BlackFideId "25059530"]
+[EventDate "2022.12.11"]
+
+1. e4 c5 2. Nf3 Nc6 3. Bb5 g6 4. Bxc6 dxc6 5. d3 Qc7 6. h3 e5 7. Nc3 Nf6 8. a4
+a5 9. Be3 b6 10. Qd2 h6 11. O-O Be6 12. Rae1 g5 13. Nh2 Nh5 14. Ng4 Bg7 15. g3
+Nf4 16. gxf4 gxf4 17. Bxf4 exf4 18. Nd5 cxd5 19. exd5 h5 20. Nh2 Rg8 21. Kh1 Qb7
+22. c4 O-O-O 23. Qxf4 Bxh3 24. Rg1 Qd7 25. Re3 Bd4 26. Reg3 Rxg3 27. Rxg3 Re8
+28. Nf3 Bxf2 29. Rg7 Qf5 30. Qxf5+ Bxf5 31. Rxf7 Bg4 32. Ng5 Re1+ 33. Kg2 Bh4
+34. Ne4 Re2+ 35. Kg1 Bh3 36. Rf8+ Kd7 37. Rf7+ Kd8 38. b3 Rg2+ 39. Kh1 Rg6 40.
+Kh2 Bd7 41. Rf8+ Be8 42. Rh8 Be7 43. Kh1 h4 44. Kh2 Kd7 45. Rh7 Kd8 46. Rh8 Bd6+
+47. Kh1 Bg3 48. Kg2 Be5+ 0-1
