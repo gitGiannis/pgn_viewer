@@ -1,40 +1,61 @@
 # -------------------------------------------------------------------------------------------------------------------- #
-# piece.py: περιέχει την κλάση Piece                                                                                   #
+# piece.py: includes class Piece                                                                                       #
 # -------------------------------------------------------------------------------------------------------------------- #
 
 
 class Piece:
     """
-    Αρχικοποιεί κάθε κομμάτι του σκακιού ως ένα αντικείμενο, προσδίδοντάς του κάποιες βασικές ιδιότητες
+    Initializes every chess piece as an object with basic attributes
 
-    Ορίσματα:
-    ---------
+    ...
+
+    Attributes:
+    -----------
         name (str):
-            όνομα κομματιού (π.χ. rbl= rook black left κ.ο.κ)
+            name of the piece (e.g. rbl= rook black left etc.)
 
         pos (str):
-            θέση κομματιού (π.χ. a8= στήλη A, γραμμή 8 κ.ο.κ)
+            position of the piece (e.g. a8= column a, row 8 etc.)
 
         state (bool):
-            κατάσταση κομματιού (True για κομμάτια, False για κενά κελιά)
+            state of the piece (True if active, False if captured)
 
         row (int):
-            γραμμή του πίνακα που βρίσκεται το κομμάτι (χρησιμοποιείται στην κλάση gui.GUI)
+            row (0~7) on the board (used in gui.GUI)
 
         col (int):
-            στήλη του πίνακα που βρίσκεται το κομμάτι (χρησιμοποιείται στην κλάση gui.GUI)
+            column (0~7) on the board (used in gui.GUI)
     """
     def __init__(self, name: str, pos: str, state=True, row=-1, col=-1):
-        self.name = name        # όνομα κομματιού (π.χ. rbl= rook black left κ.ο.κ)
-        self.pos = pos          # θέση κομματιού (π.χ. a8= στήλη A, γραμμή 8 κ.ο.κ)
-        self.state = state      # κατάσταση κομματιού (True για κομμάτια, False για κενά κελιά)
-
-        # συντεταγμένες που θα βοηθήσουν στη γραφική αναπαράσταση της σκακιέρας (βλ. κλάση GUI)
-        self.row = row          # γραμμή του πίνακα που βρίσκεται το κομμάτι
-        self.col = col          # στήλη του πίνακα που βρίσκεται το κομμάτι
-
-    def __str__(self):
         """
-        Μέθοδος για εκτυπώσεις στην κονσόλα (βοήθησε στο debugging)
+        Initializes the object
+
+        Parameters:
+            name (str):
+                name of the piece (e.g. rbl= rook black left etc.)
+
+            pos (str):
+                position of the piece (e.g. a8= column a, row 8 etc.)
+
+            state (bool):
+                state of the piece (True if active, False if captured)
+
+            row (int):
+                row (0~7) on the board (used in gui.GUI)
+
+            col (int):
+                column (0~7) on the board (used in gui.GUI)
+        """
+        self.name = name        # name of the piece (e.g. rbl= rook black left etc.)
+        self.pos = pos          # position of the piece (e.g. a8= column a, row 8 etc.)
+        self.state = state      # state of the piece (True if active, False if captured)
+
+        # coordinates used in the graphical representation of the pieces on the board (see class gui.GUI)
+        self.row = row          # row (0~7) on the board (used in gui.GUI)
+        self.col = col          # column (0~7) on the board (used in gui.GUI)
+
+    def __repr__(self):
+        """
+        Return a string with the object info
         """
         return f"{self.name}({self.pos}) [{self.row}][{self.col}]"
