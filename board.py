@@ -1,47 +1,77 @@
 # -------------------------------------------------------------------------------------------------------------------- #
-# board.py: περιέχει την κλάση Board                                                                                   #
+# board.py: includes class Board                                                                                       #
 # -------------------------------------------------------------------------------------------------------------------- #
 from piece import Piece
 
 
 class Board:
     """
-    "Δημιουργεί" το πινάκιο (ταμπλό) της σκακιέρας, όπου τοποθετούνται αντικείμενα piece.Piece (κομμάτια)
-    Μέσω μεθόδων τοποθετεί τα κομμάτια στην αρχική τους θέση και εκτελεί τις κινήσεις τους
+    Creates the chess board
+    Places the piece objects and performs their moves through methods
 
-    Μέθοδοι:
+    ...
+
+    Attributes:
+    -----------
+        pieces (list):
+            list containing the piece objects
+
+        board (list):
+            2D array representing the chess board
+
+        kings (dict):
+            dictionary containing the kings
+
+        rooks(dict):
+            dictionary containing the rooks
+
+        squares (dict):
+            dictionary to accumulate every cell of the board and the state of the piece inside
+
+        friendly_capture (bool):
+            boolean value to show same colour capture (not allowed)
+
+    Methods:
     --------
         __update_squares(self):
-            ενημερώνει το λεξικό κενών και κατηλλειμένων κελιών
+            updates the "squares" dictionary
 
         update_self(self):
-            διατρέχει τα κομμάτια και ενημερώνει το ταμπλό με τις νέες θέσεις
+            loops on the pieces and updates the board with the new positions
 
         move_piece(self, src: str, dest: str) -> str:
-            μετακινεί το κομμάτι που πρέπει να κινηθεί, επιστρέφει το όνομά του κομματιού που αιχμαλωτίστηκε
+            moves a piece from src square to dest square and returns the name of the captured piece
     """
     def __init__(self):
-        # αρχικοποίηση κομματιών ---------------------------------------------------------------------------------------
+        """
+        Initializes the board and other useful attributes
+        """
+        # initialization of the pieces ---------------------------------------------------------------------------------
+        # list containing the pieces
         self.pieces = [
-            # κομμάτια "λευκού" παίκτη
-            Piece("rwl", "a1", row=7, col=0), Piece("nwl", "b1", row=7, col=1), Piece("bwl", "c1", row=7, col=2),
-            Piece("qwl", "d1", row=7, col=3), king_w := Piece("kwr", "e1", row=7, col=4),
-            Piece("bwr", "f1", row=7, col=5), Piece("nwr", "g1", row=7, col=6), Piece("rwr", "h1", row=7, col=7),
-            Piece("pw1", "a2", row=6, col=0), Piece("pw2", "b2", row=6, col=1), Piece("pw3", "c2", row=6, col=2),
-            Piece("pw4", "d2", row=6, col=3), Piece("pw5", "e2", row=6, col=4), Piece("pw6", "f2", row=6, col=5),
+            # "white" pieces
+            king_w := Piece("kwr", "e1", row=7, col=4), Piece("qwl", "d1", row=7, col=3),
+            Piece("rwl", "a1", row=7, col=0), Piece("rwr", "h1", row=7, col=7),
+            Piece("nwl", "b1", row=7, col=1), Piece("nwr", "g1", row=7, col=6),
+            Piece("bwl", "c1", row=7, col=2), Piece("bwr", "f1", row=7, col=5),
+            Piece("pw1", "a2", row=6, col=0), Piece("pw2", "b2", row=6, col=1),
+            Piece("pw3", "c2", row=6, col=2), Piece("pw4", "d2", row=6, col=3),
+            Piece("pw5", "e2", row=6, col=4), Piece("pw6", "f2", row=6, col=5),
             Piece("pw7", "g2", row=6, col=6), Piece("pw8", "h2", row=6, col=7),
-            # κομμάτια "μαύρου" παίκτη
-            Piece("rbl", "a8", row=0, col=0), Piece("nbl", "b8", row=0, col=1), Piece("bbl", "c8", row=0, col=2),
-            Piece("qbl", "d8", row=0, col=3), king_b := Piece("kbr", "e8", row=0, col=4),
-            Piece("bbr", "f8", row=0, col=5), Piece("nbr", "g8", row=0, col=6), Piece("rbr", "h8", row=0, col=7),
-            Piece("pb1", "a7", row=1, col=0), Piece("pb2", "b7", row=1, col=1), Piece("pb3", "c7", row=1, col=2),
-            Piece("pb4", "d7", row=1, col=3), Piece("pb5", "e7", row=1, col=4), Piece("pb6", "f7", row=1, col=5),
+            # "black" pieces
+            king_b := Piece("kbr", "e8", row=0, col=4), Piece("qbl", "d8", row=0, col=3),
+            Piece("rbl", "a8", row=0, col=0), Piece("rbr", "h8", row=0, col=7),
+            Piece("nbl", "b8", row=0, col=1), Piece("nbr", "g8", row=0, col=6),
+            Piece("bbl", "c8", row=0, col=2), Piece("bbr", "f8", row=0, col=5),
+            Piece("pb1", "a7", row=1, col=0), Piece("pb2", "b7", row=1, col=1),
+            Piece("pb3", "c7", row=1, col=2), Piece("pb4", "d7", row=1, col=3),
+            Piece("pb5", "e7", row=1, col=4), Piece("pb6", "f7", row=1, col=5),
             Piece("pb7", "g7", row=1, col=6), Piece("pb8", "h7", row=1, col=7)
         ]
 
-        # αρχικοποίηση κενών κελιών
-        # θεωρώ ότι κάθε κελί της σκακιέρας περιέχει κάποιο κομμάτι, τα κενά κελιά περιέχουν decoys, τα οποία ο χρήστης
-        # δεν αντιλαμβάνεται, αλλά διευκολύνουν στις μετακινήσεις των κομματιών, όπως θα φανεί στη συνέχεια
+        # initialization of empty squares
+        # assuming every board square contains a piece, empty squares contain invisible decoys
+        # these are used to simplify the position transitions of the pieces
         r = 5
         for cnt in range(3, 7):
             self.pieces.append(Piece(" " * 3, f"a{cnt}", state=False, row=r, col=0))
@@ -54,44 +84,31 @@ class Board:
             self.pieces.append(Piece(" " * 3, f"h{cnt}", state=False, row=r, col=7))
             r -= 1
 
-        # αρχικοποίηση πινακίου (ταμπλό) σκακιού -----------------------------------------------------------------------
-        # σημειώνεται πως η δημιουργία του πινακίου θα μπορούσε να γίνει με πιο κομψό και προγραμματιστικό τρόπο,
-        # ωστόσο με αυτόν τον τρόπο ήταν πιο εύκολη η κατανόηση και η εξοικείωση με τις θέσεις
-        # και τις διευθύνσεις της σκακιέρας
-        self.board = [
-            [None, None, None, None, None, None, None, None],  # 8
-            [None, None, None, None, None, None, None, None],  # 7
-            [None, None, None, None, None, None, None, None],  # 6
-            [None, None, None, None, None, None, None, None],  # 5
-            [None, None, None, None, None, None, None, None],  # 4
-            [None, None, None, None, None, None, None, None],  # 3
-            [None, None, None, None, None, None, None, None],  # 2
-            [None, None, None, None, None, None, None, None]   # 1
-            #  a     b     c     d     e     f     g     h
-        ]
+        # initialization of the chess board ----------------------------------------------------------------------------
+        # 2D board 8x8
+        self.board = [[None for _ in range(8)] for __ in range(8)]
 
-        # λεξικό με τις διευθύνσεις των βασιλιάδων για πιο εύκολη εύρεση
-        self.kings = {"w": king_w,
-                      "b": king_b}
+        # dictionary containing the kings for easier access
+        self.kings = {"w": king_w, "b": king_b}
 
-        # λεξικό που θα συσσωρεύσει τα ονόματα των κελιών (θέσεις [pos] της σκακιέρας)
-        # και την κατάσταση τους (state [True/False]) (εάν περιέχουν κομμάτι True, εάν περιέχουν decoy False)
-        # θα χρησιμεύσει στον έλεγχο της εγκυρότητας των κινήσεων των κομματιών της κλάσης Gameplay
+        # dictionary to accumulate every cell of the board and the state of the piece inside
+        # key: square name (e.g. "a8")
+        # value: True if the square contains an active piece, False if it contains a decoy
         self.squares = {}
 
-        # τιμή bool για δήλωση ότι ένα κομμάτι κατέλαβε κομμάτι ίδιου tag (χρώματος)
+        # boolean value to show same colour capture (not allowed)
         self.friendly_capture: bool = False
 
     def __update_squares(self, piece):
         """
-        Ενημερώνει το λεξικό κενών και κατηλλειμένων κελιών
-        Το λεξικό self.squares (dict) περιέχει τα ονόματα των κελιών και την τιμή καθενός (True/False)
-        Εάν το κελί έχει κάποιο ενεργό κομμάτι, χαρακτηρίζεται ως το tag (w/b) του κομματιού
-        Εάν αν είναι κενό χαρακτηρίζεται ως False
+        Updates the squares dictionary
 
-        Ορίσματα:
-        ---------
-            piece (Piece): τρέχων κομμάτι κατά τη διαπέραση της λίστας κομματιών
+        ...
+
+        Parameters:
+        -----------
+            piece (Piece):
+                current piece from the loop in update_self method
         """
         # εάν το κελί έχει κάποιο ενεργό κομμάτι, χαρακτηρίζεται ως το tag (w/b) του κομματιού,
         # διαφορετικά αν είναι κενό False
@@ -102,14 +119,11 @@ class Board:
 
     def update_self(self):
         """
-        Διατρέχει τα κομμάτια και τα τοποθετεί στο πινάκιο (ταμπλό)
-        Σε κάθε γύρο, γίνεται προσπέλαση των κομματιών για να τοποθετηθούν στη νέα τους θέση, σε περίπτωση που αυτή έχει
-        αλλάξει
+        Loops over the piece list and updates the board with the new positions
         """
         for piece in self.pieces:
             self.__update_squares(piece)
-            # γίνεται ομαδοποίηση ελέγχων ανα στήλη για λιγότερους ελέγχους
-            # στήλη A
+            # column a
             if piece.pos[0] == "a":
                 if piece.pos == "a8":
                     self.board[0][0] = piece
@@ -128,7 +142,7 @@ class Board:
                 elif piece.pos == "a1":
                     self.board[7][0] = piece
 
-            # στήλη B
+            # column b
             elif piece.pos[0] == "b":
                 if piece.pos == "b8":
                     self.board[0][1] = piece
@@ -147,7 +161,7 @@ class Board:
                 elif piece.pos == "b1":
                     self.board[7][1] = piece
 
-            # στήλη C
+            # column c
             elif piece.pos[0] == "c":
                 if piece.pos == "c8":
                     self.board[0][2] = piece
@@ -166,7 +180,7 @@ class Board:
                 elif piece.pos == "c1":
                     self.board[7][2] = piece
 
-            # στήλη D
+            # column d
             elif piece.pos[0] == "d":
                 if piece.pos == "d8":
                     self.board[0][3] = piece
@@ -185,7 +199,7 @@ class Board:
                 elif piece.pos == "d1":
                     self.board[7][3] = piece
 
-            # στήλη E
+            # column e
             elif piece.pos[0] == "e":
                 if piece.pos == "e8":
                     self.board[0][4] = piece
@@ -204,7 +218,7 @@ class Board:
                 elif piece.pos == "e1":
                     self.board[7][4] = piece
 
-            # στήλη F
+            # column f
             elif piece.pos[0] == "f":
                 if piece.pos == "f8":
                     self.board[0][5] = piece
@@ -223,7 +237,7 @@ class Board:
                 elif piece.pos == "f1":
                     self.board[7][5] = piece
 
-            # στήλη G
+            # column g
             elif piece.pos[0] == "g":
                 if piece.pos == "g8":
                     self.board[0][6] = piece
@@ -242,7 +256,7 @@ class Board:
                 elif piece.pos == "g1":
                     self.board[7][6] = piece
 
-            # στήλη H
+            # column h
             elif piece.pos[0] == "h":
                 if piece.pos == "h8":
                     self.board[0][7] = piece
@@ -263,62 +277,57 @@ class Board:
 
     def move_piece(self, src: str, dest: str) -> str:
         """
-        Μετακινεί το κομμάτι που πρέπει να κινηθεί, επιστρέφει το όνομά του κομματιού που αιχμαλωτίστηκε
+        Moves the piece from src to dest and returns the captures piece name
 
-        Ορίσματα:
-        ---------
-            src (str): θέση κομματιού που θα εκτελέσει κάποια κίνηση
+        Parameters:
+        -----------
+            src (str): piece to move
 
-            dest (str): θέση προορισμού του κομματιού που θα μετακινηθεί
+            dest (str): position to be moved to
 
-        Επιστρεφόμενο αντικείμενο:
-        --------------------------
-            piece_dest_name_to_return (str):
-                το όνομα κομματιού που αιχμαλωτίστηκε θα επιστραφεί από τη μέθοδο και θα χρησιμοποιηθεί από λεξικό που
-                αποθηκεύει πληροφορίες για τα αιχμαλωτισμένα κομμάτια ώστε να προβληθούν στο παράθυρο εξέλιξης του αγώνα
-                (gui.GUI)
+        Returns:
+        --------
+            captured_piece_name_to_return (str):
+                the name of the captured piece (used in captured_piece_frame.CapturedPieceFrame to show captured pieces)
         """
-        # επαναφορά μεταβλητής
+        # initialization of variable
         self.friendly_capture = False
 
-        # αρχικοποίηση επιστρεφόμενης τιμής
-        piece_dest_name_to_return = ""
-
-        # προσπέλαση κομματιών για εύρεση κομματιού που μετακινείται (στο εξής κομμάτι src)
+        # loop through pieces list to find the piece to move (piece_src)
         for piece_src in self.pieces:
-            # εύρεση κομματιού src
             if piece_src.pos == src:
-                # προσωρινή αποθήκευση τρεχόντων συντεταγμένων του κομματιού src
+                # src piece has been found
+                # temporary assignment of current coordinates of src
                 row_src = piece_src.row
                 col_src = piece_src.col
 
-                # προσπέλαση κομματιών για εύρεση κομματιού στη θέση προορισμού (στο εξής κομμάτι dest)
+                # loop through pieces list to find the piece at destination (piece_dest)
                 for piece_dest in self.pieces:
-                    # εύρεση κομματιού dest
                     if piece_dest.pos == dest:
-                        # έλεγχος χρώματος (tag)
+                        # src piece has been found
+
+                        # colour check
                         if piece_src.name[1] == piece_dest.name[1]:
                             self.friendly_capture = True
 
-                        # προσωρινή αποθήκευση τρεχόντων συντεταγμένων του κομματιού dest
+                        # temporary assignment of current coordinates of dest
                         row_dest = piece_dest.row
                         col_dest = piece_dest.col
 
-                        # ανταλλαγή θέσης με το src
+                        # position swap between src and dest
                         piece_dest.pos = src
+                        piece_src.pos = dest
 
-                        # διατηρώ σε μία μεταβλητή το όνομα του κομματιού που αιχμαλωτίστηκε
-                        piece_dest_name_to_return = piece_dest.name
-                        # το κομμάτι "αιχμαλωτίστηκε" και γίνεται κενό κελί (decoy)
+                        # temporary assignment of the captured piece name
+                        captured_piece_name_to_return = piece_dest.name
+                        # captured piece becomes empty (decoy)
                         piece_dest.name = "   "
                         piece_dest.state = False
-                        # γίνεται ανταλλαγή συντεταγμένων στον πίνακα
+
+                        # coordinates swap
                         piece_dest.row = row_src
                         piece_dest.col = col_src
                         piece_src.row = row_dest
                         piece_src.col = col_dest
-                        break
-                # ανταλλαγή θέσης με το dest
-                piece_src.pos = dest
-                break
-        return piece_dest_name_to_return
+
+                        return captured_piece_name_to_return
