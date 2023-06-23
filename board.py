@@ -297,22 +297,25 @@ class Board:
         for piece_src in self.pieces:
             if piece_src.pos == src:
                 # src piece has been found
-                # temporary assignment of current coordinates of src
-                row_src = piece_src.row
-                col_src = piece_src.col
-
                 # loop through pieces list to find the piece at destination (piece_dest)
                 for piece_dest in self.pieces:
                     if piece_dest.pos == dest:
-                        # src piece has been found
+                        # dest piece has been found
 
-                        # colour check
+                        # colour check (if True, game_loader.GameLoader raises exception)
                         if piece_src.name[1] == piece_dest.name[1]:
                             self.friendly_capture = True
 
-                        # temporary assignment of current coordinates of dest
+                        # temporary assignment of current coordinates of src and dest
+                        row_src = piece_src.row
+                        col_src = piece_src.col
                         row_dest = piece_dest.row
                         col_dest = piece_dest.col
+                        # coordinates swap
+                        piece_dest.row = row_src
+                        piece_dest.col = col_src
+                        piece_src.row = row_dest
+                        piece_src.col = col_dest
 
                         # position swap between src and dest
                         piece_dest.pos = src
@@ -323,11 +326,5 @@ class Board:
                         # captured piece becomes empty (decoy)
                         piece_dest.name = "   "
                         piece_dest.state = False
-
-                        # coordinates swap
-                        piece_dest.row = row_src
-                        piece_dest.col = col_src
-                        piece_src.row = row_dest
-                        piece_src.col = col_dest
 
                         return captured_piece_name_to_return
