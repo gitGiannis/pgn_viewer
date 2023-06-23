@@ -1,2 +1,7 @@
 /chess_pgn
 .idea
+__testing.py
+_debugger.py
+_installer.py
+pip3w
+time_counter.py
