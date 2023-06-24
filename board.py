@@ -102,6 +102,8 @@ class Board:
     def __update_squares(self, piece):
         """
         Updates the squares dictionary
+        If a square contains an active piece, it is set as True (string with the piece tag 'w'/'b')
+        Else it is set as False
 
         ...
 
@@ -110,8 +112,6 @@ class Board:
             piece (Piece):
                 current piece from the loop in update_self method
         """
-        # εάν το κελί έχει κάποιο ενεργό κομμάτι, χαρακτηρίζεται ως το tag (w/b) του κομματιού,
-        # διαφορετικά αν είναι κενό False
         if piece.state:
             self.squares[piece.pos] = piece.name[1]
         else:
@@ -123,165 +123,17 @@ class Board:
         """
         for piece in self.pieces:
             self.__update_squares(piece)
-            # column a
-            if piece.pos[0] == "a":
-                if piece.pos == "a8":
-                    self.board[0][0] = piece
-                elif piece.pos == "a7":
-                    self.board[1][0] = piece
-                elif piece.pos == "a6":
-                    self.board[2][0] = piece
-                elif piece.pos == "a5":
-                    self.board[3][0] = piece
-                elif piece.pos == "a4":
-                    self.board[4][0] = piece
-                elif piece.pos == "a3":
-                    self.board[5][0] = piece
-                elif piece.pos == "a2":
-                    self.board[6][0] = piece
-                elif piece.pos == "a1":
-                    self.board[7][0] = piece
-
-            # column b
-            elif piece.pos[0] == "b":
-                if piece.pos == "b8":
-                    self.board[0][1] = piece
-                elif piece.pos == "b7":
-                    self.board[1][1] = piece
-                elif piece.pos == "b6":
-                    self.board[2][1] = piece
-                elif piece.pos == "b5":
-                    self.board[3][1] = piece
-                elif piece.pos == "b4":
-                    self.board[4][1] = piece
-                elif piece.pos == "b3":
-                    self.board[5][1] = piece
-                elif piece.pos == "b2":
-                    self.board[6][1] = piece
-                elif piece.pos == "b1":
-                    self.board[7][1] = piece
-
-            # column c
-            elif piece.pos[0] == "c":
-                if piece.pos == "c8":
-                    self.board[0][2] = piece
-                elif piece.pos == "c7":
-                    self.board[1][2] = piece
-                elif piece.pos == "c6":
-                    self.board[2][2] = piece
-                elif piece.pos == "c5":
-                    self.board[3][2] = piece
-                elif piece.pos == "c4":
-                    self.board[4][2] = piece
-                elif piece.pos == "c3":
-                    self.board[5][2] = piece
-                elif piece.pos == "c2":
-                    self.board[6][2] = piece
-                elif piece.pos == "c1":
-                    self.board[7][2] = piece
-
-            # column d
-            elif piece.pos[0] == "d":
-                if piece.pos == "d8":
-                    self.board[0][3] = piece
-                elif piece.pos == "d7":
-                    self.board[1][3] = piece
-                elif piece.pos == "d6":
-                    self.board[2][3] = piece
-                elif piece.pos == "d5":
-                    self.board[3][3] = piece
-                elif piece.pos == "d4":
-                    self.board[4][3] = piece
-                elif piece.pos == "d3":
-                    self.board[5][3] = piece
-                elif piece.pos == "d2":
-                    self.board[6][3] = piece
-                elif piece.pos == "d1":
-                    self.board[7][3] = piece
-
-            # column e
-            elif piece.pos[0] == "e":
-                if piece.pos == "e8":
-                    self.board[0][4] = piece
-                elif piece.pos == "e7":
-                    self.board[1][4] = piece
-                elif piece.pos == "e6":
-                    self.board[2][4] = piece
-                elif piece.pos == "e5":
-                    self.board[3][4] = piece
-                elif piece.pos == "e4":
-                    self.board[4][4] = piece
-                elif piece.pos == "e3":
-                    self.board[5][4] = piece
-                elif piece.pos == "e2":
-                    self.board[6][4] = piece
-                elif piece.pos == "e1":
-                    self.board[7][4] = piece
-
-            # column f
-            elif piece.pos[0] == "f":
-                if piece.pos == "f8":
-                    self.board[0][5] = piece
-                elif piece.pos == "f7":
-                    self.board[1][5] = piece
-                elif piece.pos == "f6":
-                    self.board[2][5] = piece
-                elif piece.pos == "f5":
-                    self.board[3][5] = piece
-                elif piece.pos == "f4":
-                    self.board[4][5] = piece
-                elif piece.pos == "f3":
-                    self.board[5][5] = piece
-                elif piece.pos == "f2":
-                    self.board[6][5] = piece
-                elif piece.pos == "f1":
-                    self.board[7][5] = piece
-
-            # column g
-            elif piece.pos[0] == "g":
-                if piece.pos == "g8":
-                    self.board[0][6] = piece
-                elif piece.pos == "g7":
-                    self.board[1][6] = piece
-                elif piece.pos == "g6":
-                    self.board[2][6] = piece
-                elif piece.pos == "g5":
-                    self.board[3][6] = piece
-                elif piece.pos == "g4":
-                    self.board[4][6] = piece
-                elif piece.pos == "g3":
-                    self.board[5][6] = piece
-                elif piece.pos == "g2":
-                    self.board[6][6] = piece
-                elif piece.pos == "g1":
-                    self.board[7][6] = piece
-
-            # column h
-            elif piece.pos[0] == "h":
-                if piece.pos == "h8":
-                    self.board[0][7] = piece
-                elif piece.pos == "h7":
-                    self.board[1][7] = piece
-                elif piece.pos == "h6":
-                    self.board[2][7] = piece
-                elif piece.pos == "h5":
-                    self.board[3][7] = piece
-                elif piece.pos == "h4":
-                    self.board[4][7] = piece
-                elif piece.pos == "h3":
-                    self.board[5][7] = piece
-                elif piece.pos == "h2":
-                    self.board[6][7] = piece
-                elif piece.pos == "h1":
-                    self.board[7][7] = piece
+            self.board[piece.row][piece.col] = piece
 
     def move_piece(self, src: str, dest: str) -> str:
         """
         Moves the piece from src to dest and returns the captures piece name
 
+        ...
+
         Parameters:
         -----------
-            src (str): piece to move
+            src (str): position of the piece to move
 
             dest (str): position to be moved to
 
