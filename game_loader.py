@@ -1,7 +1,7 @@
 # -------------------------------------------------------------------------------------------------------------------- #
 # game_loader.py: περιέχει την κλάση GameLoader                                                                        #
 # -------------------------------------------------------------------------------------------------------------------- #
-from gameplay import Gameplay
+from move_checking import PieceMoveChecker
 from my_exceptions import PositionReached, NoMovesFound, PossibleCorruptFile, FriendlyCapture
 
 
@@ -40,7 +40,7 @@ class GameLoader:
     """
     def __init__(self, list_of_moves: list):
         # αρχικοποίηση κλάσης Gameplay για το "τρέξιμο" του παιχνιδιού
-        self.gameplay = Gameplay(list_of_moves)
+        self.gameplay = PieceMoveChecker(list_of_moves)
 
         # αρχικοποίηση μεταβλητών για συσσώρευση πληροφορίας -----------------------------------------------------------
         # λίστα όπου αποθηκεύονται τα λεξικά με τα στιγμιότυπα κάθε γύρου
@@ -76,7 +76,7 @@ class GameLoader:
         # βοηθητική μεταβλητή
         current_round = []
         # αποθήκευση πληροφοριών για την αρχική θέση των κομματιών
-        for piece in self.gameplay.brd.pieces:
+        for piece in self.gameplay.pieces:
             current_round.append({
                 "name": piece.name[:2],
                 "row": piece.row,
@@ -95,16 +95,18 @@ class GameLoader:
 
             # η μέθοδος next_move() επέστρεψε None
             if captured_piece_name is None:
-                raise PossibleCorruptFile(f"{self.gameplay.round//2 + 1}. {self.gameplay.moves[self.gameplay.round]}")
+                raise PossibleCorruptFile(f"{self.gameplay.round_cnt//2 + 1}. "
+                                          f"{self.gameplay.moves[self.gameplay.round_cnt]}")
 
-            if self.gameplay.brd.friendly_capture:
-                raise FriendlyCapture(f"{self.gameplay.round//2 + 1}. {self.gameplay.moves[self.gameplay.round]}")
+            if self.gameplay.friendly_capture:
+                raise FriendlyCapture(f"{self.gameplay.round_cnt//2 + 1}. "
+                                      f"{self.gameplay.moves[self.gameplay.round_cnt]}")
 
             # ενημέρωση λεξικού captured_piece_names
             self.update_captured_piece_dict(captured_piece_name)
 
             # αποθήκευση πληροφοριών κάθε κομματιού για κάθε γύρο
-            for line in self.gameplay.brd.board:
+            for line in self.gameplay.board:
                 for sqr in line:
                     current_round.append({
                         "name": sqr.name[:2],
@@ -183,4 +185,4 @@ class GameLoader:
                 όνομα κομματιού που αιχμαλωτίστηκε
         """
         if piece_name != "   ":
-            self.captured_piece_names[self.gameplay.round + 1] = piece_name[:2]
+            self.captured_piece_names[self.gameplay.round_cnt + 1] = piece_name[:2]
