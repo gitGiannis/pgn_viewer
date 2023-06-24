@@ -117,7 +117,7 @@ class Board:
         else:
             self.squares[piece.pos] = False
 
-    def update_self(self):
+    def update_board(self):
         """
         Loops over the piece list and updates the board with the new positions
         """
