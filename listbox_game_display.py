@@ -5,6 +5,7 @@ from tkinter import Frame, Button, Listbox, Label, Scrollbar
 from pgn import FilePGN
 from game_loader import GameLoader
 from gui import GUI
+from my_exceptions import PossibleCorruptFile, NoMovesFound, FriendlyCapture
 
 
 class ListboxGameDisplay(Frame):
@@ -117,7 +118,7 @@ class ListboxGameDisplay(Frame):
                 game_loader = GameLoader(list_of_moves=current_game_dictionary["moves"])
                 # τρέχουμε το GUI (γραφική αναπαράσταση παιχνιδιού) με το συγκεκριμένο παιχνίδι
                 GUI(game_loader, current_game_dictionary)
-            except Exception as v:
+            except (PossibleCorruptFile, NoMovesFound, FriendlyCapture) as v:
                 self.warning_label.config(text=str(v))
                 self.warning_label.grid(row=1, column=1, columnspan=2, sticky="nw")
                 self.warning_label.after(3000, self.warning_label.grid_forget)
