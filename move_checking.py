@@ -666,7 +666,7 @@ class PieceMoveChecker(Board):
                 True: the move is valid
                 False: the move is not valid
         """
-        # storing the difference in dile and rank
+        # storing the difference in file and rank
         # the difference is converted to integer by finding their positions on the list (file, rank)
         distance_by_file = self.files.index(src[0]) - self.files.index(dest[0])
         distance_by_rank = self.ranks.index(src[1]) - self.ranks.index(dest[1])
@@ -679,7 +679,7 @@ class PieceMoveChecker(Board):
     def __king_move_is_valid(self, src: str, dest: str) -> bool:
         """
         Returns True if the move of the king is valid
-        Else returns False
+        Returns False otherwise
 
         ...
 
@@ -689,63 +689,60 @@ class PieceMoveChecker(Board):
 
             dest (str): destination position (e.g. e5)
 
-        Επιστρεφόμενο αντικείμενο:
-        --------------------------
+        Returns:
             (bool):
-                True: η κίνηση είναι έγκυρη
-                False: η κίνηση δεν είναι έγκυρη
+                True: the move is valid
+                False: the move is not valid
         """
         if src == dest:
-            # έλεγχος εάν έχουμε ίδια θέση εκκίνησης - προορισμού (δεν επιτρέπεται)
+            # piece cannot stay on the same square
             return False
 
-        # ορισμός μεταβλητών για πιο εύκολη πρόσβαση
+        # storing information for easier access
         king_file = src[0]
         king_rank = int(src[1])
         dest_file = dest[0]
         dest_rank = int(dest[1])
 
-        # --- οριζόντια κίνηση ---
+        # --- horizontal move ---
         if king_file == dest_file:
-            # έλεγχος εάν το rank (γραμμή) του βασιλιά έχει διαφορά μία μονάδα
+            # check whether the king's rank is different by one from the destination square rank
             if king_rank - 1 == dest_rank or king_rank + 1 == dest_rank:
                 return True
 
-        # --- κάθετη κίνηση ---
+        # --- vertical move ---
         if king_rank == dest_rank:
-            # εύρεση του index του γράμματος μέσα στο self.files, ώστε να "μετατραπούν" σε αριθμητικές τιμές και να
-            # γίνει σύγκριση
+            # check whether the king's file is different by one from the destination square file after finding the index
+            # of both king's and destination square's file in self.files
             king_file_index = self.files.index(king_file)
             dest_file_index = self.files.index(dest_file)
-            # έλεγχος εάν το file (στήλη) του βασιλιά έχει διαφορά ένα γράμμα
             if king_file_index - 1 == dest_file_index or king_file_index + 1 == dest_file_index:
                 return True
 
-        # --- διαγώνια κίνηση ---
-        # αρχικοποίηση βοηθητικής μεταβλητής
-        # όταν ενεργοποιηθεί, σημαίνει πως πρέπει να ελεγχθεί το επόμενο κελί
+        # --- diagonal move ---
+        # initialization of auxiliary variable
+        # when activated (True), the next square must be checked
         check_next_flag = False
         for diag in self.diags:
-            # έλεγχος εάν και οι δύο θέσεις βρίσκονται στην ίδια διαγώνιο
+            # check if both squares in same diagonal
             if src in diag and dest in diag:
-                # βασιλιάς και θέση επίθεσης βρίσκονται στην ίδια διαγώνιο
-                # για να μπορεί να εκτελεστεί η κίνηση από αυτό τον βασιλιά, θα πρέπει να είναι το αμέσως επόμενο κελί
+                # both found in the same diagonal
+                # for the move to be valid, king must be one square away from the destination square
                 for square in diag:
-                    # διατρέχουμε τα κελιά μέχρι να βρούμε το ένα απο τα δύο (κομμάτι ή θέση επίθεσης)
+                    # loop through the squares until one of the squares is found
                     if square != src and square != dest and check_next_flag is False:
-                        # συνεχίζουμε στην επόμενη επανάληψη όσο είμαστε εκτός εύρους κίνησης
                         continue
-                    # όταν βρεθεί το ένα, ενεργοποιείται το flag, ώστε να ελεγχθεί το επόμενο κελί
+                    # when one is found, the flag is set to True to check the next square
                     if (square == src or square == dest) and check_next_flag is False:
                         check_next_flag = True
                         continue
-                    # όταν το flag ενεργοποιηθεί, ελέγχεται το επόμενο κελί
+                    # when flag is activated, the next square is checked
                     if check_next_flag:
-                        # εάν κάποιο από τα κελιά είναι ενεργό, διακόπτεται η αναζήτηση
+                        # if the square matches, the move is valid
                         if square == dest or square == src:
                             return True
 
-        # απέτυχαν όλοι οι έλεγχοι, η κίνηση δεν είναι εφικτή
+        # all checks failed, the move is not valid
         return False
 
     def __piece_is_not_pinned(self, src: str, dest: str, tag: str) -> bool:
@@ -770,260 +767,250 @@ class PieceMoveChecker(Board):
                 True: piece is not pinned
                 False: piece is pinned
         """
-        # αποθήκευση θέσης βασιλιά με τη χρήση του λεξικού kings της κλάσης board.Board
+        # storing of the kings current position using the dictionary kings from the board.Board class
         king_pos = self.kings[tag].pos
 
-        # έλεγχος γραμμής ----------------------------------------------------------------------------------------------
-        # δημιουργία λίστας με κελιά γραμμής που ανήκει ο βασιλιάς
+        # --- horizontal check ---
+        # list with squares if king's row
         king_row: list = []
         for letter in self.files:
             king_row.append(letter + king_pos[1])
 
-        # έλεγχος εάν το κομμάτι που θα κινηθεί βρίσκεται στην ίδια γραμμή με τον βασιλιά
+        # check if the moving piece is within the same row as the king (same rank)
         if src in king_row:
-            # το κομμάτι που θα κινηθεί βρίσκεται στην ίδια γραμμή με τον βασιλιά
-            # θέσεις του βασιλιά και κομματιού που θα κινηθεί (src) στη λίστα
+            # piece is in the same row
+            # storing the index of each piece position
             king_index = king_row.index(king_pos)
             src_index = king_row.index(src)
 
-            # εάν η θέση src είναι μικρότερη, ξεκινάμε από την επόμενή της και προς τα "αριστερά"
+            # if src position is lesser than the king's, the checking for enemy pieces starts from the next to the left
             if src_index < king_index:
-                # έλεγχος εάν τα ενδιάμεσα κελιά είναι κενά
+                # check if there are more pieces between the king and the moving piece
                 for i in range(king_index - 1, src_index, -1):
                     if self.squares[king_row[i]]:
-                        # βρέθηκε κάποιο κομμάτι ενδιάμεσα, οπότε δεν είναι "καρφωμένο"
+                        # a piece was found, so the piece to move is not pinned
                         return True
 
                 for i in range(src_index - 1, -1, -1):
-                    # king_row[i] == θέση της λίστας
+                    # king_row[i] == position within the list
                     if self.squares[king_row[i]]:
-                        # βρέθηκε το πρώτο κατειλημμένο κελί
+                        # first occupied square has been found
+                        # loop through the pieces to find what type of piece it is
                         for piece in self.pieces:
-                            # εύρεση κομματιού που βρίσκεται σε αυτήν τη θέση
                             if piece.pos == king_row[i]:
                                 if piece.name[1] == tag:
-                                    # εάν βρεθεί κομμάτι ίδιου χρώματος, δεν απειλείται ο βασιλιάς
-                                    # άρα δεν είναι καρφωμένο
+                                    # if a friendly piece is found, the piece to move is not pinned
                                     return True
                                 else:
                                     if piece.name[0] != "q" and piece.name[0] != "r":
-                                        # εάν βρεθεί αντίπαλο κομμάτι, αλλά δεν μπορεί να απειλήσει,
-                                        # δεν είναι καρφωμένο
+                                        # if an enemy piece is found, but it's not a queen or a rook, it cannot pin the
+                                        # moving piece
                                         return True
 
                                     if piece.name[0] == "q" or piece.name[0] == "r":
                                         if dest in king_row:
-                                            # εάν η κίνηση που θα εκτελεστεί, διατηρεί το "κάρφωμα" στο κομμάτι
-                                            # η κίνηση είναι νόμιμη
+                                            # if the move to be performed is within the same row, the pin remains but
+                                            # the move is valid
                                             return True
-                                        # εάν είναι βασίλισσα ή πύργος στην ίδια γραμμή, το κομμάτι είναι "καρφωμένο"
+                                        # the piece is pinned and cannot move
                                         return False
 
-            # εάν η θέση src είναι μεγαλύτερη, ξεκινάμε από την επόμενή της και προς τα "δεξιά"
+            # if src position is greater than the king's, the checking for enemy pieces starts from the next to the
+            # right
             if src_index > king_index:
                 for i in range(king_index + 1, src_index):
+                    # check if there are more pieces between the king and the moving piece
                     if self.squares[king_row[i]]:
-                        # βρέθηκε κάποιο κομμάτι ενδιάμεσα, οπότε δεν είναι "καρφωμένο"
+                        # a piece was found, so the piece to move is not pinned
                         return True
 
                 for i in range(src_index + 1, 8):
-                    # king_row[i] == θέση της λίστας
+                    # king_row[i] == position within the list
                     if self.squares[king_row[i]]:
-                        # βρέθηκε το πρώτο κατειλημμένο κελί
+                        # first occupied square has been found
+                        # loop through the pieces to find what type of piece it is
                         for piece in self.pieces:
-                            # εύρεση κομματιού που βρίσκεται σε αυτήν τη θέση
                             if piece.pos == king_row[i]:
-                                # εάν είναι κομμάτι ίδιου χρώματος, δεν είναι καρφωμένο
                                 if piece.name[1] == tag:
-                                    # εάν βρεθεί κομμάτι ίδιου χρώματος, δεν απειλείται ο βασιλιάς
-                                    # άρα δεν είναι καρφωμένο
+                                    # if a friendly piece is found, the piece to move is not pinned
                                     return True
                                 else:
                                     if piece.name[0] != "q" and piece.name[0] != "r":
-                                        # εάν βρεθεί αντίπαλο κομμάτι, αλλά δεν μπορεί να απειλήσει,
-                                        # δεν είναι καρφωμένο
+                                        # if an enemy piece is found, but it's not a queen or a rook, it cannot pin the
+                                        # moving piece
                                         return True
-                                    # εάν είναι βασίλισσα ή πύργος στην ίδια γραμμή, το κομμάτι είναι "καρφωμένο"
+
                                     if piece.name[0] == "q" or piece.name[0] == "r":
                                         if dest in king_row:
-                                            # εάν η κίνηση που θα εκτελεστεί, διατηρεί το "κάρφωμα" στο κομμάτι
-                                            # η κίνηση είναι νόμιμη
+                                            # if the move to be performed is within the same row, the pin remains but
+                                            # the move is valid
                                             return True
-                                        # εάν είναι βασίλισσα ή πύργος στην ίδια γραμμή, το κομμάτι είναι "καρφωμένο"
+                                        # the piece is pinned and cannot move
                                         return False
 
-            # το κομμάτι είναι στην ίδια ευθεία, αλλά δε βρέθηκε κάποιο αντίπαλο κομμάτι που να το "καρφώνει",
-            # άρα μπορεί να μετακινηθεί
+            # no enemy piece pinning the moving piece has been found
             return True
 
-        # έλεγχος στήλης -----------------------------------------------------------------------------------------------
-        # δημιουργία λίστας με κελιά στήλης που ανήκει ο βασιλιάς
+        # --- vertical check ---
+        # list with squares if king's column
         king_col: list = []
         for number in self.ranks:
             king_col.append(king_pos[0] + number)
 
-        # έλεγχος εάν το κομμάτι που θα κινηθεί βρίσκεται στην ίδια στήλη με τον βασιλιά
+        # check if the moving piece is within the same column as the king (same file)
         if src in king_col:
-            # το κομμάτι που θα κινηθεί βρίσκεται στην ίδια στήλη με τον βασιλιά
-            # θέσεις του βασιλιά και κομματιού που θα κινηθεί (src) στη λίστα
+            # piece is in the same column
+            # storing the files of each piece
             king_index = king_col.index(king_pos)
             src_index = king_col.index(src)
-            # εάν η θέση src είναι μικρότερη, ξεκινάμε από την επόμενή της και προς τα "κάτω"
+
+            # if src position is lesser than the king's, the checking for enemy pieces starts from the next to bottom
             if src_index < king_index:
                 for i in range(king_index - 1, src_index, -1):
                     if self.squares[king_col[i]]:
-                        # βρέθηκε κάποιο κομμάτι ενδιάμεσα, οπότε δεν είναι "καρφωμένο"
+                        # a piece has been found between the king and moving piece, so it is not pinned
                         return True
 
                 for i in range(src_index - 1, -1, -1):
-                    # king_row[i] == θέση της λίστας
+                    # king_row[i] == position within the list
                     if self.squares[king_col[i]]:
-                        # βρέθηκε το πρώτο κατειλημμένο κελί
+                        # first occupied square has been found
                         for piece in self.pieces:
-                            # εύρεση κομματιού που βρίσκεται σε αυτήν τη θέση
+                            # loop through he pieces to find the type of piece found
                             if piece.pos == king_col[i]:
                                 if piece.name[1] == tag:
-                                    # εάν βρεθεί κομμάτι ίδιου χρώματος, δεν απειλείται ο βασιλιάς
-                                    # άρα δεν είναι καρφωμένο
+                                    # if a friendly piece is found, the moving piece is not pinned
                                     return True
                                 else:
                                     if piece.name[0] != "q" and piece.name[0] != "r":
-                                        # εάν βρεθεί αντίπαλο κομμάτι, αλλά δεν μπορεί να απειλήσει,
-                                        # δεν είναι καρφωμένο
+                                        # if an enemy piece is found, but it is not a queen or a rook, it cannot pin the
+                                        # moving piece
                                         return True
 
                                     if piece.name[0] == "q" or piece.name[0] == "r":
                                         if dest in king_col:
-                                            # εάν η κίνηση που θα εκτελεστεί, διατηρεί το "κάρφωμα" στο κομμάτι
-                                            # η κίνηση είναι νόμιμη
+                                            # if the move is within the same column, the pin remains and the move is
+                                            # valid
                                             return True
-                                        # εάν είναι βασίλισσα ή πύργος στην ίδια στήλη, το κομμάτι είναι "καρφωμένο"
+                                        # the piece cannot move as it is pinned
                                         return False
 
-            # εάν η θέση src είναι μεγαλύτερη, ξεκινάμε από την επόμενή της και προς τα "πάνω"
+            # if src position is greater than the king's, the checking for enemy pieces starts from the next to top
             if src_index > king_index:
                 for i in range(king_index + 1, src_index):
                     if self.squares[king_col[i]]:
-                        # βρέθηκε κάποιο κομμάτι ενδιάμεσα, οπότε δεν είναι "καρφωμένο"
+                        # a piece has been found between the king and moving piece, so it is not pinned
                         return True
 
                 for i in range(src_index + 1, 8):
-                    # king_row[i] == θέση της λίστας
+                    # king_row[i] == position within the list
                     if self.squares[king_col[i]]:
-                        # βρέθηκε το πρώτο κατειλημμένο κελί
+                        # first occupied square has been found
                         for piece in self.pieces:
-                            # εύρεση κομματιού που βρίσκεται σε αυτήν τη θέση
+                            # loop through he pieces to find the type of piece found
                             if piece.pos == king_col[i]:
                                 if piece.name[1] == tag:
-                                    # εάν βρεθεί κομμάτι ίδιου χρώματος, δεν απειλείται ο βασιλιάς
-                                    # άρα δεν είναι καρφωμένο
+                                    # if a friendly piece is found, the moving piece is not pinned
                                     return True
                                 else:
                                     if piece.name[0] != "q" and piece.name[0] != "r":
-                                        # εάν βρεθεί αντίπαλο κομμάτι, αλλά δεν μπορεί να απειλήσει,
-                                        # δεν είναι καρφωμένο
+                                        # if an enemy piece is found, but it is not a queen or a rook, it cannot pin the
+                                        # moving piece
                                         return True
 
                                     if piece.name[0] == "q" or piece.name[0] == "r":
                                         if dest in king_col:
-                                            # εάν η κίνηση που θα εκτελεστεί, διατηρεί το "κάρφωμα" στο κομμάτι
-                                            # η κίνηση είναι νόμιμη
+                                            # if the move is within the same column, the pin remains and the move is
+                                            # valid
                                             return True
-                                        # εάν είναι βασίλισσα ή πύργος στην ίδια γραμμή, το κομμάτι είναι "καρφωμένο"
+                                        # the piece cannot move as it is pinned
                                         return False
 
-            # το κομμάτι είναι στην ίδια στήλη, αλλά δε βρέθηκε κάποιο αντίπαλο κομμάτι που να το "καρφώνει",
-            # άρα μπορεί να μετακινηθεί
+            # no enemy piece pinning the moving piece has been found
             return True
 
-        # έλεγχος διαγωνίων --------------------------------------------------------------------------------------------
-        # δημιουργία λίστας με λίστες με τα κελιά διαγωνίων που ανήκει ο βασιλιάς
+        # --- diagonal check ---
+        # list with list of the kings diagonals
         king_diags: list = []
         for diag in self.diags:
-            # γίνεται προσθήκη των διαγωνίων που ανήκει ο βασιλιάς, εκτός από τις μικρές (με δύο κελιά)
-            # επίσης άμα ο βασιλιάς βρίσκεται σε κάποια γωνία, ανήκει μόνο σε μία διαγώνιο
             if king_pos in diag and len(diag) > 2:
+                # if the diagonal consists of only two squares, it doesn't need to be checked
                 king_diags.append(diag)
 
-        # διαπέραση διαγωνίων (μπορεί να είναι μία ή δύο)
+        # loop through the diagonals
         for diag in king_diags:
-            # έλεγχος εάν το κομμάτι που θα κινηθεί βρίσκεται στην ίδια διαγώνιο με τον βασιλιά
+            # check if the moving piece is within the kings diagonal
             if src in diag:
-                # το κομμάτι που θα κινηθεί βρίσκεται στην ίδια διαγώνιο με τον βασιλιά
-                # θέσεις του βασιλιά και κομματιού που θα κινηθεί (src) στη λίστα
+                # king is within the kings diagonal
+                # storing both position indexes
                 king_index = diag.index(king_pos)
                 src_index = diag.index(src)
 
-                # εάν η θέση src είναι μικρότερη, ξεκινάμε από την επόμενή της και προς την αντίθετη μεριά του βασιλιά
+                # if src position is lesser than the king's, the checking for enemy pieces starts from the next the
+                # opposite side from the king
                 if src_index < king_index:
                     for i in range(king_index - 1, src_index, -1):
                         if self.squares[diag[i]]:
-                            # βρέθηκε κάποιο κομμάτι ενδιάμεσα, οπότε δεν είναι "καρφωμένο"
+                            # a piece has been found between the king and moving piece, so it is not pinned
                             return True
 
                     for i in range(src_index - 1, -1, -1):
-                        # king_row[i] == θέση της λίστας
+                        # king_row[i] == position within the list
                         if self.squares[diag[i]]:
-                            # βρέθηκε το πρώτο κατειλημμένο κελί
+                            # first occupied square has been found
                             for piece in self.pieces:
-                                # εύρεση κομματιού που βρίσκεται σε αυτήν τη θέση
+                                # check what type of piece has been found
                                 if piece.pos == diag[i]:
                                     if piece.name[1] == tag:
-                                        # εάν βρεθεί κομμάτι ίδιου χρώματος, δεν απειλείται ο βασιλιάς
-                                        # άρα δεν είναι καρφωμένο
+                                        # if a friendly piece is found, the piece to move is not pinned
                                         return True
                                     else:
                                         if piece.name[0] != "q" and piece.name[0] != "b":
-                                            # εάν βρεθεί αντίπαλο κομμάτι, αλλά δεν μπορεί να απειλήσει,
-                                            # δεν είναι καρφωμένο
+                                            # if an enemy piece is found, but is not a queen or bishop, it cannot pin
+                                            # the moving piece
                                             return True
-                                        # εάν είναι βασίλισσα ή αξ/κός στην ίδια διαγώνιο, το κομμάτι είναι "καρφωμένο"
+
                                         if piece.name[0] == "q" or piece.name[0] == "b":
                                             if dest in diag:
-                                                # εάν η κίνηση που θα εκτελεστεί, διατηρεί το "κάρφωμα" στο κομμάτι
-                                                # η κίνηση είναι νόμιμη
+                                                # if the move to be performed is within the same diagonal, the pin
+                                                # remains and the move is valid
                                                 return True
-                                            # εάν είναι βασίλισσα ή αξιωματικός στην ίδια διαγώνιο,
-                                            # το κομμάτι είναι "καρφωμένο"
+                                            # the piece is pinned and cannot move
                                             return False
 
-                # εάν η θέση src είναι μεγαλύτερη, ξεκινάμε από την επόμενή της και προς την αντίθετη μεριά του βασιλιά
-                if src_index > king_index:
+                    # if src position is greater than the king's, the checking for enemy pieces starts from the next the
+                    # opposite side from the king
                     for i in range(king_index + 1, src_index):
                         if self.squares[diag[i]]:
-                            # βρέθηκε κάποιο κομμάτι ενδιάμεσα, οπότε δεν είναι "καρφωμένο"
+                            # a piece has been found between the king and moving piece, so it is not pinned
                             return True
 
                     for i in range(src_index + 1, len(diag)):
-                        # king_row[i] == θέση της λίστας
+                        # king_row[i] == position within the list
                         if self.squares[diag[i]]:
-                            # βρέθηκε το πρώτο κατειλημμένο κελί
+                            # first occupied square has been found
                             for piece in self.pieces:
-                                # εύρεση κομματιού που βρίσκεται σε αυτήν τη θέση
+                                # check what type of piece has been found
                                 if piece.pos == diag[i]:
                                     if piece.name[1] == tag:
-                                        # εάν βρεθεί κομμάτι ίδιου χρώματος, δεν απειλείται ο βασιλιάς
-                                        # άρα δεν είναι καρφωμένο
+                                        # if a friendly piece is found, the piece to move is not pinned
                                         return True
                                     else:
                                         if piece.name[0] != "q" and piece.name[0] != "b":
-                                            # εάν βρεθεί αντίπαλο κομμάτι, αλλά δεν μπορεί να απειλήσει,
-                                            # δεν είναι καρφωμένο
+                                            # if an enemy piece is found, but is not a queen or bishop, it cannot pin
+                                            # the moving piece
                                             return True
 
                                         if piece.name[0] == "q" or piece.name[0] == "b":
                                             if dest in diag:
-                                                # εάν η κίνηση που θα εκτελεστεί, διατηρεί το "κάρφωμα" στο κομμάτι
-                                                # η κίνηση είναι νόμιμη
+                                                # if the move to be performed is within the same diagonal, the pin
+                                                # remains and the move is valid
                                                 return True
-                                            # εάν είναι βασίλισσα ή αξιωματικός στην ίδια διαγώνιο,
-                                            # το κομμάτι είναι "καρφωμένο"
+                                            # the piece is pinned and cannot move
                                             return False
 
-                # το κομμάτι είναι στην ίδια διαγώνιο, αλλά δε βρέθηκε κάποιο αντίπαλο κομμάτι που να το "καρφώνει",
-                # άρα μπορεί να μετακινηθεί
+                # no enemy piece has been found so the piece is not pinned
                 return True
 
-        # τελείωσαν όλοι οι βασικοί έλεγχοι και δε βρέθηκε αντίπαλο κομμάτι που να "καρφώνει" το κομμάτι,
-        # άρα μπορεί να κινηθεί νόμιμα
+        # all checks ended and no pin was found
         return True
