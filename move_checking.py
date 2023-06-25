@@ -243,6 +243,12 @@ class PieceMoveChecker(Board):
                            (diff_in_rank_after_moving == -2 and piece.pos[1] != "7"):
                             continue
 
+                        # a pawn is about to move two squares, the front square must be checked to make sure there is no
+                        # other pawn there which should move one square
+                        if (diff_in_rank_after_moving == 2 and self.squares[move[0] + "3"]) or \
+                           (diff_in_rank_after_moving == -2 and self.squares[move[0] + "6"]):
+                            continue
+
                         # if all the above statements are false, the pawn is free to move
                         # promotion check
                         if pawn_promotion:
