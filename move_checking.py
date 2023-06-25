@@ -43,7 +43,7 @@ class PieceMoveChecker(Board):
 
     Methods:
     --------
-        next_move(self) -> str | None:
+        load_next_move(self) -> str | None:
             executes next move and returns the name of the piece captured
 
         __diagonal_move_is_valid(self, src: str, dest: str) -> bool:
@@ -124,7 +124,7 @@ class PieceMoveChecker(Board):
         self.check = None
         self.capture = False
 
-    def next_move(self) -> str | None:
+    def load_next_move(self) -> str | None:
         """
         Executes the next move based on the current move from the moves list
 
