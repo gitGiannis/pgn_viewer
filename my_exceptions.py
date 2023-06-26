@@ -1,12 +1,12 @@
 # -------------------------------------------------------------------------------------------------------------------- #
-# my_exceptions.py: περιέχει προσαρμοσμένες εξαιρέσεις για χειρισμό λαθών                                              #
+# my_exceptions.py: includes custom exception for error handling                                                       #
 # -------------------------------------------------------------------------------------------------------------------- #
 
 
 class PositionReached(Exception):
     """
-    Δηλώνει ότι η μέθοδος game_loader.Gameloader.next_round()/game_loader.Gameloader.previous_round() έχει φτάσει στον
-    πρώτο/προτελευταίο γύρο
+    Declares that the GameLoader.next_move or GameLoader.previous_move method has reached the second/second to last
+    round
     """
     def __init__(self):
         super().__init__()
@@ -17,8 +17,7 @@ class PositionReached(Exception):
 
 class NoMovesFound(Exception):
     """
-    Δηλώνει ότι η κλάση game_loader.Gameloader δεν κατάφερε να φορτώσει κινήσεις για τον αγώνα, διότι η συνάρτηση
-    functions.get_moves_list() επέστρεψε κενή λίστα
+    Declares that the GameLoader class couldn't load any moves for a game
     """
     def __init__(self):
         super().__init__()
@@ -32,12 +31,14 @@ class NoMovesFound(Exception):
 
 class FalseGame(Exception):
     """
-    Δηλώνει ότι η κλάση game_loader.Gameloader δεν κατάφερε να δημιουργήσει στιγμιότυπα του αγώνα, διότι η μέθοδος
-    gameplay.Gameplay.next_move() επέστρεψε None
+    Declares that the GameLoader class could not process the moves list and create screenshots of the game
 
-    Ορίσματα:
-    ---------
-        bug (str): θέση όπου προέκυψε το σφάλμα
+    ...
+
+    Parameters:
+    -----------
+        bug (str):
+            move that raised the exception
     """
     def __init__(self, bug: str = ""):
         super().__init__()
@@ -52,12 +53,14 @@ class FalseGame(Exception):
 
 class PossibleCorruptFile(Exception):
     """
-    Δηλώνει ότι η κλάση game_loader.Gameloader δεν κατάφερε να δημιουργήσει στιγμιότυπα του αγώνα, διότι η μέθοδος
-    gameplay.Gameplay.next_move() επέστρεψε None
+    Declares that the FilePGN class could not load the file properly and the list of data created is not ok
 
-    Ορίσματα:
-    ---------
-        bug (str): θέση όπου προέκυψε το σφάλμα
+    ...
+
+    Parameters:
+    -----------
+        bug (str):
+            description
     """
     def __init__(self, bug: str = ""):
         super().__init__()
@@ -72,12 +75,12 @@ class PossibleCorruptFile(Exception):
 
 class FriendlyCapture(Exception):
     """
-    Δηλώνει ότι η κλάση game_loader.Gameloader δεν κατάφερε να δημιουργήσει στιγμιότυπα του αγώνα, διότι η μεταβλητή
-    gameplay.brd.friendly_capture είναι True
+    Declares that the GameLoader class could not create screenshot of the game, because a friendly capture occurred
 
-    Ορίσματα:
-    ---------
-        bug (str): θέση όπου προέκυψε το σφάλμα
+    Parameters:
+    -----------
+        bug (str):
+            move that raised the exception
     """
     def __init__(self, bug: str = ""):
         super().__init__()
