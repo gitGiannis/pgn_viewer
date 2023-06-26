@@ -518,6 +518,9 @@ class PieceMoveChecker(Board):
                                 # rook gets moved
                                 return self.move_piece(piece.pos, move[1:3])
 
+        if move == " ":
+            return "   "
+
         # no move could be performed (the file might not be correct)
         return None
 
