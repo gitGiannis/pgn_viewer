@@ -1,176 +1,195 @@
 # -------------------------------------------------------------------------------------------------------------------- #
-# pgn.py: περιέχει την κλάση FilePGN για επεξεργασία ενός αρχείου .pgn                                                 #
+# pgn.py: includes class FilePGN                                                                                       #
 # -------------------------------------------------------------------------------------------------------------------- #
+from my_exceptions import PossibleCorruptFile
 
 
 class FilePGN:
     """
-    Δέχεται σαν όρισμα τη διεύθυνση ενός αρχείου pgn
-    Με τις μεθόδους αποσπά από το αρχείο τις πληροφορίες που περιέχει, τις επεξεργάζεται και τις οργανώνει σε δομές
+    Using the filepath provided as parameter, splits the different games in a pgn file, processes the information it
+    stores and organizes them into structures
 
     ...
 
-    Ορίσματα:
+    Attributes:
+    ----------
         file_path (str):
-            διεύθυνση αρχείου pgn
+            address of a pgn file
 
-    Μέθοδοι:
-        get_info(self, game_no: int =0) -> dict:
-            δημιουργεί και επιστρέφει λεξικό με τις πληροφορίες ενός συγκεκριμένου αγώνα
+        game_data (list):
+            list of information read from the pgn file (prior to being processed)
+
+        index_of_games (list[int]):
+            list of integers posing as game indexes in game_data list
+
+    Methods:
+    --------
+        get_info(self, game_no: int) -> dict:
+            returns dict with the information of a game
 
         __split_files(self) -> list[str]:
-            δημιουργεί και επιστρέφει λίστα με τις πληροφορίες και κινήσεις των παιχνιδιών που περιέχει το αρχείο pgn
+            returns list with the information and moves of the games stored inside the pgn file
 
         __get_index_of_games(self) -> list:
-            επιστρέφει λίστα με τις θέσεις των παιχνιδιών της λίστας από split_files
+            returns list with indexes of games in game_data list
 
         @staticmethod
         __get_moves_as_list(game_moves: str) -> list[str]:
-            επιστρέφει λίστα με τις επεξεργασμένες κινήσεις του αγώνα
+            returns list with the processed game moves
 
         @staticmethod
         __get_total_rounds(processed_game_moves: list) -> str:
-            επιστρέφει συμβολοσειρά με τον αριθμό των γύρων του παιχνιδιού
+            returns string with the number of rounds of the game
     """
 
     def __init__(self, file_path: str):
         """
-        Μέθοδος για αρχικοποίηση αντικειμένου της κλάσης
+        Initialization of class object
 
         ...
 
-        Ορίσματα:
-            file_path (str): διεύθυνση αρχείου pgn που θα χρησιμοποιηθεί από το αντικείμενο
+        Parameters:
+        -----------
+            file_path (str):
+                address of a pgn file
         """
-        # η κλάση παίρνει σαν όρισμα τη διεύθυνση ενός αρχείου *.pgn
         self.file_path = file_path
 
-        # κλήση συνάρτησης "split_files" για το αρχείο αυτό
-        # η λίστα self.game_data πλέον περιλαμβάνει
-        # α) στις θέσεις n την πληροφορία ενός από τους αγώνες και
-        # β) στις θέσεις n+1 τις κινήσεις του εκάστοτε αγώνα
-        # [όπου "n" ζυγός μη αρνητικός αριθμός (0, 2, 4 κλπ)]
-        self.game_data = self.__split_files()
+        # __split_files() gets called for this pgn file
+        # game_data list now contains
+        # a) in positions n the information of a game and
+        # b) in positions n+1 the moves of each game
+        # n is even non-negative number (0, 2, 4 etc.)
+        self.game_data: list = self.__split_files()
 
-        # λίστα με τις θέσεις όπου βρίσκονται πληροφορίες αγώνα
-        self.index_of_games = self.__get_index_of_games()
+        # list with indexes of games
+        self.index_of_games: list = self.__get_index_of_games()
 
-    def get_info(self, game_no: int = 0) -> dict[str, str | list]:
+    def get_info(self, game_no: int) -> dict[str, str | list]:
         """
-        Εισάγει σε λεξικό τις πληροφορίες ενός αγώνα από το αρχείο .pgn και το επιστρέφει.
-        Λέξεις κλειδιά λεξικού: Event, Site, Date, White, Black, Result, Rounds, moves
+        Returns dictionary with information of a game from the pgn file
+        The game is selected by the index 'game_no'
+        Dictionary key-words: Event, Site, Date, White, Black, Result, Rounds, moves
 
-        Ορίσματα:
-        ---------
-            game_no (int) default=0:
-                ζυγός μη αρνητικός αριθμός (0, 2, 4 κλπ) που δείχνει τον αγώνα που θα αναλυθεί
+        ...
 
-        Επιστρεφόμενο αντικείμενο:
-        --------------------------
+        Parameters:
+        -----------
+            game_no (int):
+                even non-negative number (0, 2, 4 etc.) from index_of_games attribute
+
+        Returns:
+        --------
             game_dict (dict):
-                λεξικό με τις πληροφορίες ενός αγώνα
+                dictionary with game information
         """
-        # συνάρτηση που επιστρέφει την πληροφορίες από τις λέξεις κλειδιά της info_list
+        # list containing key-words
         info_list = ["Event ", "Site ", "Date ", "Round ", "White ", "Black ", "Result "]
-        # αρχικοποίηση λεξικού που θα περιέχει τις πληροφορίες του αγώνα
+        # initialization of dictionary to be returned
         game_dict = {}
 
-        # δημιουργία λίστας με συμβολοσειρές, που περιέχει τις πληροφορίες του αγώνα που επιλέχθηκε
+        # storing the game info for easier access
         game_info = self.game_data[game_no].split("\n")
 
-        # εξαγωγή πληροφοριών αγώνα
-        # για κάθε λέξη-κλειδί της info_list
+        # extraction of game info
         for key_word in info_list:
-            # για κάθε συμβολοσειρά της game_info
             for string in game_info:
-                # πχ key_word: Event , string: [Event "Sparkassen Chess Meeting"]
+                # e.g. key_word: Event , string: [Event "Sparkassen Chess Meeting"]
                 if string[1: 1 + len(key_word)] == key_word:
-                    # εύρεση θέσης που ξεκινάει και τελειώνει η πραγματική πληροφορία που μας ενδιαφέρει
+                    # index of staring and ending of the desired information
                     start = string.find("\"") + 1
                     end = string.rfind("\"")
-                    # προσθήκη σε λεξικό
+                    # addition to the dictionary
                     game_dict[key_word.strip()] = string[start:end]
                     break
-            # διατρέξαμε όλες τις συμβολοσειρές και δε βρέθηκε η σχετική πληροφορία
+            # no information based on the key-word could be retrieved
             else:
                 game_dict[key_word.strip()] = "[no info]"
 
         try:
-            # δημιουργία συμβολοσειράς, που περιέχει τις κινήσεις του αγώνα
+            # string with the game moves
             game_moves = self.game_data[game_no + 1]
         except IndexError:
             game_moves = ""
 
-        # προσθήκη λίστας κινήσεων στο λεξικό
+        # moves get added to the dict
         game_dict["moves"] = self.__get_moves_as_list(game_moves)
 
-        # προσθήκη συνολικών γύρων στο λεξικό
+        # total rounds get added to the dict
         game_dict["RoundsPlayed"] = self.__get_total_rounds(game_dict["moves"])
 
-        # επιστρεφόμενη τιμή: λεξικό με όλες τις πληροφορίες του αγώνα
+        # dictionary gets returned
         return game_dict
 
     def __split_files(self) -> list[str]:
         """
-        Εξάγει και επιστρέφει αγώνες από ένα αρχείο pgn
-        Αποθηκεύει τις πληροφορίες του αγώνα σε μία λίστα με:
-        α) στις θέσεις n την πληροφορία ενός από τους αγώνες και
-        β) στις θέσεις n+1 τις κινήσεις του εκάστοτε αγώνα
-        [όπου "n" ζυγός μη αρνητικός αριθμός (0, 2, 4 κλπ)]
+        returns list with the information and moves of the games stored inside the pgn file
+        # returned list contains
+        # a) in positions n the information of a game and
+        # b) in positions n+1 the moves of each game
+        # n is even non-negative number (0, 2, 4 etc.)
 
-        Επιστρεφόμενο αντικείμενο:
+        ...
+
+        Returns:
+        --------
             game_data_list (list[str]):
-                λίστα με συμβολοσειρές με τις πληροφορίες που αποσπάστηκαν από το αρχείο
+                list with information extracted
+
+        Raises:
+        -------
+            PossibleCorruptFile (Exception):
+                if the length of the list to return is not even number
         """
 
-        # διάβασμα του αρχείου pgn
+        # pgn file gets opened
         with open(self.file_path, "r") as pgn:
-            # αρχικοποίηση λίστας αποθήκευσης πληροφοριών
+            # initialization of list to store information
             game_data_list = []
-            # αρχικοποίηση βοηθητικής συμβολοσειράς όπου θα αποθηκεύεται προσωρινά η πληροφορία
+            # initialization of temporary string variable to store information
             game_data = ''
-            # προσπέλαση αρχείου pgn γραμμή προς γραμμή
+            # loop through the file contents by line
             for line in pgn:
-                # προσθήκη γραμμής βοηθητική συμβολοσειρά
+                # concatenation of line to the game_data string
                 game_data += line
+                # every time a line with the "\n" is read, the reading of either the game information or game moves has
+                # been finished
                 if line == "\n":
-                    # κάθε φορά που γίνεται διάβασμα κενής γραμμής, σημαίνει ότι ολοκληρώθηκε το διάβασμα
-                    # είτε των στοιχείων ενός αγώνα είτε των κινήσεων του
-
+                    # in case more than one empty lines exist between them, they get ignored
                     if game_data == "\n":
-                        # σε περίπτωση που σε κάποιο σημείο υπάρχουν περισσότερες από μία κενές γραμμές, η game_data θα
-                        # περιλαμβάνει μόνο τον χαρακτήρα αλλαγής γραμμής·
-                        # την αγνοώ και η μέθοδος συνεχίζει στην επόμενη γραμμή
                         game_data = ''
                         continue
-                    # όση πληροφορία διαβάστηκε προστίθεται στη λίστα
+                    # all the information stored till now is added to the list
                     game_data_list.append(game_data)
-                    # και η βοηθητική συμβολοσειρά αδειάζει
+                    # the temporary variable gets reset
                     game_data = ''
 
-            # προσθήκη τελευταίας σειράς κινήσεων, σε περίπτωση που το τελικό αρχείο
-            # δεν τελειώνει με μία κενή σειρά
+            # if the file doesn't end on an empty line, the final information is added to the list
             if game_data:
                 game_data_list.append(game_data)
 
-            # η επιστρεφόμενη λίστα περιέχει
-            # α) στις θέσεις n την πληροφορία ενός από τους αγώνες και
-            # β) στις θέσεις n+1 τις κινήσεις του εκάστοτε αγώνα
-            # [όπου "n" ζυγός μη αρνητικός αριθμός (0, 2, 4 κλπ)]
             pgn.close()
+
+            if len(game_data_list) % 2 != 0:
+                # some error occurred while reading the file
+                raise PossibleCorruptFile('Length of list should be even number, not ' + str(len(game_data_list)))
+
             return game_data_list
 
     def __get_index_of_games(self) -> list:
         """
-        Επιστρέφει λίστα με τα index των πληροφοριών παιχνιδιών ενός αρχείου pgn
+        Returns the index of games for the game_data list
 
-        Επιστρεφόμενο αντικείμενο:
+        ...
+
+        Returns:
+        --------
             index_of_games (list):
-                λίστα με τα index των πληροφοριών παιχνιδιών ενός αρχείου pgn
+                list of indexes
         """
         index_of_games = []
 
-        # αποθήκευση σημείων όπου ξεκινάει ο κάθε αγώνας
+        # appending the indexes of the games
         for num in range(0, len(self.game_data), 2):
             index_of_games.append(num)
 
@@ -179,79 +198,87 @@ class FilePGN:
     @staticmethod
     def __get_moves_as_list(game_moves: str) -> list[str]:
         """
-        Δέχεται σαν όρισμα συμβολοσειρά με κινήσεις από το αρχείο .pgn και εξάγει τις κινήσεις σε επιστρεφόμενη λίστα
-        Η λίστα περιέχει συμβολοσειρές με την κάθε κίνηση αυτούσια
-        Η συνάρτηση επίσης αφαιρεί σχόλια, εάν βρεθούν
+        Extracts a list with the processed moves from the game_moves string it takes as parameter and returns it
+        The list created includes all the moves as strings without any round indexes, comments etc.
 
-        Ορίσματα:
-        ---------
-            game_moves (str): κινήσεις συγκεκριμένου αγώνα (προ επεξεργασίας)
+        ...
 
-        Επιστρεφόμενο αντικείμενο:
-        --------------------------
-            (list): λίστα με κινήσεις (πλην τελευταίου στοιχείου που είναι το αποτέλεσμα)
+        Parameters:
+        -----------
+            game_moves (str):
+                string with moves of current game before being processed
+
+        Returns:
+        --------
+            (list):
+                list with moves as strings (without the last element which is the result)
         """
         if not game_moves:
             return []
-        # έλεγχος εάν υπάρχουν σχόλια μέσα στις κινήσεις
+        # searching for comment within the moves string (they will be removed)
         while True:
-            # αναζήτηση θέσης αγκύλης αρχής σχολίου
+            # searching for opening bracket of the comment
             comment_start = game_moves.find("{")
-            # εάν δε βρεθεί κάποιο σχόλιο, γίνεται έξοδος από τον ατέρμον βρόγχο
+            # if no comment is found or all comments were found, the loop is stopped
             if comment_start == -1:
                 break
-            # δεν έχει γίνει "break", επομένως βρέθηκε αγκύλη έναρξης σχολίου
-            # οπότε γίνεται αναζήτηση θέσης αγκύλης τέλους σχολίου
+            # the loop was not stopped so an opening comment bracket was found
+            # searching for closing comment bracket
             comment_end = game_moves.find("}") + 1
-            # το σχόλιο αφαιρείται από τη συμβολοσειρά με τις κινήσεις
+            # comment is removed from the moves string
             game_moves = game_moves[:comment_start] + game_moves[comment_end:]
-            # ο ατέρμον βρόγχος ξαναδιαβάζει τη νέα συμβολοσειρά για να βρει το επόμενο σχόλιο (εάν υπάρχει)
+            # the loop continues to find the next comment
 
-        # χωρίζουμε τις κινήσεις με βάση τα κενά και αλλαγές γραμμής
+        # the moves string is split based on spaces and '\n' characters
         moves_list = game_moves.split()
-        # διατρέχουμε τη λίστα με τς κινήσεις
+        # loop on the moves list created
         for item in moves_list:
-            # εάν η τελεία βρίσκεται μέσα στην κίνηση, σημαίνει ότι πρόκειται για δείκτη γύρου
-            # και θα παραληφθεί
+            # if the dot character is within the move, it is a round index and must be removed
             if "." in item:
-                # προχωράμε σε έλεγχο εάν το αρχείο pgn έχει κενό μετά το δείκτη γύρου ή όχι
+                # check if the current element end with the dot character
                 if item[-1] == ".":
-                    # εάν η τελεία βρίσκεται στο τέλος της συμβολοσειράς, πρόκειται για δείκτη γύρου και αφαιρείται
-                    # π.χ. "1."
+                    # if the dot is the last character, then it is a round index and gets removed
+                    # e.g. "1."
                     moves_list.remove(item)
                 else:
-                    # επειδή η συμβολοσειρά περιέχει την τελεία "." αλλά όχι στην τελευταία θέση, έχουμε δείκτη γύρου
-                    # κολλητά με κάποια κίνηση (π.χ. 1.e4 αντί για 1. e4)
-                    # βρίσκω τη θέση όπου βρίσκεται η συμβολοσειρά με την κίνηση μέσα στη λίστα (θα χρειαστεί παρακάτω
-                    # ώστε να προσθέσουμε στο ίδιο σημείο την επεξεργασμένη κίνηση και να μην αλλάξουμε τη σειρά)
+                    # the current element includes the dot character but not at the last position (as before),
+                    # it means there is a round index next to a move (e.g. 1.e4 instead of 1. e4)
+                    # storing the position of the current element inside the list so that the new element is inserted
+                    # at the right spot
                     index = moves_list.index(item)
 
-                    # η συμβολοσειρά χωρίζεται με βάση τον χαρακτήρα της τελείας (π.χ. 1.e4 θα γίνει ["1.", "e4"])
+                    # the string is split based on the dot character (e.g. 1.e4 is now ["1", "e4"])
                     split_move = item.split(".")
-                    # κρατάω το δεξί μέρος της λίστας που επιστράφηκε (split_move[1] == "e4") και την εισάγω στο σωστό
-                    # σημείο μέσα στην αλληλουχία των κινήσεων, ώστε να μην τροποποιηθεί η σειρά
-                    # (αντικαθίσταται η παλιά κίνηση "1.e4" με την επεξεργασμένη "e4")
+                    # the right side of the list is kept (split_move[1] == "e4") and is inserted at the right spot, so
+                    # that the order is not spoiled
+                    # the old string "1.e4" is replaced by "e4")
                     moves_list[index] = split_move[1]
 
-        # επιστρεφόμενη τιμή: λίστα με κινήσεις (πλην τελευταίου στοιχείου που είναι το αποτέλεσμα)
+        # no moves performed (only the score is shown)
+        if len(moves_list) == 1:
+            return [" "]
+        # the list is returned without the last element (the result of the game)
         return moves_list[:len(moves_list) - 1]
 
     @staticmethod
     def __get_total_rounds(processed_game_moves: list) -> str:
         """
-        Επιστρέφει συμβολοσειρά με τον αριθμό των γύρων του παιχνιδιού
-        Λαμβάνει σαν όρισμα λίστα με επεξεργασμένες κινήσεις του αγώνα και επιστρέφει συμβολοσειρά με τον τελευταίο γύρο
+        Takes as argument the processed moves of the game and returns a string with the number of rounds played
 
-        Ορίσματα:
-        ---------
-            game_moves (list): επεξεργασμένες κινήσεις συγκεκριμένου αγώνα
+        ...
 
-        Επιστρεφόμενο αντικείμενο:
-        --------------------------
-            (str): συμβολοσειρά με τον αριθμό των γύρων του αγώνα
+        Parameters:
+        -----------
+            processed_game_moves (list):
+                processed game moves of the current game
+
+        Returns:
+        --------
+            (str):
+                string with the number of rounds played
         """
 
-        # αποθήκευση μήκους λίστας κινήσεων για ακέραια διαίρεση
+        # length of the game moves list
         length = len(processed_game_moves)
-        # επιστρεφόμενη τιμή είναι συμβολοσειρά με τον αριθμό γύρων του αγώνα
+        # returns string with the number of rounds (number of moves divided by two)
         return str(length // 2 if length % 2 == 0 else (length // 2) + 1)
