@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------------------------------------------------- #
-# manual_game_selector.py: περιέχει την κλάση ManualGameSelector                                                       #
+# manual_game_selector.py: includes class ManualGameSelector                                                           #
 # -------------------------------------------------------------------------------------------------------------------- #
 from tkinter import Frame, Button, Listbox, Scrollbar, Label
 from game_loader import GameLoader

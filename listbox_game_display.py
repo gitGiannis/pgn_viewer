@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------------------------------------------------- #
-# listbox_game_display.py: περιέχει την κλάση ListboxGameDisplay                                                       #
+# listbox_game_display.py: includes class ListboxGameDisplay                                                           #
 # -------------------------------------------------------------------------------------------------------------------- #
 from tkinter import Frame, Button, Listbox, Label, Scrollbar
 from pgn import FilePGN
