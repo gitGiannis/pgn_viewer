@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------------------------------------------------- #
-# functions.py: αρχείο για συλλογή των συναρτήσεων του προγράμματος                                                    #
+# functions.py: includes various functions used in the app                                                             #
 # -------------------------------------------------------------------------------------------------------------------- #
 from tkinter.messagebox import showinfo
 
@@ -7,7 +7,7 @@ from tkinter.messagebox import showinfo
 # main_program.py ------------------------------------------------------------------------------------------------------
 def show_help():
     """
-    Ανοίγει παράθυρο με πληροφορίες χρήσης
+    Shows window with options of main menu
     """
     showinfo(title="Help",
              message="Show Files:\n"
@@ -19,7 +19,7 @@ def show_help():
 
 def about():
     """
-    Ανοίγει παράθυρο με τεχνικές πληροφορίες εφαρμογής
+    Shows technical info about the app
     """
     showinfo(title="About",
              message="Chess PGN Manager v1.0\n"
@@ -28,7 +28,7 @@ def about():
 
 def show_credits():
     """
-    Ανοίγει παράθυρο με τα Credits
+    Shows credits
     """
     showinfo(title="Credits",
              message="Developers:\n"
@@ -39,7 +39,7 @@ def show_credits():
 
 def show_info():
     """
-    Ανοίγει παράθυρο με πληροφορίες για το αρχείο pgn
+    Shows information on pgn files
     """
     showinfo(title="Info about PGN files",
              message="PGN [Portable Game Notation] is a standard plain text format\n"
