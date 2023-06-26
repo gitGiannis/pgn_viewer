@@ -30,7 +30,7 @@ class NoMovesFound(Exception):
         return "NoMovesFound (Exception): 'could not retrieve any moves for this game'"
 
 
-class PossibleCorruptFile(Exception):
+class FalseGame(Exception):
     """
     Δηλώνει ότι η κλάση game_loader.Gameloader δεν κατάφερε να δημιουργήσει στιγμιότυπα του αγώνα, διότι η μέθοδος
     gameplay.Gameplay.next_move() επέστρεψε None
@@ -47,7 +47,27 @@ class PossibleCorruptFile(Exception):
         return f"Failed processing {self.bug}"
 
     def __repr__(self):
-        return f"PossibleCorruptFile (Exception): 'failed processing {self.bug}"
+        return f"FalseGame (Exception): 'failed processing {self.bug}"
+
+
+class PossibleCorruptFile(Exception):
+    """
+    Δηλώνει ότι η κλάση game_loader.Gameloader δεν κατάφερε να δημιουργήσει στιγμιότυπα του αγώνα, διότι η μέθοδος
+    gameplay.Gameplay.next_move() επέστρεψε None
+
+    Ορίσματα:
+    ---------
+        bug (str): θέση όπου προέκυψε το σφάλμα
+    """
+    def __init__(self, bug: str = ""):
+        super().__init__()
+        self.bug = bug
+
+    def __str__(self):
+        return "Error! Please check pgn file"
+
+    def __repr__(self):
+        return f"PossibleCorruptFile (Exception): {self.bug}"
 
 
 class FriendlyCapture(Exception):

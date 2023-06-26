@@ -2,7 +2,7 @@
 # game_loader.py: includes class GameLoader                                                                            #
 # -------------------------------------------------------------------------------------------------------------------- #
 from move_checking import PieceMoveChecker
-from my_exceptions import PositionReached, NoMovesFound, PossibleCorruptFile, FriendlyCapture
+from my_exceptions import PositionReached, NoMovesFound, FriendlyCapture, FalseGame
 
 
 class GameLoader(PieceMoveChecker):
@@ -124,7 +124,7 @@ class GameLoader(PieceMoveChecker):
 
             # load_next_move() method returned None
             if captured_piece_name is None:
-                raise PossibleCorruptFile(f"{self.round_cnt//2 + 1}. {self.moves[self.round_cnt]}")
+                raise FalseGame(f"{self.round_cnt//2 + 1}. {self.moves[self.round_cnt]}")
 
             # a friendly capture has been made
             if self.friendly_capture:
