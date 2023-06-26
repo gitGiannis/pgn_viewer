@@ -26,7 +26,7 @@ class ManualGameSelector(Frame):
             button to run the selected game
 
         game_dict_collection (list[dict]):
-            list for dictionaries for each game
+            list of dictionaries for each game
 
         listbox (Listbox):
             listbox to store the games of the selected file

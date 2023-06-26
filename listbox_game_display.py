@@ -5,80 +5,110 @@ from tkinter import Frame, Button, Listbox, Label, Scrollbar
 from pgn import FilePGN
 from game_loader import GameLoader
 from gui import GUI
-from my_exceptions import PossibleCorruptFile, NoMovesFound, FriendlyCapture
+from my_exceptions import PossibleCorruptFile, NoMovesFound, FriendlyCapture, FalseGame
 
 
 class ListboxGameDisplay(Frame):
     """
-    Κατασκευάζει ένα νέο frame και τοποθετεί σε αυτό listbox με τα αρχεία pgn ενός προκαθορισμένου φακέλου (pgn_files)
-    Από αυτά τα αρχεία ο χρήστης μπορεί να φορτώνει τα παιχνίδια και να επιλέγει το παιχνίδι που θέλει να τρέξει
-    Κληρονομεί από την κλάση tkinter.Frame
+    Inherits from parent class Frame and adds in a listbox all the pgn files found inside the pre-selected directory
+    User can then select any of those and load the games they contain
 
-    Ορίσματα:
-    ---------
-        root (main_program.MainProgram):
-            κύριο παράθυρο της εφαρμογής
+    ...
+
+    Attributes:
+    -----------
+        button_back (Button):
+            button to go back to main frame
+
+        button_run (Button):
+            button to run the selected game
+
+        game_dict_collection (list[dict]):
+            list of dictionaries for each game
+
+        pgn_listbox (Listbox):
+            listbox to store the pgn files found
+
+        game_listbox (Listbox):
+            listbox to store the games of the selected file
 
         pgn_list (list):
-            λίστα με τα αρχεία pgn ενός φακέλου
+            list with pgn files found
 
-    Μέθοδοι:
+        root (Tk):
+            master window
+
+        scrollbar1,2 (Scrollbar):
+            scrollbars for list-boxes
+
+        warning_label (Label):
+            label to show messages to the user
+
+    Methods:
     --------
         run_game(self):
-            προβάλει το παιχνίδι που επιλέχθηκε
+            displays the selected game
 
         load_file(self, event):
-            φορτώνει τα παιχνίδια ενός αρχείου
+            loads the games of a file
 
         __pack_widgets():
-            τοποθέτηση widgets
+            places widgets
 
         retrieve_master():
-            επαναφέρει το κύριο πλαίσιο
+            retrieves master frame
     """
     def __init__(self, root, pgn_list: list):
-        # κλήση της super() για αρχικοποίηση γονικής κλάσης
+        """
+        Initializes the frame for listbox file selection
+
+        ...
+
+        Parameters:
+        -----------
+            root (Tk):
+                main window
+
+            pgn_list (list):
+                list with pgn files found
+        """
+        # initialization of parent class (Frame)
         super().__init__()
         self.config(bg="light blue")
-        # ορισμός master του frame
+        # # master of the frame
         self.root = root
-        # δημιουργία πίνακα για συλλογή των game_dictionaries κάθε παιχνιδιού
+        # initialization of list to store the dictionaries for each game
         self.game_dict_collection = []
-        # ενεργοποίηση επιλογής "back" στο μενού μπάρας
+        # back option enabled (in file sub-menu)
         self.root.file_menu.entryconfig(5, state="normal", command=self.retrieve_master)
 
-        # αρχικοποίηση λίστας με τα αρχεία pgn που βρέθηκαν ------------------------------------------------------------
+        # initialization of list with pgn files found ------------------------------------------------------------------
         self.pgn_list = []
         for item in pgn_list:
             if ".pgn" in item:
-                # εξαιρούνται όσα αρχεία δεν είναι *.pgn
+                # all files that are not the correct type get excluded
                 self.pgn_list.append(item)
 
-        # αρχικοποίηση πλαισίου που θα περιέχει τα παιχνίδια που διαβάστηκαν από το αρχείο pgn -------------------------
-        # δημιουργία listbox
+        # initialization of list-boxes ---------------------------------------------------------------------------------
         self.pgn_listbox = Listbox(self, bg="#f7ffde", width=30, height=20, font=("consolas", 10))
         self.game_listbox = Listbox(self, bg="#f7ffde", width=60, height=20, font=("consolas", 10))
 
-        # δημιουργία scrollbars για τα listbox
+        # initialization of scrollbars for list-boxes
         self.scrollbar1 = Scrollbar(master=self, command=self.pgn_listbox.yview)
         self.scrollbar2 = Scrollbar(master=self, command=self.game_listbox.yview)
 
-        # σύνδεση Listbox με Scrollbar
+        # scrollbars added to list-boxes
         self.pgn_listbox.config(yscrollcommand=self.scrollbar1.set)
         self.game_listbox.config(yscrollcommand=self.scrollbar2.set)
 
-        # προσθήκη αρχείων pgn στο pgn_listbox
+        # adding pgn files in listbox
         for item in self.pgn_list:
             self.pgn_listbox.insert("end", item)
 
-        # ετικέτα με σφάλμα μη επιλογής --------------------------------------------------------------------------------
-        self.warning_label = Label(self,
-                                   bg="light blue",
-                                   fg="red",
-                                   font=("consolas", 10, "bold"),
-                                   pady=5)
+        # initialization of label to show messages to user -------------------------------------------------------------
+        self.warning_label = Label(self, bg="light blue", fg="red", font=("consolas", 10, "bold"), pady=5)
 
-        # αρχικοποίηση κουμπιών ----------------------------------------------------------------------------------------
+        # initialization of buttons ------------------------------------------------------------------------------------
         self.button_run = Button(self,
                                  text="Run",
                                  font=("consolas", 12, "bold"),
@@ -95,77 +125,83 @@ class ListboxGameDisplay(Frame):
                                   width=12,
                                   command=self.retrieve_master)
 
-        # χειρισμός event όταν επιλέγει κάτι από το Listbox ------------------------------------------------------------
+        # event binding for listbox selection --------------------------------------------------------------------------
         self.pgn_listbox.bind(sequence="<<ListboxSelect>>", func=self.load_file)
 
-        # τοποθέτηση στο παράθυρο --------------------------------------------------------------------------------------
+        # widget placing -----------------------------------------------------------------------------------------------
         self.__pack_widgets()
 
     def run_game(self):
         """
-        Προβάλει το παιχνίδι που επιλέχθηκε
+        Displays the selected game
         """
-        # αποθηκεύουμε τις πληροφορίες της επιλογής του χρήστη από το listbox
+        # storing the user's selection
         index = self.game_listbox.curselection()
-        # εάν επιλέξει κάτι...
+        # if something is selected...
         if index:
-            # κρατάμε το πρώτο κομμάτι του επιστρεφόμενου tuple (ακέραιος δείκτης αγώνα)
+            # ... the first part of the returned tuple is kept
             index_for_collection: int = index[0]
             current_game_dictionary = self.game_dict_collection[index_for_collection]
 
             try:
-                # συλλογή των στιγμιοτύπων του παιχνιδιού μέσω της κλάσης GameLoader
+                # collecting screenshot of game through the GameLoader object
                 game_loader = GameLoader(list_of_moves=current_game_dictionary["moves"])
-                # τρέχουμε το GUI (γραφική αναπαράσταση παιχνιδιού) με το συγκεκριμένο παιχνίδι
+                # running GUI for selected game
                 GUI(game_loader, current_game_dictionary)
-            except (PossibleCorruptFile, NoMovesFound, FriendlyCapture) as v:
+            except (FalseGame, PossibleCorruptFile, NoMovesFound, FriendlyCapture) as v:
                 self.warning_label.config(text=str(v))
                 self.warning_label.grid(row=1, column=1, columnspan=2, sticky="nw")
                 self.warning_label.after(3000, self.warning_label.grid_forget)
         else:
-            # εμφάνιση μηνύματος σφάλματος σε περίπτωση που δεν έχει γίνει επιλογή
+            # no selection was made
             self.warning_label.config(text="Select a game to continue")
             self.warning_label.grid(row=1, column=1, columnspan=2, sticky="nw")
             self.warning_label.after(3000, self.warning_label.grid_forget)
 
     def load_file(self, event):
         """
-        Φορτώνει τα παιχνίδια ενός αρχείου
+        Loads the selected file
 
-        Ορίσματα:
+        ...
+
+        Parameters:
+        -----------
             event (<<ListboxSelect>>):
-                όταν επιλέγεται ένα αρχείο του listbox εκτελείται η μέθοδος
+                method gets called when a listbox item is selected
         """
         if self.pgn_listbox.curselection():
-            # καθαρισμός λεξικού και listbox από προηγούμενη φόρτωση παιχνιδιών
+            # clearing listbox and dictionary from previous selection
             self.game_dict_collection.clear()
             self.game_listbox.delete(0, "end")
 
             try:
-                # δημιουργία αντικειμένου για εξαγωγή πληροφοριών
+                # FilePGN object is used to extract information
                 file = FilePGN("pgn_files\\" + self.pgn_listbox.get(self.pgn_listbox.curselection()))
             except OSError:
-                # εμφάνιση μηνύματος σφάλματος σε περίπτωση αποτυχία διαβάσματος αρχείου
                 self.warning_label.config(text="Could not open file")
                 self.warning_label.grid(row=1, column=1, columnspan=2, sticky="nw")
                 self.warning_label.after(3000, self.warning_label.grid_forget)
+            except PossibleCorruptFile as v:
+                self.warning_label.config(text=str(v))
+                self.warning_label.grid(row=1, column=1, columnspan=2, sticky="nw")
+                self.warning_label.after(3000, self.warning_label.grid_forget)
             else:
-                # προσθήκη παιχνιδιών που διαβάστηκαν, στο listbox
+                # games get added to the listbox
                 for i, num in enumerate(file.index_of_games):
-                    # δημιουργία του λεξικού με τη μέθοδο get_info της κλάσης FilePGN
+                    # dictionary creation through the get_info method
                     game_dictionary = file.get_info(num)
-                    # προσθήκη του λεξικού στη συλλογή με τα λεξικά του συγκεκριμένου αρχείου pgn
+                    # dictionary gets added to the collection
                     self.game_dict_collection.append(game_dictionary)
                     self.game_listbox.insert(i, f'{str(i + 1) + ".":4}{game_dictionary["White"]} vs '
                                                 f'{game_dictionary["Black"]} '
                                                 f'({game_dictionary["Result"]})')
-                    # εμφάνιση αποτελεσμάτων ανα εκατό, για ανανέωση του παραθύρου εάν έχουμε πολλά αρχεία
+                    # showing results by 100, if many games were loaded
                     if i % 100 == 0:
                         self.update()
 
     def __pack_widgets(self):
         """
-        Τοποθετεί τα widgets στο πλαίσιο και το πλαίσιο στο κυρίως παράθυρο
+        Places the widgets in the frame
         """
         # τοποθέτηση στο πλαίσιο
         self.pgn_listbox.grid(row=0, column=0, sticky="nw")
@@ -175,19 +211,19 @@ class ListboxGameDisplay(Frame):
         self.button_back.grid(row=1, column=0, sticky="sw")
         self.button_run.grid(row=1, column=2, columnspan=2, sticky="se")
 
-        # προσθήκη πλαισίου στο κυρίως παράθυρο
+        # frame gets packed
         self.pack()
 
     def retrieve_master(self):
         """
-        Επαναφέρει το κύριο πλαίσιο
+        Main frame retrieval
         """
-        # επαναφορά κύριου πλαισίου
+        # main frame retrieval
         self.root.main_frame.pack()
-        # επαναφορά μενού
+        # menu retrieval
         self.root.file_menu.entryconfig(0, state="normal")
         self.root.file_menu.entryconfig(1, state="normal")
         self.root.file_menu.entryconfig(3, state="normal")
         self.root.file_menu.entryconfig(5, state="disabled")
-        # τερματισμός τρέχοντος frame
+        # current frame gets destroyed
         self.destroy()
