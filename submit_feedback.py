@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------------------------------------------------- #
-# submit_feedback.py: περιέχει την κλάση FeedBack                                                                      #
+# submit_feedback.py: includes class FeedBack                                                                          #
 # -------------------------------------------------------------------------------------------------------------------- #
 import smtplib as smtp
 from email.message import EmailMessage
@@ -10,45 +10,73 @@ from pickle import load
 
 class FeedBack(Toplevel):
     """
-    Ανοίγει ένα νέο, εξαρτημένο παράθυρο
-    Ο χρήστης μπορεί να συμπληρώσει τα στοιχεία του και να στείλει ανατροφοδότηση για την εφαρμογή
-    Κληρονομεί από τη γονική κλάση Toplevel
+    Inherits from parent class Toplevel and opens new window with feedback option
 
-    Ορίσματα:
-    ---------
-        master (main_program.MainProgram):
-            παράθυρο Tk από το οποίο είναι εξαρτημένο το παράθυρο FeedBack
+    ...
 
-    Μέθοδοι:
+    Attributes:
+    -----------
+        __mail_address (str):
+            email address
+
+        __pwd (str):
+            password
+
+        body_box (Text):
+            main text for the email
+
+        email_box (Entry):
+            user's email
+
+        name_box (Entry):
+            user's name
+
+        email_obj (EmailMessage):
+            email object
+
+        send_button (Button):
+            button to send feedback
+
+    Methods:
     --------
         submit_feedback(self):
-            πραγματοποιεί σύνδεση και αποστολή email ανατροφοδότησης, με ότι πληροφορίες έχει συμπληρώσει ο χρήστης
+            connects to email and sends feedback
     """
+
     def __init__(self, master):
-        # κλήση της super για κληρονόμηση ιδιοτήτων απο μητρική κλάση
+        """
+        Initializes new window
+
+        ...
+
+        Parameters:
+        -----------
+            master (Tk):
+                master window
+        """
+        # initialization of parent class (Toplevel)
         super().__init__(master=master)
-        # εικονίδιο παραθύρου
+        # window icon and title
         self.iconbitmap("icons\\stonk.ico")
-        # όνομα παραθύρου
         self.title("Feedback")
-        # αφαίρεση ικανότητας χρήστη να τροποποιεί το μέγεθος του παραθύρου
+        # non-resizable window
         self.resizable(False, False)
 
-        # δημιουργία label και entry-box
+        # labels and entry-boxes
         name_label = Label(master=self, text="name:", bg="light blue", font=("consolas", 9))
         self.name_box = Entry(master=self, width=40, bg="light yellow")
         email_label = Label(master=self, text="e-mail:", bg="light blue", font=("consolas", 9))
         self.email_box = Entry(master=self, width=40, bg="light yellow")
         self.body_box = Text(master=self, width=37, height=10, bg="light yellow")
 
-        # τοποθέτηση στο παράθυρο
+        # placing in window
         name_label.grid(row=0, column=0)
         email_label.grid(row=1, column=0)
         self.name_box.grid(row=0, column=1, sticky="w")
         self.email_box.grid(row=1, column=1, sticky="w")
         self.body_box.grid(row=2, column=0, columnspan=2)
 
-        # δημιουργία κουμπιού
+        # button initialization and placing
         self.send_button = Button(master=self, text="Submit Feedback",
                                   font=("consolas", 10, "bold"),
                                   background="light green",
@@ -79,26 +107,26 @@ class FeedBack(Toplevel):
 
     def submit_feedback(self):
         """
-        Πραγματοποιεί σύνδεση και αποστολή email ανατροφοδότησης, με ότι πληροφορίες έχει συμπληρώσει ο χρήστης
+        Connects to email and sends feedback
         """
-        # κυρίως σώμα email
+        # main body
         email_body = f"name: {self.name_box.get()}\n" \
                      f"email: {self.email_box.get()}\n" \
-                     f"{self.body_box.get(1.0,'end-1c')}"
+                     f"{self.body_box.get(1.0, 'end-1c')}"
         self.email_obj.set_content(email_body)
 
         try:
-            # αποστολή email
+            # email sent
             with smtp.SMTP_SSL("smtp.gmail.com", 465, context=create_default_context()) as f:
                 f.login(self.__mail_address, self.__pwd)
                 f.sendmail(self.__mail_address, self.__mail_address, self.email_obj.as_string())
-                # ενημερωτικό label προς τον χρήστη
+                # label showing message to user
                 self.send_button.grid_forget()
                 Label(master=self, text="Thank You!",
                       bg="light blue", font=("consolas", 10, "bold")).grid(row=3, column=0, columnspan=2, sticky="n")
                 self.after(3000, self.destroy)
         except:
-            # χειρισμός σφαλμάτων
+            # error handling
             self.send_button.grid_forget()
             Label(master=self,
                   text="Error! Please Check Internet Connection",
