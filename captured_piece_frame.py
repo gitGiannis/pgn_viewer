@@ -1,50 +1,85 @@
 # -------------------------------------------------------------------------------------------------------------------- #
-# captured_piece_frame.py: περιέχει την κλάση CapturedPieceFrame                                                       #
+# captured_piece_frame.py: includes class CapturedPieceFrame                                                           #
 # -------------------------------------------------------------------------------------------------------------------- #
 from tkinter import Frame, Label
 
 
 class CapturedPieceFrame(Frame):
     """
-    Κληρονομεί τις ιδιότητες της γονικής κλάσης Frame
-    Περιλαμβάνει grid 5Χ6 όπου απεικονίζονται όσα κομμάτια έχουν καταληφθεί κατά την εξέλιξη του αγώνα
-    Χρησιμοποιείται από την κλάση gui.GUI
+    Inherits from parent class Frame
+    Creates 5X6 grid to show the pieces captured throughout the game
 
-    Ορίσματα:
-    ---------
-        master (tkinter object):
-            ο master στον οποίο ανήκει το Frame που θα δημιουργηθεί
+    ...
 
-        captured_piece_dictionary (dict):
-            λεξικό με τις πληροφορίες αιχμαλωτισμένων κομματιών
+    Attributes:
+    -----------
+        blank (PhotoImage):
+            blank photo
 
-        *_image (tkinter.PhotoImage):
-            εικόνες κομματιών σκακιού
+        photo_dict (dict):
+            dictionary with photos
 
-    Μέθοδοι:
+        round (int):
+            round counter
+
+        captured_piece_board (list):
+            2D list to show the captured pieces
+
+        row_for_white (int):
+            row index for white
+
+        col_for_white (int):
+            column index for white
+
+        row_for_black (int):
+            row index for black
+
+        col_for_black (int):
+            column index for black
+
+        dict (dict):
+            dictionary of captured pieces
+
+    Methods:
     --------
         __update_frame(self) -> str:
-            ενημερώνει το ταμπλό αιχμαλωτισμένων κομματιών, επιστρέφει συμβολοσειρά με το tag του κομματιού
+            updates the captured piece frame and returns string with the tag of the captured piece
 
         next_round(self):
-            ενημερώνει το ταμπλό εάν καταληφθεί κάποιο κομμάτι
+            updates the board of a piece gets captured
 
         previous_round(self):
-            ενημερώνει το ταμπλό αφαιρώντας κομμάτια από το πλαίσιο
+            updates the board by removing pieces
 
         reset(self):
-            επαναφέρει το ταμπλό στην αρχική κατάσταση
+            resets the board
     """
     def __init__(self, master, captured_piece_dictionary: dict, blank_image,
                  rw_image, rb_image, nw_image, nb_image, bw_image, bb_image, qw_image, qb_image, pw_image, pb_image):
-        # κλήση της super() για κληρονόμηση ιδιοτήτων
+        """
+        Initializes the frame
+
+        ...
+
+        Parameters:
+        ---------
+            master (GUI):
+                master of the frame
+
+            captured_piece_dictionary (dict):
+                dictionary with information about captured pieces
+
+            *_image (PhotoImage):
+                piece images
+        """
+        # initialization of parent class (Frame)
         super().__init__(master=master)
         self.config(bg="light grey")
-        # αρχικοποίηση λεξικού με τις πληροφορίες των αιχμαλωτισμένων κομματιών ανά γύρο
+        # initialization of dictionary with the information about captured pieces
         self.dict = captured_piece_dictionary
-        # αρχικοποίηση μετρητή γύρων
+        # initialization of round counter
         self.round = 0
-        # αρχικοποίηση εικόνων
+        # initialization of images
         self.blank = blank_image
         self.photo_dict = {"rw": rw_image, "rb": rb_image,
                            "nw": nw_image, "nb": nb_image,
@@ -52,13 +87,12 @@ class CapturedPieceFrame(Frame):
                            "qw": qw_image, "qb": qb_image,
                            "pw": pw_image, "pb": pb_image}
 
-        # αρχικοποίηση πίνακα με labels που θα χρησιμοποιήσει το grid για να προβάλει τις εικόνες των αιχμαλωτισμένων
-        # κομματιών
+        # initialization of 2D board to show the captured pieces
         self.captured_piece_board = []
         for row in range(5):
             temp = []
             for col in range(6):
-                # γίνεται αρχικοποίηση όλων των ετικετών με την κενή εικόνα, μέχρι να γίνει η έναρξη
+                # initialized with blank image
                 temp.append(Label(self, bg="light grey", image=blank_image))
             self.captured_piece_board.append(temp)
 
@@ -66,7 +100,7 @@ class CapturedPieceFrame(Frame):
             for col in range(6):
                 self.captured_piece_board[row][col].grid(row=row, column=col)
 
-        # αρχικοποίηση μετρητών γραμμών και στηλών για σωστή τοποθέτηση των κομματιών στο grid
+        # initialization of column and row counters
         self.row_for_white = 0
         self.col_for_white = 0
         self.row_for_black = 0
@@ -74,18 +108,20 @@ class CapturedPieceFrame(Frame):
 
     def __update_frame(self) -> str:
         """
-        Ενημερώνει το ταμπλό αιχμαλωτισμένων κομματιών
-        Επιστρέφει συμβολοσειρά με την πληροφορία των αιχμαλωτισμένων κομματιών σε κάθε γύρο
+        Updates the captured piece frame and returns string with the tag of the captured piece
 
-        Επιστρεφόμενο αντικείμενο:
-        --------------------------
-            (str): "w"/"b" αναλόγως το χρώμα του κομματιού, "" εάν δεν υπάρχει κάποιο κομμάτι στον συγκεκριμένο γύρο
+        ...
+
+        Returns:
+        --------
+            (str):
+                "w"/"b" based on captured piece, "" if no piece is captured
         """
         try:
-            # έλεγχος εάν υπάρχει ο τρέχων γύρος στο λεξικό
+            # check if current round exists in dictionary
             captured_piece_name = self.dict[self.round]
         except KeyError:
-            # εάν δεν υπάρχει το συγκεκριμένο κλειδί, έχουμε εξαίρεση
+            # no key found
             return ""
 
         if captured_piece_name[1] == "w":
@@ -102,14 +138,12 @@ class CapturedPieceFrame(Frame):
 
     def next_round(self):
         """
-        Ενημερώνει το ταμπλό εάν καταληφθεί κάποιο κομμάτι
+        Updates the board of a piece gets captured
         """
         self.round += 1
-        # προσωρινή αποθήκευση του tag
+        # temporary storing of the tag
         current_piece_tag = self.__update_frame()
-        # έλεγχος θέση που θα μπει η νέα εικόνα
-        # τα λευκά κομμάτια τοποθετούνται στις τρεις πρώτες στήλες (0, 1, 2), τα μαύρα στις τρεις τελευταίες (3, 4, 5)
-        # ξεκινώντας από την πρώτη στήλη για το καθένα και μόλις γεμίσει συνεχίζει στην επόμενη
+        # formatted placing of the images
         if current_piece_tag == "w":
             self.row_for_white += 1
             if self.row_for_white == 5:
@@ -123,19 +157,19 @@ class CapturedPieceFrame(Frame):
 
     def previous_round(self):
         """
-        Ενημερώνει το ταμπλό αφαιρώντας κομμάτια από το πλαίσιο
+        Updates the board by removing pieces
         """
-        # κρατάω τον προηγούμενο γύρο
+        # previous round index is stored temporarily
         cur_round = self.round - 1
-        # καλώ τη reset() για άδειασμα του ταμπλό
+        # board gets reset
         self.reset()
-        # ενημερώνω κατάλληλα το ταμπλό μέχρι τον εκάστοτε γύρο
+        # board gets updated till previous round is reached
         for rnd in range(cur_round):
             self.next_round()
 
     def reset(self):
         """
-        Επαναφέρει το ταμπλό στην αρχική κατάσταση
+        Resets the board
         """
         self.round = 0
         self.row_for_white = 0
