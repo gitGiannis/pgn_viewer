@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------------------------------------------------- #
-# gui.py: περιέχει την κλάση GUI                                                                                       #
+# gui.py: includes class GUI                                                                                           #
 # -------------------------------------------------------------------------------------------------------------------- #
 from tkinter import Tk, Menu, PhotoImage, Frame, Label, Button, IntVar
 from tkinter.messagebox import askyesno, showinfo
@@ -11,107 +11,160 @@ from captured_piece_frame import CapturedPieceFrame
 
 class GUI(Tk):
     """
-    Ανοίγει ένα παράθυρο με το πλαίσιο της σκακιέρας και εκτελεί τις κινήσεις του αγώνα με γραφική 2D αναπαράσταση
-    Ο χρήστης, αφού πραγματοποιήσει έναρξη του αγώνα και θέσει τα κομμάτια στις θέσεις τους, μπορεί να επιλέξει να
-    κινηθεί εμπρός - πίσω στην αλληλουχία των κινήσεων
-    Στο δεξί μέρος του παραθύρου γίνεται προβολή των λεπτομερειών του αγώνα
+    Opens a new Tkinter window with the 2D chess board and represents the game from start to end using some basic
+    buttons (forwards, backwards etc.)
+    The window also includes two frames, one for showing the game info and another one for showing the captured pieces
 
-    Ορίσματα:
-    ---------
-        game_loader_obj (game_loader.GameLoader):
-            αντικείμενο με τα στιγμιότυπα του αγώνα, καθώς και άλλες πληροφορίες
+    ...
 
-        game_dict (dict):
-            λεξικό με τις πληροφορίες του αγώνα
+    Attributes:
+    -----------
+        *_image (PhotoImage):
+            images for each piece
 
-    Μέθοδοι:
+        game_loader (GameLoader):
+            object containing all the info needed for each game
+
+        board (list):
+            the 2D chess board
+
+        button_next (Button):
+            button for next move
+
+        button_prev (Button):
+            button for previous move
+
+        button_restart (Button):
+            button for restarting the game
+
+        button_start (Button):
+            button for starting the game
+
+        info_frame (Frame):
+            frame with game info
+
+        cap_frame (Frame):
+            frame with captured pieces
+
+        checkbutton_var (IntVar):
+            variable for autoplay checkbutton
+
+        file_menu (Menu):
+            drop down file menu
+
+        board_frame (Frame):
+            chess board frame
+
+        __next_move_display (Label):
+            label with info about next move
+
+        __starting_move (bool):
+            boolean value (if true the game is in the first move)
+
+        __ending_move (bool):
+            boolean value (if true the game is in the last move)
+
+        __result (str):
+            result of the game
+
+    Methods:
     --------
-        update_gui_board(self):
-            πραγματοποιεί ανανέωση του γραφικού περιβάλλοντος μετά από κάθε κίνηση
+        __update_gui_board(self):
+            updates the chess board
 
-        next_move(self):
-            μετάβαση στην επόμενη κίνηση του αγώνα
+        load_next(self):
+            continues to next move
 
-        previous_move(self):
-            μετάβαση στην προηγούμενη κίνηση του αγώνα
+        load_previous(self):
+            goes back to previous move
 
         start_game(self):
-            εκκίνηση του αγώνα
+            starts the game
 
         restart_game(self):
-            επανεκκίνηση του αγώνα
+            restarts the game
 
         autoplay(self):
-            εκτελεί αυτόματη αναπαραγωγή του παιχνιδιού
+            auto-plays the game moves per one second until canceled or game ends
 
         text_config(self) -> str:
-            διαχειρίζεται και επιστρέφει συμβολοσειρά με πληροφορίες για την επόμενη κίνηση
+            edits and returns string with next move display info
 
         show_controls(self):
-            εμφανίζει παράθυρο με τις οδηγίες χρήσης του παραθύρου
+            shows window with the controls explained
 
         exit(self):
-            ζητά επιβεβαίωση εξόδου από την αναπαραγωγή του παιχνιδιού
+            shows yes/no window for exit confirmation
 
         right_key_bind(self, event):
-            εκτελεί την επόμενη κίνηση χρησιμοποιώντας key-event <δεξί-βέλος>
-            εάν το παιχνίδι βρίσκεται στην τελευταία κίνηση, δεν εκτελεί κάτι
+            performs next move using key event <right-arrow>
 
         left_key_bind(self, event):
-            εκτελεί την προηγούμενη κίνηση χρησιμοποιώντας key-event <αριστερό-βέλος>
-            εάν το παιχνίδι βρίσκεται στην πρώτη κίνηση, δεν εκτελεί κάτι
+            performs previous move using key event <right-arrow>
 
         down_key_bind(self, event):
-            επιστρέφει το ταμπλό στην αρχική θέση χρησιμοποιώντας key-event <κάτω-βέλος>
-            εάν το παιχνίδι βρίσκεται στην πρώτη κίνηση, δεν εκτελεί κάτι
+            restarts the game using key event <down-arrow>
 
         up_key_bind(self, event):
-            ενεργοποιεί την αυτόματη αναπαραγωγή του αγώνα χρησιμοποιώντας key-event <πάνω-βέλος>
-            εάν το παιχνίδι βρίσκεται στην τελευταία κίνηση, δεν εκτελεί κάτι
+            auto-plays next move using key event <up-arrow>
     """
+
     def __init__(self, game_loader_obj, game_dict: dict):
-        # κλήση της super για κληρονόμηση ιδιοτήτων γονικής κλάσης
+        """
+        Initializes the new window
+
+        ...
+
+        Parameters:
+        -----------
+            game_loader_obj (game_loader.GameLoader):
+                αντικείμενο με τα στιγμιότυπα του αγώνα, καθώς και άλλες πληροφορίες
+
+            game_dict (dict):
+                λεξικό με τις πληροφορίες του αγώνα
+        """
+        # initialization of parent class (Tk)
         super().__init__()
-        # αρχικοποίηση παραθύρου γραφικών ------------------------------------------------------------------------------
-        # τίτλος και εικονίδιο παραθύρου
+        # initialization of window -------------------------------------------------------------------------------------
+        # title and icon
         self.title(f"Chess Match: W: {game_dict['White']} vs B: {game_dict['Black']} - ({game_dict['Result']})")
         self.iconbitmap("icons\\stonk.ico")
 
-        # αφαίρεση ικανότητας χρήστη να τροποποιεί το μέγεθος του παραθύρου
+        # non-resizable window
         self.resizable(False, False)
 
-        # συλλογή των στιγμιοτύπων του παιχνιδιού ----------------------------------------------------------------------
+        # initialization of GameLoader object --------------------------------------------------------------------------
         self.game_loader = game_loader_obj
 
         self.__result = game_dict["Result"]
 
-        # δημιουργία μπάρας μενού --------------------------------------------------------------------------------------
+        # menu-bar initialization --------------------------------------------------------------------------------------
         menubar = Menu(self)
 
-        # υπο-μενού File
+        # File sub-menu
         self.file_menu = Menu(menubar, tearoff=0)
-        # προσθήκη υπο-μενού File στην μπάρα μενού
+        # sub-menu addition to main menu
         menubar.add_cascade(label="  File  ", menu=self.file_menu)
-        # προσθήκη επιλογών
+        # options
         self.file_menu.add_checkbutton(label="Autoplay", command=self.autoplay)
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Exit", command=self.exit)
 
-        # υπο-μενού Help
+        # Help sub-menu
         help_menu = Menu(menubar, tearoff=0)
-        # προσθήκη υπο-μενού Help στην μπάρα μενού
+        # sub-menu addition to main menu
         menubar.add_cascade(label="  Help  ", menu=help_menu)
-        # προσθήκη επιλογών
+        # options
         help_menu.add_command(label="Help", command=self.show_controls)
 
-        # αρχικοποίηση ήχου --------------------------------------------------------------------------------------------
+        # pygame mixer initialization ----------------------------------------------------------------------------------
         mixer.init()
 
-        # αρχικοποίηση εικόνων -----------------------------------------------------------------------------------------
-        # αρχικοποίηση εικόνας κενών κελιών
+        # image initialization -----------------------------------------------------------------------------------------
+        # blank image for empty squares
         self.blank = PhotoImage(master=self, file="icons\\piece_icons\\BLANK_ICON.png")
 
-        # αρχικοποίηση εικόνων μαύρων κομματιών
+        # images for black pieces
         self.rb_image = PhotoImage(master=self, file="icons\\piece_icons\\rb.png")
         self.nb_image = PhotoImage(master=self, file="icons\\piece_icons\\nb.png")
         self.bb_image = PhotoImage(master=self, file="icons\\piece_icons\\bb.png")
@@ -119,7 +172,7 @@ class GUI(Tk):
         self.kb_image = PhotoImage(master=self, file="icons\\piece_icons\\kb.png")
         self.pb_image = PhotoImage(master=self, file="icons\\piece_icons\\pb.png")
 
-        # αρχικοποίηση εικόνων λευκών κομματιών
+        # images for white pieces
         self.rw_image = PhotoImage(master=self, file="icons\\piece_icons\\rw.png")
         self.nw_image = PhotoImage(master=self, file="icons\\piece_icons\\nw.png")
         self.bw_image = PhotoImage(master=self, file="icons\\piece_icons\\bw.png")
@@ -127,22 +180,23 @@ class GUI(Tk):
         self.kw_image = PhotoImage(master=self, file="icons\\piece_icons\\kw.png")
         self.pw_image = PhotoImage(master=self, file="icons\\piece_icons\\pw.png")
 
-        # αρχικοποίηση εικόνων βασιλιάδων με ματ
+        # checked king images
         self.kb_checked = PhotoImage(master=self, file="icons\\piece_icons\\kb_checked.png")
         self.kw_checked = PhotoImage(master=self, file="icons\\piece_icons\\kw_checked.png")
 
-        # αρχικοποίηση πλαισίου σκακιέρας ------------------------------------------------------------------------------
-        self.frame = Frame(self, bd=10, relief="raised")
+        # chess board initialization -----------------------------------------------------------------------------------
+        self.board_frame = Frame(self, bd=10, relief="raised")
 
-        # δημιουργία πίνακα με ετικέτες (labels)
+        # creation of 2D board with labels
         self.board = []
         for row in range(8):
             temp = []
             for col in range(8):
-                # γίνεται αρχικοποίηση όλων των ετικετών με την κενή εικόνα, μέχρι να γίνει η έναρξη
-                temp.append(Label(self.frame, image=self.blank, bd=7))
+                # blank image is set to each label until the start of the game
+                temp.append(Label(self.board_frame, image=self.blank, bd=7))
             self.board.append(temp)
 
+        # colour setting for background
         for row in range(8):
             for col in range(8):
                 self.board[row][col].grid(row=row, column=col)
@@ -151,58 +205,53 @@ class GUI(Tk):
                 else:
                     self.board[row][col].config(bg="#47473C")
 
-        # προσθήκη συντεταγμένων στα εξωτερικά κελιά της σκακιέρας
-        letters = self.game_loader.gameplay.files
-        numbers = self.game_loader.gameplay.ranks
-        # αριθμός pixel πάνω στο frame
+        # file and rank indexes for side squares
+        letters = self.game_loader.files
+        numbers = self.game_loader.ranks
+        # pixel index in frame
         position = 0
-        # τοποθέτηση γράμματος/αριθμού στα ακραία κελιά και προσθήκη κατάλληλων background και foreground χρωμάτων
         for num in range(8):
             if num % 2 == 0:
-                # ετικέτα με αριθμό
-                Label(master=self.frame,
+                # label with rank
+                Label(master=self.board_frame,
                       bg="#47473C",
                       fg="#EEEED2",
                       font=("consolas", 10, "bold"),
-                      text=numbers[7-num]).place(relx=0.97, y=position)
-                # ετικέτα με γράμμα
-                Label(master=self.frame,
+                      text=numbers[7 - num]).place(relx=0.97, y=position)
+                # label with file
+                Label(master=self.board_frame,
                       bg="#47473C",
                       fg="#EEEED2",
                       font=("consolas", 10, "bold"),
                       text=letters[num]).place(x=position, rely=0.96)
             else:
-                # ετικέτα με αριθμό
-                Label(master=self.frame,
+                # label with rank
+                Label(master=self.board_frame,
                       bg="#EEEED2",
                       fg="#47473C",
                       font=("consolas", 10, "bold"),
-                      text=numbers[7-num]).place(relx=0.97, y=position)
-                # ετικέτα με γράμμα
-                Label(master=self.frame,
+                      text=numbers[7 - num]).place(relx=0.97, y=position)
+                # label with file
+                Label(master=self.board_frame,
                       bg="#EEEED2",
                       fg="#47473C",
                       font=("consolas", 10, "bold"),
                       text=letters[num]).place(x=position, rely=0.96)
-            # επαύξηση θέσης (pixel) πάνω στο frame κατά 74 pixel
-            # 60 pixel η εικόνα του κομματιού και 7+7 το εξωτερικό border που έχω ορίσει στα Labels
+            # pixel position index gets added 74 pixels (60 pixels for the image and 7+7 for the padding)
             position += 74
 
-        # αρχικοποίηση βοηθητικής μεταβλητής
-        self.starting_move = True
-        self.ending_move = False
+        # auxiliary variables
+        self.__starting_move = True
+        self.__ending_move = False
 
-        # διαμόρφωση επιλογής autoplay ---------------------------------------------------------------------------------
-        # αρχικοποίηση μεταβλητής τύπου int που θα ελέγχει το checkbutton
+        # autoplay options ---------------------------------------------------------------------------------------------
+        # initialization of checkbutton variable
         self.checkbutton_var = IntVar(master=self.file_menu)
-        # ανάθεση της μεταβλητής στο checkbutton και διαμόρφωση αρχικής του κατάστασης
         self.file_menu.entryconfig(0, variable=self.checkbutton_var, state="disabled")
-        # συμβολοσειρά για αποθήκευση identifier της self.after() για ακύρωσή της (η μέθοδος after() επιστρέφει ένα
-        # αναγνωριστικό, σε περίπτωση που θέλουμε να την ακυρώσουμε με τη μέθοδο after_cancel() )
+        # string that stores the self.after() method identifier to cancel if necessary
         self.__identifier_for_after_method = ""
 
-        # αρχικοποίηση κουμπιών και πλαισίου που θα τα συμπεριλάβει ----------------------------------------------------
-        # δημιουργία πλαισίου κομβίων
+        # initialization of button frame and buttons -------------------------------------------------------------------
         button_frame = Frame(master=self, bg="light blue")
 
         self.button_next = Button(button_frame,
@@ -212,7 +261,7 @@ class GUI(Tk):
                                   background="light green",
                                   activebackground="green",
                                   width=8,
-                                  command=self.next_move)
+                                  command=self.load_next)
 
         self.button_prev = Button(button_frame,
                                   text="<----",
@@ -221,7 +270,7 @@ class GUI(Tk):
                                   background="light green",
                                   activebackground="green",
                                   width=8,
-                                  command=self.previous_move)
+                                  command=self.load_previous)
 
         self.button_restart = Button(button_frame,
                                      text="||<--",
@@ -239,31 +288,31 @@ class GUI(Tk):
                                    activebackground="green",
                                    command=self.start_game)
 
-        # δημιουργία ετικέτας για προβολή επόμενης κίνησης -------------------------------------------------------------
-        self.next_move_display = Label(button_frame,
-                                       text="'start game' to continue",
-                                       background="light blue",
-                                       font=("consolas", 12, "bold"),
-                                       width=28)
+        # next move display label initialization -----------------------------------------------------------------------
+        self.__next_move_display = Label(button_frame,
+                                         text="'start game' to continue",
+                                         background="light blue",
+                                         font=("consolas", 12, "bold"),
+                                         width=28)
 
-        # τοποθέτηση στο παράθυρο --------------------------------------------------------------------------------------
-        # τοποθέτηση κουμπιών στο button_frame
+        # widget packing -----------------------------------------------------------------------------------------------
+        # packing buttons in button frame
         self.button_next.pack(side="right")
         self.button_prev.pack(side="right")
         self.button_restart.pack(side="right")
         self.button_start.pack(side="left")
-        # τοποθέτηση ετικέτας με την επόμενη κίνηση
-        self.next_move_display.pack(side="right", fill="both")
+        # packing label in button frame
+        self.__next_move_display.pack(side="right", fill="both")
 
-        # τοποθέτηση σκακιέρας στο παράθυρο
-        self.frame.grid(row=0, column=0)
-        # τοποθέτηση button_frame στο παράθυρο
+        # chess board gets placed on grid
+        self.board_frame.grid(row=0, column=0)
+        # button frame gets placed on grid
         button_frame.grid(row=1, column=0, sticky="ew")
 
-        # αρχικοποίηση και τοποθέτηση Frame με τις πληροφορίες του αγώνα στο παράθυρο
+        # initialization of InfoFrame with the game info and placing on grid
         InfoFrame(master=self, info_dictionary=game_dict).grid(row=0, column=1, sticky="n")
 
-        # αρχικοποίηση και τοποθέτηση Frame με τα αιχμαλωτισμένα κομμάτια στο παράθυρο
+        # initialization of CapturedPieceFrame with captured pieces and placing on grid
         self.cap_frame = CapturedPieceFrame(master=self, blank_image=self.blank,
                                             captured_piece_dictionary=self.game_loader.captured_piece_names,
                                             rw_image=self.rw_image, nw_image=self.nw_image, bw_image=self.bw_image,
@@ -272,23 +321,20 @@ class GUI(Tk):
                                             qb_image=self.qb_image)
         self.cap_frame.grid(row=0, column=1, rowspan=2, sticky="sw")
 
-        # ερώτηση για επιβεβαίωση εξόδου από το παράθυρο
+        # yes/no window for exit confirmation
         self.protocol("WM_DELETE_WINDOW", self.exit)
 
-        # επεξεργασία παραθύρου για προσθήκη παραμέτρων
+        # window configuration and mainloop
         self.config(menu=menubar, background="light grey")
-
-        # εντολή για έναρξη του παραθύρου (πάντα στο τέλος)
         self.mainloop()
 
-    def update_gui_board(self):
+    def __update_gui_board(self):
         """
-        Πραγματοποιεί ανανέωση του γραφικού περιβάλλοντος μετά από κάθε κίνηση
+        Updates the chess board after every move
         """
-        # η λίστα game_rounds του αντικειμένου game_loader περιέχει τα στιγμιότυπα (λεξικά) του αγώνα με τη θέση των
-        # κομματιών σε κάθε γύρο
-        # πραγματοποιείται διαπέραση της λίστας για τον εκάστοτε γύρο, και ανανεώνεται αντίστοιχα το γραφικό περιβάλλον
-        # της σκακιέρας
+        # the info_dictionaries_per_round list attribute of game_loader contains lists with the positions of each piece
+        # for each round
+        # each dictionary is looped through and the board gets updated with the new piece positions
         for piece in self.game_loader.info_dictionaries_per_round[self.game_loader.round]:
             if piece["name"] == "  ":
                 self.board[piece["row"]][piece["col"]].config(image=self.blank, compound="center")
@@ -323,30 +369,27 @@ class GUI(Tk):
                 else:
                     self.board[piece["row"]][piece["col"]].config(image=self.kw_image, compound="center")
 
-    def next_move(self):
+    def load_next(self):
         """
-        Μετάβαση στην επόμενη κίνηση του αγώνα
-        Η μέθοδος επίσης απενεργοποιεί/ενεργοποιεί τα αντίστοιχα κουμπιά/checkbuttons για αποφυγή σφαλμάτων
+        Continues to the next move and enables/disables control buttons based on the current round
         """
-        # ενεργοποίηση του κουμπιού προηγούμενης κίνησης και επαναφοράς στην αρχική θέση
-        # (σε περίπτωση που είναι ανενεργό, εάν βρισκόμαστε στην αρχική θέση)
+        # previous move and restart buttons get activated (if previously disabled)
         self.button_prev.config(state="normal")
         self.button_restart.config(state="normal")
-        self.starting_move = False
+        self.__starting_move = False
 
         try:
-            # μετάβαση στον επόμενο γύρο
-            self.game_loader.next_round()
+            # advance to next move
+            self.game_loader.next_move()
         except PositionReached:
-            self.game_loader.next_round(force=True)
-            # απενεργοποίηση του κουμπιού επόμενης κίνησης όταν φτάσουμε στην τελευταία
+            self.game_loader.next_move(force=True)
+            # next move button and autoplay checkbutton get disabled
             self.button_next.config(state="disabled")
-            # απο-επιλογή και απενεργοποίηση του checkbutton autoplay
             self.checkbutton_var.set(0)
             self.file_menu.entryconfig(index=0, state="disabled")
-            self.ending_move = True
+            self.__ending_move = True
 
-        # αναπαραγωγή ήχων
+        # sound playback
         if self.game_loader.captures_per_round[self.game_loader.round]:
             mixer.music.load('sound_effects\\capture_sound.mp3')
             mixer.music.play(loops=0)
@@ -354,148 +397,138 @@ class GUI(Tk):
             mixer.music.load('sound_effects\\move_sound.mp3')
             mixer.music.play(loops=0)
 
-        # ανανέωση γραφικής αναπαράστασης σκακιέρας
-        self.update_gui_board()
+        # board gets updated
+        self.__update_gui_board()
 
-        # προβολή επόμενης κίνησης στο ταμπλό
-        self.next_move_display.config(text=self.text_config(),
-                                      width=28,
-                                      fg="red" if self.ending_move else "black")
+        # next move display gets updated
+        self.__next_move_display.config(text=self.text_config(),
+                                        width=28,
+                                        fg="red" if self.__ending_move else "black")
 
-        # ενημέρωση πλαισίου με αιχμαλωτισμένα κομμάτια
+        # cap frame gets updated
         self.cap_frame.next_round()
 
-    def previous_move(self):
+    def load_previous(self):
         """
-        Μετάβαση στην προηγούμενη κίνηση του αγώνα
+        Goes back to previous move and enables/disables control buttons based on the current round
         """
-        # ενεργοποίηση του κουμπιού επόμενης κίνησης
-        # (σε περίπτωση που είναι ανενεργό, εάν βρισκόμαστε στην τελική θέση)
+        # next move button and autoplay checkbutton get activated (if previously disabled)
         self.button_next.config(state="normal")
-        # ενεργοποίηση του checkbutton autoplay
         self.file_menu.entryconfig(index=0, state="normal")
-        # απο-επιλογή για να σταματήσει η αυτόματη αναπαραγωγή άμα ο χρήστης κινηθεί προς τα πίσω
+        # autoplay stops if the previous move button is pressed
         self.checkbutton_var.set(0)
-        self.ending_move = False
+        self.__ending_move = False
 
         try:
-            # μετάβαση στον προηγούμενο γύρο
-            self.game_loader.previous_round()
+            # revert to previous move
+            self.game_loader.previous_move()
         except PositionReached:
-            self.game_loader.previous_round(force=True)
-            # απενεργοποίηση του κουμπιού προηγούμενης κίνησης και επαναφοράς στην αρχική θέση όταν φτάσουμε στην πρώτη
+            self.game_loader.previous_move(force=True)
+            # previous move and restart button get disabled
             self.button_prev.config(state="disabled")
             self.button_restart.config(state="disabled")
-            self.starting_move = True
+            self.__starting_move = True
 
-        # αναπαραγωγή ήχου
+        # sound playback
         mixer.music.load('sound_effects\\previous_move.mp3')
         mixer.music.play(loops=0, fade_ms=200)
 
-        # ανανέωση γραφικής αναπαράστασης σκακιέρας
-        self.update_gui_board()
+        # board gets updated
+        self.__update_gui_board()
 
-        # προβολή επόμενης κίνησης στο ταμπλό
-        self.next_move_display.config(text=self.text_config(),
-                                      width=28,
-                                      fg="black")
+        # next move display gets updated
+        self.__next_move_display.config(text=self.text_config(), width=28, fg="black")
 
-        # ενημέρωση πλαισίου με αιχμαλωτισμένα κομμάτια
+        # cap frame gets updated
         self.cap_frame.previous_round()
 
     def start_game(self):
         """
-        Εκκίνηση του αγώνα
-        Η μέθοδος αρχικοποιεί τα key-bindings για ευκολία κύλισης εμπρός-πίσω στην αλληλουχία των κινήσεων
+        Starts the game and initializes the key-bindings for buttons
         """
-        # key-bindings με την εκκίνηση του αγώνα
+        # key-bindings initialization
         self.bind(sequence='<Right>', func=self.right_key_bind)
         self.bind(sequence='<Left>', func=self.left_key_bind)
         self.bind(sequence="<Down>", func=self.down_key_bind)
         self.bind(sequence="<Up>", func=self.up_key_bind)
 
-        # ενεργοποίηση πλήκτρων ελέγχου αγώνα
+        # activation of next move button and autoplay checkbutton
         self.button_next.config(state="normal")
         self.button_start.config(state="disabled")
         self.file_menu.entryconfig(index=0, state="normal")
 
-        # αντιστοίχηση εικονιδίων κομματιών με τα κομμάτια κάθε θέσης
-        self.update_gui_board()
+        # board gets updated
+        self.__update_gui_board()
 
-        # προβολή επόμενης κίνησης στο ταμπλό
-        self.next_move_display.config(text=self.text_config(),
-                                      width=28,
-                                      fg="black")
+        # next move display gets updated
+        self.__next_move_display.config(text=self.text_config(), width=28, fg="black")
 
     def restart_game(self):
         """
-        Επανεκκίνηση του αγώνα
+        Restarts the game and enables/disables control buttons based on the current round
         """
-        # θέτω τον γύρο στην αρχική τιμή (0)
-        self.game_loader.round = 0
+        # round gets set to zero
+        self.game_loader.restart_game()
 
-        # ανανέωση γραφικής αναπαράστασης σκακιέρας
-        self.update_gui_board()
-
-        # ενεργοποίηση του κουμπιού επόμενου γύρου και απενεργοποίηση του προηγούμενου
+        # button adjustment
         self.button_next.config(state="normal")
         self.button_prev.config(state="disabled")
         self.button_restart.config(state="disabled")
-        # ενεργοποίηση του checkbutton autoplay
         self.file_menu.entryconfig(index=0, state="normal")
-        # απο-επιλογή για να σταματήσει η αυτόματη αναπαραγωγή άμα ο χρήστης κινηθεί προς τα πίσω
         self.checkbutton_var.set(0)
-        self.ending_move = False
-        self.starting_move = True
+        self.__ending_move = False
+        self.__starting_move = True
 
-        # αναπαραγωγή ήχου
+        # sound playback
         mixer.music.load('sound_effects\\restart.mp3')
         mixer.music.play(loops=0)
 
-        # προβολή επόμενης κίνησης στο ταμπλό
-        self.next_move_display.config(text=self.text_config(),
-                                      width=28,
-                                      fg="black")
+        # board gets updated
+        self.__update_gui_board()
 
-        # επαναφορά πλαισίου με αιχμαλωτισμένα κομμάτια
+        # next move display gets updated
+        self.__next_move_display.config(text=self.text_config(), width=28, fg="black")
+
+        # cap frame gets updated
         self.cap_frame.reset()
 
     def autoplay(self):
         """
-        Εκτελεί αυτόματη αναπαραγωγή του παιχνιδιού, μέχρι να πιεστεί πλήκτρο επαναφοράς / προηγούμενων κινήσεων ή να
-        απενεργοποιηθεί χειροκίνητα
+        Performs next move every one second until canceled or a previous move button is pressed
         """
-        # εάν το checkbutton είναι ενεργό, η μεταβλητή παρακάτω παίρνει την τιμή 0
+        # if checkbutton is set to 1 (active)...
         if self.checkbutton_var.get() == 1:
-            # εκτέλεση επόμενης κίνησης
-            self.next_move()
-            # επανάκληση της μεθόδου autoplay μετά από 1200 milliseconds
+            # ... the next move is performed ...
+            self.load_next()
+            # ... and then again after 1200 milliseconds
             self.__identifier_for_after_method = self.after(1200, self.autoplay)
-        # εάν το checkbutton είναι ανενεργό, ελέγχω εάν υπάρχει ενεργή after, και αν ναι την ακυρώνω
+        # if checkbutton is off and an after() method is active, it gets canceled
         elif self.__identifier_for_after_method:
             self.after_cancel(self.__identifier_for_after_method)
 
     def text_config(self) -> str:
         """
-        Διαχειρίζεται και επιστρέφει συμβολοσειρά με πληροφορίες για την επόμενη κίνηση
+        Edits and returns string with next move information
 
-        Επιστρεφόμενο αντικείμενο:
-        --------------------------
+        ...
+
+        Returns:
+        --------
             (str):
-                συμβολοσειρά με πληροφορίες για την επόμενη κίνηση
+                string with next move information
         """
-        if not self.ending_move:
+        if not self.__ending_move:
             cur_round = self.game_loader.round
             to_play = "White to play: " if cur_round % 2 == 0 else "Black to play: "
-            self.ending_move = False
-            return to_play + str((cur_round//2)+1) + ". " + self.game_loader.gameplay.moves[cur_round]
+            self.__ending_move = False
+            return to_play + str((cur_round // 2) + 1) + ". " + self.game_loader.moves[cur_round]
         else:
-            # εάν είμαστε στην τελευταία κίνηση επιστρέφεται το τελικό σκορ του αγώνα
+            # if in ending move, the game result gets displayed
             return self.__result
 
     def show_controls(self):
         """
-        Εμφανίζει παράθυρο με τις οδηγίες χρήσης του παραθύρου
+        Shows information with the controls of the window
         """
         showinfo(master=self,
                  title="Help",
@@ -508,48 +541,43 @@ class GUI(Tk):
 
     def exit(self):
         """
-        Ζητάει επιβεβαίωση εξόδου από την αναπαραγωγή του παιχνιδιού
-        Εμφανίζει messagebox με επιλογή yes/no
+        Asks confirmation to exit the game display through a yes/no messagebox
         """
         if askyesno(master=self, title="Exit Game?", message="Do you really wish to exit this game?", default="no"):
             if self.__identifier_for_after_method:
-                # ακύρωση της μεθόδου self.after() σε περίπτωση είναι ενεργή ενώ τερματίζει το παράθυρο
+                # if after() method is active, it gets canceled
                 self.after_cancel(self.__identifier_for_after_method)
             self.destroy()
 
     def right_key_bind(self, event):
         """
-        Εκτελεί την επόμενη κίνηση χρησιμοποιώντας key-event <δεξί-βέλος>
-        Εάν το παιχνίδι βρίσκεται στην τελευταία κίνηση, δεν εκτελεί κάτι
+        Performs the next move through key-event <right-arrow>, except if in last move
         """
-        if self.ending_move:
+        if self.__ending_move:
             return
-        self.next_move()
+        self.load_next()
 
     def left_key_bind(self, event):
         """
-        Εκτελεί την προηγούμενη κίνηση χρησιμοποιώντας key-event <αριστερό-βέλος>
-        Εάν το παιχνίδι βρίσκεται στην πρώτη κίνηση, δεν εκτελεί κάτι
+        Performs the previous move through key-event <left-arrow>, except if in first move
         """
-        if self.starting_move:
+        if self.__starting_move:
             return
-        self.previous_move()
+        self.load_previous()
 
     def down_key_bind(self, event):
         """
-        Επιστρέφει το ταμπλό στην αρχική θέση χρησιμοποιώντας key-event <κάτω-βέλος>
-        Εάν το παιχνίδι βρίσκεται στην πρώτη κίνηση, δεν εκτελεί κάτι
+        Restarts the game through key-event <down-arrow>, except if in first move
         """
-        if self.starting_move:
+        if self.__starting_move:
             return
         self.restart_game()
 
     def up_key_bind(self, event):
         """
-        Ενεργοποιεί την αυτόματη αναπαραγωγή του αγώνα χρησιμοποιώντας key-event <πάνω-βέλος>
-        Εάν το παιχνίδι βρίσκεται στην τελευταία κίνηση, δεν εκτελεί κάτι
+        Activates/Deactivates autoplay function through key-event <up-arrow>, except if in first move
         """
-        if self.ending_move:
+        if self.__ending_move:
             return
         if self.checkbutton_var.get() == 1:
             # εάν το checkbutton_var είναι 1 (δηλαδή ενεργό), διακόπτει την αυτόματη αναπαραγωγή
