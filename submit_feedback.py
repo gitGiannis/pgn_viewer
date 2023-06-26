@@ -10,7 +10,7 @@ from pickle import load
 
 class FeedBack(Toplevel):
     """
-    Inherits from parent class Toplevel and opens new window with feedback option
+    Inherits from parent class Toplevel and opens a new window with feedback option
 
     ...
 
