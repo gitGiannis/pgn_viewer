@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------------------------------------------------- #
-# main_program.py: περιέχει την κλάση MainProgram για έναρξη κυρίως παραθύρου                                          #
+# main_program.py: includes class MainProgram                                                                          #
 # -------------------------------------------------------------------------------------------------------------------- #
 from tkinter import Tk, Menu, Button, Label, Frame, PhotoImage
 from tkinter.messagebox import askyesno
@@ -9,57 +9,74 @@ from os.path import abspath
 from manual_game_selector import ManualGameSelector
 from listbox_game_display import ListboxGameDisplay
 from functions import show_help, show_info, show_credits, about
+from my_exceptions import PossibleCorruptFile
 from submit_feedback import FeedBack
 
 
 class MainProgram(Tk):
     """
-    Δημιουργεί το κύριο παράθυρο γραφικής αλληλεπίδρασης με τον χρήστη
-    Από εδώ ο χρήστης μπορεί να επιλέξει τον τρόπο που θα αναζητήσει τα αρχεία pgn και το αρχείο που θέλει να προβάλει
-    Κληρονομεί τις ιδιότητές του από το tkinter.Tk
+    Inherits from the parent class (Tk) and creates the main window of the app
+    Provides two main ways for the user to load pgn files
 
-    Μέθοδοι:
+    ...
+
+    Attributes:
+    -----------
+        menubar (Menu):
+            top side menu-bar
+
+        file_menu (Menu):
+            dropdown sub-menu
+
+        help_menu (Menu):
+            dropdown sub-menu
+
+        main_frame (Frame):
+            main frame of the window
+
+        warning_label (Label):
+            label to show messages to user
+
+    Methods:
     --------
         select_file(self):
-            ανοίγει παράθυρο εξερεύνησης των windows για χειροκίνητη επιλογή αρχείου pgn
+            opens Windows explorer window for manual pgn file loading
 
         open_file(self):
-            φορτώνει τα αρχεία pgn που βρέθηκαν σε έναν προκαθορισμένο φάκελο
+            loads al the pgn files found in the pre-selected folder inside the app files
 
         submit_fb(self):
-            λήψη ανατροφοδότησης από τον χρήστη
+            reception of user feedback
 
         copy_path(self):
-            αντιγραφή απόλυτης διεύθυνσης προκαθορισμένου φακέλου με αρχεία pgn
+            copies (to clipboard) the absolute path to pre-selected folder with pgn files
 
         exit(self):
-            καταστρέφει το παράθυρο και τερματίζει το πρόγραμμα
+            destroys the main window and exits the app
     """
 
     def __init__(self):
         """
-        Μέθοδος για αρχικοποίηση αντικειμένου της κλάσης και άνοιγμα του παραθύρου διεπαφής
+        Initialization of the main window object
         """
-        # αρχικοποίηση παραθύρου γραφικών ------------------------------------------------------------------------------
-        # κλήση της super για κληρονόμηση ιδιοτήτων γονικής κλάσης
+        # initialization of parent class (Tk)
         super().__init__()
-        # αφαίρεση ικανότητας χρήστη να τροποποιεί το μέγεθος του παραθύρου
-        self.resizable(False, False)
-        # εικονίδιο εφαρμογής
+        # window title and icon
         self.iconbitmap("icons\\stonk.ico")
-        # όνομα εφαρμογής
         self.title("Chess PGN manager v1.0")
+        # non-resizable window
+        self.resizable(False, False)
 
-        # δημιουργία μπάρας μενού --------------------------------------------------------------------------------------
+        # menu-bar initialization --------------------------------------------------------------------------------------
         self.menubar = Menu(self)
-        # μενού File
+        # file sub-menu
         self.file_menu = Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="  File  ", menu=self.file_menu)
-        # μενού Help
+        # help sub-menu
         self.help_menu = Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="  Help  ", menu=self.help_menu)
 
-        # υπο-μενού File
+        # file sub-menu options
         self.file_menu.add_command(label="Show Files", command=self.show_files)
         self.file_menu.add_command(label="Select File", command=self.select_file)
         self.file_menu.add_separator()
@@ -68,7 +85,7 @@ class MainProgram(Tk):
         self.file_menu.add_command(label="Back", state="disabled")
         self.file_menu.add_command(label="Exit", command=self.exit)
 
-        # υπο-μενού Help
+        # help sub-menu options
         self.help_menu.add_command(label="Help", command=show_help)
         self.help_menu.add_separator()
         self.help_menu.add_command(label="About PGN", command=show_info)
@@ -77,16 +94,13 @@ class MainProgram(Tk):
         self.help_menu.add_separator()
         self.help_menu.add_command(label="Submit Feedback", command=self.submit_fb)
 
-        # δημιουργία frame μέσα στο οποίο θα τοποθετηθούν τα κουμπιά κλπ -----------------------------------------------
+        # main frame to include the widgets ----------------------------------------------------------------------------
         self.main_frame = Frame(master=self, bg="light blue")
-        # δημιουργία ετικέτας με εικόνα για το παρασκήνιο
+        # main label with image for background
         chess_image = PhotoImage(master=self.main_frame, file="icons\\chess.png")
-        Label(master=self.main_frame,
-              image=chess_image,
-              width=550,
-              background="light yellow").pack()
+        Label(master=self.main_frame, image=chess_image, width=550, background="light yellow").pack()
 
-        # δημιουργία και τοποθέτηση κουμπιών ---------------------------------------------------------------------------
+        # initialization and placing of buttons ------------------------------------------------------------------------
         Button(self.main_frame,
                text="Select File",
                font=("consolas", 12, "bold"),
@@ -94,6 +108,7 @@ class MainProgram(Tk):
                activebackground="green",
                width="15",
                command=self.select_file).pack(side="right")
+
         Button(self.main_frame,
                text="Show Files",
                font=("consolas", 12, "bold"),
@@ -102,97 +117,95 @@ class MainProgram(Tk):
                width="15",
                command=self.show_files).pack(side="left")
 
-        # Label για προβολή μηνυμάτων προς χρήστη ----------------------------------------------------------------------
-        self.warning_label = Label(self.main_frame,
-                                   bg="light blue",
-                                   fg="red",
-                                   font=("consolas", 12, "bold"),
-                                   pady=5)
+        # Label for showing messages to user ---------------------------------------------------------------------------
+        self.warning_label = Label(self.main_frame, bg="light blue", fg="red", font=("consolas", 12, "bold"), pady=5)
 
-        # τοποθέτηση μπάρας μενού και καθορισμός χρώματος φόντου
+        # main window configuration and main frame packing -------------------------------------------------------------
         self.config(menu=self.menubar, background="light blue")
-        # τοποθέτηση του frame στο παράθυρο
         self.main_frame.pack(fill="x")
 
-        # επιβεβαίωση εξόδου από το πρόγραμμα
+        # window mainloop ----------------------------------------------------------------------------------------------
         self.protocol("WM_DELETE_WINDOW", self.exit)
-        # έναρξη λειτουργίας παραθύρου ---------------------------------------------------------------------------------
         self.mainloop()
 
     def select_file(self):
         """
-        Ανοίγει παράθυρο εξερεύνησης των windows για χειροκίνητη επιλογή αρχείου
+        Opens new Windows explorer window for manual pgn file selection
         """
-        # άνοιγμα παραθύρου εξερεύνησης των windows
+        # explorer window
         file_path = askopenfilename(initialdir="pgn_files",
                                     title="Choose PGN file",
                                     filetypes=(("PGN files", "*.pgn"), ("All files", "*.*")))
         if file_path:
-            # έλεγχος για ορθότητα τύπου αρχείου
+            # check file type
             if file_path[-4:] == ".pgn":
-                # απόκρυψη κύριου πλαισίου
+                # main frame gets withdrawn
                 self.main_frame.forget()
                 self.file_menu.entryconfig(0, state="disabled")
                 self.file_menu.entryconfig(1, state="disabled")
                 self.file_menu.entryconfig(3, state="disabled")
 
                 try:
-                    # τοποθέτηση frame με τους αγώνες για επιλογή παιχνιδιού
+                    # ManualGameSelector frame gets packed
                     ManualGameSelector(root=self, pgn_filepath=file_path)
                 except OSError:
-                    # εμφάνιση μηνύματος σφάλματος σε περίπτωση αποτυχία διαβάσματος αρχείου
+                    # a relevant message is shown in case of failure to open the file
                     self.warning_label.config(text="Could not open file")
                     self.warning_label.pack(fill="both")
                     self.warning_label.after(2000, self.warning_label.pack_forget)
+                except PossibleCorruptFile as v:
+                    # in case of corrupt file, a relevant message is shown
+                    self.warning_label.config(text=str(v))
+                    self.warning_label.pack(fill="both")
+                    self.warning_label.after(2000, self.warning_label.pack_forget)
             else:
-                # το αρχείο είναι λάθος τύπου
+                # wrong file type
                 self.warning_label.config(text="Invalid File Type!")
                 self.warning_label.pack(fill="both")
                 self.warning_label.after(2000, self.warning_label.pack_forget)
 
     def show_files(self):
         """
-        Φορτώνει τα αρχεία pgn που βρέθηκαν σε έναν προκαθορισμένο φάκελο και τα προβάλει στο παράθυρο διεπαφής
+        Loads all pgn file found in pre-selected folder
         """
         try:
-            # λίστα με τα περιεχόμενα του φακέλου
+            # list with directory items
             list_dir = listdir("pgn_files")
         except FileNotFoundError:
-            # εάν ο φάκελος δεν υπάρχει ή έχει διαγραφεί, δημιουργείται εξ αρχής άδειος,
-            # ώστε να προσθέσει ο χρήστης αρχεία pgn
+            # pre-selected directory was not found or deleted, and is created again
             mkdir("pgn_files")
             list_dir = []
 
-        # έλεγχος για ορθότητα τύπου αρχείου
+        # check file type
         for pgn_file_path in list_dir:
             if pgn_file_path[-4:] != ".pgn":
-                # αφαίρεση αρχείων που δεν πληρούν τα κριτήρια (κατάληξη .pgn)
+                # removal of wrong file types
                 list_dir.remove(pgn_file_path)
 
         if list_dir:
-            # απόκρυψη κύριου πλαισίου
+            # main frame gets withdrawn
             self.main_frame.forget()
             self.file_menu.entryconfig(0, state="disabled")
             self.file_menu.entryconfig(1, state="disabled")
             self.file_menu.entryconfig(3, state="disabled")
 
-            # άνοιγμα παραθύρου με τα αρχεία pgn για επιλογή αρχείου
+            # ListboxGameDisplay frame gets packed
             ListboxGameDisplay(root=self, pgn_list=list_dir)
         else:
-            # δε βρέθηκε αρχείο ή τα αρχεία που βρέθηκαν δεν πληρούν τα κριτήρια
+            # no files (of correct type) were found in the pre-selected directory
             self.warning_label.config(text="No Files Found!")
             self.warning_label.pack(fill="both")
             self.warning_label.after(2000, self.warning_label.pack_forget)
 
     def submit_fb(self):
         """
-        Λήψη ανατροφοδότησης από τον χρήστη
+        User feedback
         """
         FeedBack(master=self)
 
     def copy_path(self):
         """
-        Αντιγραφή απόλυτης διεύθυνσης προκαθορισμένου φακέλου με αρχεία pgn
+        Copies absolute path to pre-selected pgn directory
         """
         self.clipboard_clear()
         self.clipboard_append(abspath("pgn_files"))
@@ -202,11 +215,7 @@ class MainProgram(Tk):
 
     def exit(self):
         """
-        Καταστρέφει το παράθυρο και τερματίζει το πρόγραμμα
-        Εμφανίζει messagebox με επιλογή yes/no
+        Ask confirmation to terminate the app
         """
-        if askyesno(master=self,
-                    title="Quit?",
-                    message="Do you really wish to quit?",
-                    default="no"):
+        if askyesno(master=self, title="Quit?", message="Do you really wish to quit?", default="no"):
             self.destroy()
