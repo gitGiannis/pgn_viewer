@@ -127,7 +127,7 @@ class Board:
 
     def move_piece(self, src: str, dest: str) -> str:
         """
-        Moves the piece from src to dest and returns the captures piece name
+        Moves the piece from src to dest and returns the captured piece name
 
         ...
 
