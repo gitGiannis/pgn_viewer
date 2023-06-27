@@ -140,7 +140,7 @@ class Board:
         Returns:
         --------
             captured_piece_name_to_return (str):
-                the name of the captured piece (used in captured_piece_frame.CapturedPieceFrame to show captured pieces)
+                the name of the captured piece
         """
         # initialization of variable
         self.friendly_capture = False
@@ -158,16 +158,9 @@ class Board:
                         if piece_src.name[1] == piece_dest.name[1]:
                             self.friendly_capture = True
 
-                        # temporary assignment of current coordinates of src and dest
-                        row_src = piece_src.row
-                        col_src = piece_src.col
-                        row_dest = piece_dest.row
-                        col_dest = piece_dest.col
                         # coordinates swap
-                        piece_dest.row = row_src
-                        piece_dest.col = col_src
-                        piece_src.row = row_dest
-                        piece_src.col = col_dest
+                        piece_src.row, piece_dest.row = piece_dest.row, piece_src.row
+                        piece_src.col, piece_dest.col = piece_dest.col, piece_src.col
 
                         # position swap between src and dest
                         piece_dest.pos = src
