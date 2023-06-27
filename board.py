@@ -102,7 +102,7 @@ class Board:
     def __update_squares(self, piece):
         """
         Updates the squares dictionary
-        If a square contains an active piece, it is set as True (string with the piece tag 'w'/'b')
+        If a square contains an active piece, it is set as True
         Else it is set as False
 
         ...
@@ -110,10 +110,10 @@ class Board:
         Parameters:
         -----------
             piece (Piece):
-                current piece from the loop in update_self method
+                current piece from the loop in update_board method
         """
         if piece.state:
-            self.squares[piece.pos] = piece.name[1]
+            self.squares[piece.pos] = True
         else:
             self.squares[piece.pos] = False
 
