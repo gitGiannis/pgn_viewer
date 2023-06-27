@@ -40,6 +40,9 @@ class GUI(Tk):
         button_start (Button):
             button for starting the game
 
+        button_frame (Frame):
+            frame for buttons
+
         info_frame (Frame):
             frame with game info
 
@@ -69,6 +72,9 @@ class GUI(Tk):
 
     Methods:
     --------
+        __board_config(self) -> None:
+            configures the board by adding background colours and indexes for side squares
+
         __update_gui_board(self):
             updates the chess board
 
@@ -107,6 +113,9 @@ class GUI(Tk):
 
         up_key_bind(self, event):
             auto-plays next move using key event <up-arrow>
+
+        __pack_widgets(self) -> None:
+            Packs the widgets in the window
     """
 
     def __init__(self, game_loader_obj, game_dict: dict):
@@ -188,14 +197,89 @@ class GUI(Tk):
         self.board_frame = Frame(self, bd=10, relief="raised")
 
         # creation of 2D board with labels
-        self.board = []
-        for row in range(8):
-            temp = []
-            for col in range(8):
-                # blank image is set to each label until the start of the game
-                temp.append(Label(self.board_frame, image=self.blank, bd=7))
-            self.board.append(temp)
+        self.board = [[Label(self.board_frame, image=self.blank, bd=7) for _col in range(8)] for _row in range(8)]
+        self.__board_config()
 
+        # auxiliary variables
+        self.__starting_move = True
+        self.__ending_move = False
+
+        # autoplay options ---------------------------------------------------------------------------------------------
+        # initialization of checkbutton variable
+        self.checkbutton_var = IntVar(master=self.file_menu)
+        self.file_menu.entryconfig(0, variable=self.checkbutton_var, state="disabled")
+        # string that stores the self.after() method identifier to cancel if necessary
+        self.__identifier_for_after_method = ""
+
+        # initialization of button frame and buttons -------------------------------------------------------------------
+        self.button_frame = Frame(master=self, bg="light blue")
+
+        self.button_next = Button(self.button_frame,
+                                  text="---->",
+                                  state="disabled",
+                                  font=("consolas", 12, "bold"),
+                                  background="light green",
+                                  activebackground="green",
+                                  width=8,
+                                  command=self.load_next)
+
+        self.button_prev = Button(self.button_frame,
+                                  text="<----",
+                                  state="disabled",
+                                  font=("consolas", 12, "bold"),
+                                  background="light green",
+                                  activebackground="green",
+                                  width=8,
+                                  command=self.load_previous)
+
+        self.button_restart = Button(self.button_frame,
+                                     text="||<--",
+                                     state="disabled",
+                                     font=("consolas", 12, "bold"),
+                                     background="light green",
+                                     activebackground="green",
+                                     width=8,
+                                     command=self.restart_game)
+
+        self.button_start = Button(self.button_frame,
+                                   text="start game",
+                                   font=("consolas", 12, "bold"),
+                                   background="light green",
+                                   activebackground="green",
+                                   command=self.start_game)
+
+        # next move display label initialization -----------------------------------------------------------------------
+        self.__next_move_display = Label(self.button_frame,
+                                         text="'start game' to continue",
+                                         background="light blue",
+                                         font=("consolas", 12, "bold"),
+                                         width=28)
+
+        # initialization of InfoFrame with the game info ---------------------------------------------------------------
+        self.info_frame = InfoFrame(master=self, info_dictionary=game_dict)
+
+        # initialization of CapturedPieceFrame with captured pieces ----------------------------------------------------
+        self.cap_frame = CapturedPieceFrame(master=self, blank_image=self.blank,
+                                            captured_piece_dictionary=self.game_loader.captured_piece_names,
+                                            rw_image=self.rw_image, nw_image=self.nw_image, bw_image=self.bw_image,
+                                            qw_image=self.qw_image, pw_image=self.pw_image, pb_image=self.pb_image,
+                                            rb_image=self.rb_image, nb_image=self.nb_image, bb_image=self.bb_image,
+                                            qb_image=self.qb_image)
+
+        # widget packing -----------------------------------------------------------------------------------------------
+        self.__pack_widgets()
+
+        # yes/no window for exit confirmation
+        self.protocol("WM_DELETE_WINDOW", self.exit)
+
+        # window configuration and mainloop
+        self.config(menu=menubar, background="light grey")
+        self.mainloop()
+
+    def __board_config(self) -> None:
+        """
+        Configures the board by adding background colours as well as file and rank indexes for side squares
+        """
         # colour setting for background
         for row in range(8):
             for col in range(8):
@@ -239,94 +323,6 @@ class GUI(Tk):
                       text=letters[num]).place(x=position, rely=0.96)
             # pixel position index gets added 74 pixels (60 pixels for the image and 7+7 for the padding)
             position += 74
-
-        # auxiliary variables
-        self.__starting_move = True
-        self.__ending_move = False
-
-        # autoplay options ---------------------------------------------------------------------------------------------
-        # initialization of checkbutton variable
-        self.checkbutton_var = IntVar(master=self.file_menu)
-        self.file_menu.entryconfig(0, variable=self.checkbutton_var, state="disabled")
-        # string that stores the self.after() method identifier to cancel if necessary
-        self.__identifier_for_after_method = ""
-
-        # initialization of button frame and buttons -------------------------------------------------------------------
-        button_frame = Frame(master=self, bg="light blue")
-
-        self.button_next = Button(button_frame,
-                                  text="---->",
-                                  state="disabled",
-                                  font=("consolas", 12, "bold"),
-                                  background="light green",
-                                  activebackground="green",
-                                  width=8,
-                                  command=self.load_next)
-
-        self.button_prev = Button(button_frame,
-                                  text="<----",
-                                  state="disabled",
-                                  font=("consolas", 12, "bold"),
-                                  background="light green",
-                                  activebackground="green",
-                                  width=8,
-                                  command=self.load_previous)
-
-        self.button_restart = Button(button_frame,
-                                     text="||<--",
-                                     state="disabled",
-                                     font=("consolas", 12, "bold"),
-                                     background="light green",
-                                     activebackground="green",
-                                     width=8,
-                                     command=self.restart_game)
-
-        self.button_start = Button(button_frame,
-                                   text="start game",
-                                   font=("consolas", 12, "bold"),
-                                   background="light green",
-                                   activebackground="green",
-                                   command=self.start_game)
-
-        # next move display label initialization -----------------------------------------------------------------------
-        self.__next_move_display = Label(button_frame,
-                                         text="'start game' to continue",
-                                         background="light blue",
-                                         font=("consolas", 12, "bold"),
-                                         width=28)
-
-        # widget packing -----------------------------------------------------------------------------------------------
-        # packing buttons in button frame
-        self.button_next.pack(side="right")
-        self.button_prev.pack(side="right")
-        self.button_restart.pack(side="right")
-        self.button_start.pack(side="left")
-        # packing label in button frame
-        self.__next_move_display.pack(side="right", fill="both")
-
-        # chess board gets placed on grid
-        self.board_frame.grid(row=0, column=0)
-        # button frame gets placed on grid
-        button_frame.grid(row=1, column=0, sticky="ew")
-
-        # initialization of InfoFrame with the game info and placing on grid
-        InfoFrame(master=self, info_dictionary=game_dict).grid(row=0, column=1, sticky="n")
-
-        # initialization of CapturedPieceFrame with captured pieces and placing on grid
-        self.cap_frame = CapturedPieceFrame(master=self, blank_image=self.blank,
-                                            captured_piece_dictionary=self.game_loader.captured_piece_names,
-                                            rw_image=self.rw_image, nw_image=self.nw_image, bw_image=self.bw_image,
-                                            qw_image=self.qw_image, pw_image=self.pw_image, pb_image=self.pb_image,
-                                            rb_image=self.rb_image, nb_image=self.nb_image, bb_image=self.bb_image,
-                                            qb_image=self.qb_image)
-        self.cap_frame.grid(row=0, column=1, rowspan=2, sticky="sw")
-
-        # yes/no window for exit confirmation
-        self.protocol("WM_DELETE_WINDOW", self.exit)
-
-        # window configuration and mainloop
-        self.config(menu=menubar, background="light grey")
-        self.mainloop()
 
     def __update_gui_board(self):
         """
@@ -587,3 +583,23 @@ class GUI(Tk):
             # εάν το checkbutton_var είναι 0 (δηλαδή ανενεργό), ενεργοποιεί την αυτόματη αναπαραγωγή
             self.checkbutton_var.set(1)
             self.autoplay()
+
+    def __pack_widgets(self) -> None:
+        """
+        Packs the widgets in the window
+        """
+        # packing buttons in button frame
+        self.button_next.pack(side="right")
+        self.button_prev.pack(side="right")
+        self.button_restart.pack(side="right")
+        self.button_start.pack(side="left")
+        # packing label in button frame
+        self.__next_move_display.pack(side="right", fill="both")
+
+        # chess board gets placed on grid
+        self.board_frame.grid(row=0, column=0)
+        # button frame gets placed on grid
+        self.button_frame.grid(row=1, column=0, sticky="ew")
+        # rest of frames placed on grid
+        self.info_frame.grid(row=0, column=1, sticky="n")
+        self.cap_frame.grid(row=0, column=1, rowspan=2, sticky="sw")
