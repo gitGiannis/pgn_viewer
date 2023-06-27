@@ -22,7 +22,7 @@ class Board:
         kings (dict):
             dictionary containing the kings
 
-        rooks(dict):
+        rooks (dict):
             dictionary containing the rooks
 
         squares (dict):
