@@ -53,7 +53,7 @@ class GameLoader(PieceMoveChecker):
         NoMovesFound (Exception):
             the current game has no moves
 
-        PossibleCorruptFile (Exception):
+        FalseGame (Exception):
             game could not be processed
 
         FriendlyCapture (Exception):
