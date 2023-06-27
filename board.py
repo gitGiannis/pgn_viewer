@@ -22,7 +22,7 @@ class Board:
         kings (dict):
             dictionary containing the kings
 
-        rooks(dict):
+        rooks (dict):
             dictionary containing the rooks
 
         squares (dict):
@@ -127,7 +127,7 @@ class Board:
 
     def move_piece(self, src: str, dest: str) -> str:
         """
-        Moves the piece from src to dest and returns the captures piece name
+        Moves the piece from src to dest and returns the captured piece name
 
         ...
 
