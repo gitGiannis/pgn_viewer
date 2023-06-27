@@ -22,7 +22,7 @@ class GameLoader(PieceMoveChecker):
         round (int):
             counter of current half move (ply)
 
-        info_dictionaries_pre_round (list):
+        info_dictionaries_per_round (list):
             list that stores the 'screenshots' of each round
 
         check_per_round (list):
