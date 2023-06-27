@@ -133,9 +133,11 @@ class Board:
 
         Parameters:
         -----------
-            src (str): position of the piece to move
+            src (str):
+                position of the piece to move
 
-            dest (str): position to be moved to
+            dest (str):
+                position to be moved to
 
         Returns:
         --------
