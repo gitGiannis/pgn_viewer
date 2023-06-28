@@ -561,11 +561,11 @@ class GUI(Tk):
         if self.__ending_move:
             return
         if self.checkbutton_var.get() == 1:
-            # εάν το checkbutton_var είναι 1 (δηλαδή ενεργό), διακόπτει την αυτόματη αναπαραγωγή
+            # if checkbutton_var == 1 (activated), autoplay gets interrupted
             self.checkbutton_var.set(0)
             return
         if self.checkbutton_var.get() == 0:
-            # εάν το checkbutton_var είναι 0 (δηλαδή ανενεργό), ενεργοποιεί την αυτόματη αναπαραγωγή
+            # if checkbutton_var == 0 (deactivated), autoplay starts
             self.checkbutton_var.set(1)
             self.autoplay()
 
