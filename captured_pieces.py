@@ -6,7 +6,8 @@ from tkinter import Frame, Label, PhotoImage
 
 class CapturedPieces:
     """
-
+    Initializes and processes the top and bottom frames for the GUI window
+    These frames contain the difference in pieces between the two players
 
     ...
 
@@ -21,94 +22,188 @@ class CapturedPieces:
 
     def __init__(self, master, captured_list: dict):
         """
-        Initializes the frame
+        Initializes the class attributes
 
         ...
 
         Parameters:
         -----------
+            master (Tk):
+                window containing the two frames created here
 
+            captured_list (list):
+                list with dictionaries with piece difference for each round
         """
-        self.master = master
         # initialization of images dictionary
-        self.images = self.image_dictionary_init()
-        # initialization of dictionary with the information about captured pieces
+        self.images = self.image_dictionary_init(master=master)
+        # initialization of dictionaries list with the information about captured pieces
         self.captured_list = captured_list
-        # initialization of round counter
+
+        # initialization of variables ----------------------------------------------------------------------------------
+        # round counter
         self.round = 0
 
-        self.white_value: int = 39
-        self.black_value: int = 39
-
-        self.white_index: int = 0
-        self.black_index: int = 0
-
+        # call signs list for each piece (placed by priority)
         self.call_signs = ('q', 'r', 'b', 'n', 'p')
 
+        # values of pieces
+        self.values = {'q': 9, 'r': 5, 'b': 3, 'n': 3, 'p': 1}
+
+        # value of pieces for each player
+        self.captured_white_piece_value: int = 0
+        self.captured_black_piece_value: int = 0
+
+        # indexes for lists
+        self.w_index: int = 1
+        self.b_index: int = 1
+
+        # frame initialization -----------------------------------------------------------------------------------------
         self.white_pawns_frame = Frame(master=master, bg="orange", bd=3, relief="raised")
         self.black_pawns_frame = Frame(master=master, bg="orange", bd=3, relief="raised")
-        self.white_array = [Label(master=self.white_pawns_frame, bg="orange",
-                                  image=self.images["blank"]) for _ in range(15)]
 
-        self.black_array = [Label(master=self.black_pawns_frame, bg="orange",
-                                  image=self.images["blank"]) for _ in range(15)]
-        self.__pack()
+        # array initialization and placement inside frames -------------------------------------------------------------
+        self.white_array = []
+        self.black_array = []
+        self.arrays_init()
 
     def forward_captured_piece_frames(self) -> None:
+        """
+        Continues to next move
+        """
         self.round += 1
         self.reset()
         for call_sign in self.call_signs:
+            # pieces get updated by priority
             self.update_item(call_sign, self.captured_list[self.round][call_sign])
-        """for call_sign, diff in self.captured_list[self.round].items():
-            self.update_item(call_sign, diff)"""
 
-    def backwards_captured_piece_frames(self):
+        # values label update
+        diff_in_value = self.captured_white_piece_value - self.captured_black_piece_value
+        if diff_in_value > 0:
+            self.white_array[0].config(text=f"+{diff_in_value}")
+            self.black_array[0].config(text=f"{diff_in_value * (-1)}")
+            return
+        if diff_in_value < 0:
+            self.white_array[0].config(text=f"{diff_in_value}")
+            self.black_array[0].config(text=f"+{diff_in_value * (-1)}")
+            return
+
+    def backwards_captured_piece_frames(self) -> None:
+        """
+        Goes one move back
+        """
         self.round -= 2
         self.forward_captured_piece_frames()
 
-    def restart_captured_piece_frames(self):
+    def restart_captured_piece_frames(self) -> None:
+        """
+        Restarts the frames to first round
+        """
         self.round = -1
         self.forward_captured_piece_frames()
 
-    def reset(self):
-        self.white_index = 0
-        self.black_index = 0
-        for i in range(15):
+    def reset(self) -> None:
+        """
+        Resets the two lists before each next/previous move
+        """
+        # indexes reset
+        self.w_index = 1
+        self.b_index = 1
+        # values reset
+        self.captured_white_piece_value = 0
+        self.captured_black_piece_value = 0
+        self.white_array[0].config(text="")
+        self.black_array[0].config(text="")
+        # lists reset
+        for i in range(1, 16):
             self.white_array[i].config(image=self.images["blank"])
             self.black_array[i].config(image=self.images["blank"])
 
     def update_item(self, call_sign: str, diff: int) -> None:
         """
+        Updates the 'call_sign' piece on the boards based on their difference
+        (call signs are initialized in the self.call_signs tuple)
 
         ...
 
-        Returns:
-        --------
+        Parameters:
+        ----------
+            call_sign (str):
+                the first letter of each piece ('q', 'b' etc.)
+
+            diff (int):
+                the difference in pieces (positive number if more captured white pieces, negative for black)
         """
-        # white player captured a piece
+        # white piece got captured
         if diff > 0:
-            diff += self.white_index
-            for i in range(self.white_index, diff):
+            # adding the current list index
+            diff += self.w_index
+            # adding the right amount of pieces captured
+            for i in range(self.w_index, diff):
                 self.white_array[i].config(image=self.images[call_sign])
-            self.white_index = diff
+                # value update
+                self.captured_white_piece_value += self.values[call_sign]
+            # index gets updated for following pieces
+            self.w_index = diff
+            return
 
-        # black player captured a piece
-        elif diff < 0:
+        # black piece got captured
+        if diff < 0:
+            # multiplied by (-1) to become a positive entity
             diff *= -1
-            diff += self.black_index
-            for i in range(self.black_index, diff):
+            # adding the current list index
+            diff += self.b_index
+            # adding the right amount of pieces captured
+            for i in range(self.b_index, diff):
                 self.black_array[i].config(image=self.images[call_sign])
-            self.black_index = diff
+                # value update
+                self.captured_black_piece_value += self.values[call_sign]
+            # index gets updated for following pieces
+            self.b_index = diff
+            return
 
-    def __pack(self):
-        for _ in range(15):
+    def value_update(self, call_sign: str) -> None:
+        """
+        Updates the value of captured pieces for each player
+        """
+        # value calculation
+        if self.values[call_sign]:
+            pass
+
+    def arrays_init(self) -> None:
+        """
+        Method that processes and fills the arrays with labels
+        """
+        # appending one label for showing difference in piece (arithmetic value)
+        self.white_array.append(Label(master=self.white_pawns_frame, bg="orange", text=""))
+        self.black_array.append(Label(master=self.black_pawns_frame, bg="orange", text=""))
+        self.white_array[0].grid(row=0, column=0)
+        self.black_array[0].grid(row=0, column=0)
+        for _ in range(1, 16):
+            self.white_array.append(Label(master=self.white_pawns_frame, bg="orange", image=self.images["blank"]))
+            self.black_array.append(Label(master=self.black_pawns_frame, bg="orange", image=self.images["blank"]))
             self.white_array[_].grid(row=0, column=_)
             self.black_array[_].grid(row=0, column=_)
 
-    def image_dictionary_init(self):
-        return {"p": PhotoImage(master=self.master, file="icons\\piece_icons\\basic\\pawn.png"),
-                "n": PhotoImage(master=self.master, file="icons\\piece_icons\\basic\\knight.png"),
-                "b": PhotoImage(master=self.master, file="icons\\piece_icons\\basic\\bishop.png"),
-                "r": PhotoImage(master=self.master, file="icons\\piece_icons\\basic\\rook.png"),
-                "q": PhotoImage(master=self.master, file="icons\\piece_icons\\basic\\queen.png"),
-                "blank": PhotoImage(master=self.master, file="icons\\piece_icons\\basic\\blank.png")}
+    @staticmethod
+    def image_dictionary_init(master) -> dict:
+        """
+        Static method that returns the images dictionary
+
+        ...
+
+        Parameters:
+        -----------
+            master (Tk):
+                master of the PhotoImages
+
+        Returns:
+        --------
+            (dict):
+                dictionary with the PhotoImages of pieces
+        """
+        return {"p": PhotoImage(master=master, file="icons\\piece_icons\\basic\\pawn.png"),
+                "n": PhotoImage(master=master, file="icons\\piece_icons\\basic\\knight.png"),
+                "b": PhotoImage(master=master, file="icons\\piece_icons\\basic\\bishop.png"),
+                "r": PhotoImage(master=master, file="icons\\piece_icons\\basic\\rook.png"),
+                "q": PhotoImage(master=master, file="icons\\piece_icons\\basic\\queen.png"),
+                "blank": PhotoImage(master=master, file="icons\\piece_icons\\basic\\blank.png")}
