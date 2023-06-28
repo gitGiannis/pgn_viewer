@@ -37,17 +37,14 @@ class GUI(Tk):
         button_restart (Button):
             button for restarting the game
 
-        button_start (Button):
-            button for starting the game
-
         button_frame (Frame):
             frame for buttons
 
         info_frame (Frame):
             frame with game info
 
-        cap_frame (Frame):
-            frame with captured pieces
+        captured_pieces (captured_pieces.CapturedPieces):
+            frames with captured pieces
 
         checkbutton_var (IntVar):
             variable for autoplay checkbutton
@@ -58,7 +55,7 @@ class GUI(Tk):
         board_frame (Frame):
             chess board frame
 
-        __next_move_display (Label):
+        next_move_display (Label):
             label with info about next move
 
         __starting_move (bool):
@@ -72,10 +69,10 @@ class GUI(Tk):
 
     Methods:
     --------
-        __board_config(self) -> None:
+        board_config(self) -> None:
             configures the board by adding background colours and indexes for side squares
 
-        __update_gui_board(self):
+        update_gui_board(self):
             updates the chess board
 
         load_next(self):
@@ -114,7 +111,7 @@ class GUI(Tk):
         up_key_bind(self, event):
             auto-plays next move using key event <up-arrow>
 
-        __pack_widgets(self) -> None:
+        pack_widgets(self) -> None:
             Packs the widgets in the window
     """
 
@@ -313,7 +310,7 @@ class GUI(Tk):
             # pixel position index gets added 74 pixels (60 pixels for the image and 7+7 for the padding)
             position += 74
 
-    def __update_gui_board(self):
+    def update_gui_board(self):
         """
         Updates the chess board after every move
         """
@@ -383,7 +380,7 @@ class GUI(Tk):
             mixer.music.play(loops=0)
 
         # board gets updated
-        self.__update_gui_board()
+        self.update_gui_board()
 
         # next move display gets updated
         self.next_move_display.config(text=self.text_config(),
@@ -419,7 +416,7 @@ class GUI(Tk):
         mixer.music.play(loops=0, fade_ms=200)
 
         # board gets updated
-        self.__update_gui_board()
+        self.update_gui_board()
 
         # next move display gets updated
         self.next_move_display.config(text=self.text_config(), width=28, fg="black")
@@ -442,7 +439,7 @@ class GUI(Tk):
         self.file_menu.entryconfig(index=0, state="normal")
 
         # board gets updated
-        self.__update_gui_board()
+        self.update_gui_board()
 
         # next move display gets updated
         self.next_move_display.config(text=self.text_config(), fg="black")
@@ -468,7 +465,7 @@ class GUI(Tk):
         mixer.music.play(loops=0)
 
         # board gets updated
-        self.__update_gui_board()
+        self.update_gui_board()
 
         # next move display gets updated
         self.next_move_display.config(text=self.text_config(), width=28, fg="black")
