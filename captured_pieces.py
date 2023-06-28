@@ -238,9 +238,9 @@ class CapturedPieces:
             (dict):
                 dictionary with the PhotoImages of pieces
         """
-        return {"p": PhotoImage(master=master, file="icons\\piece_icons\\basic\\pawn.png"),
-                "n": PhotoImage(master=master, file="icons\\piece_icons\\basic\\knight.png"),
-                "b": PhotoImage(master=master, file="icons\\piece_icons\\basic\\bishop.png"),
-                "r": PhotoImage(master=master, file="icons\\piece_icons\\basic\\rook.png"),
-                "q": PhotoImage(master=master, file="icons\\piece_icons\\basic\\queen.png"),
-                "blank": PhotoImage(master=master, file="icons\\piece_icons\\basic\\blank.png")}
+        return {"p": PhotoImage(master=master, file="icons/basic\\pawn.png"),
+                "n": PhotoImage(master=master, file="icons/basic\\knight.png"),
+                "b": PhotoImage(master=master, file="icons/basic\\bishop.png"),
+                "r": PhotoImage(master=master, file="icons/basic\\rook.png"),
+                "q": PhotoImage(master=master, file="icons/basic\\queen.png"),
+                "blank": PhotoImage(master=master, file="icons/basic\\blank.png")}
