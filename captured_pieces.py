@@ -13,11 +13,56 @@ class CapturedPieces:
 
     Attributes:
     -----------
+        *_array (list):
+            array for each white/black captured pieces
 
+        *_index (int):
+            index for arrays
+
+        captured_*_piece_value (int):
+            value of captured pieces for each colour
+
+        *_pawns_frame (Frame):
+            frames for each array
+
+        call_signs (tuple):
+            tuple of prioritizes call signs
+
+        captured_list (list[dict]):
+            list with dictionaries of captured differences for each round
+
+        images (dict):
+            dictionary of images
+
+        round (int):
+            current round index
+
+        values (dict):
+            dictionary with values of each piece
 
     Methods:
     --------
+        forward_captured_piece_frames(self) -> None:
+            continues to next move
 
+        backwards_captured_piece_frames(self) -> None:
+            goes one move back
+
+        restart_captured_piece_frames(self) -> None:
+            restarts the frames to first round
+
+        reset(self) -> None:
+            resets the two lists before each next/previous move
+
+        update_item(self, call_sign: str, diff: int) -> None:
+            updates the 'call_sign' piece on the boards based on their difference
+
+        arrays_init(self) -> None:
+            processes and fills the arrays with labels
+
+        @staticmethod
+        image_dictionary_init(master) -> dict:
+            returns the images dictionary
     """
 
     def __init__(self, master, captured_list: dict):
@@ -160,14 +205,6 @@ class CapturedPieces:
             # index gets updated for following pieces
             self.b_index = diff
             return
-
-    def value_update(self, call_sign: str) -> None:
-        """
-        Updates the value of captured pieces for each player
-        """
-        # value calculation
-        if self.values[call_sign]:
-            pass
 
     def arrays_init(self) -> None:
         """
