@@ -72,7 +72,7 @@ class InfoFrame(Frame):
                        f"\n{moves_str + ' ' + info_dictionary['Result']}"
 
         # placing in the frame
-        text = Text(self, background="light grey", relief="flat", width=45, height=20)
+        text = Text(self, background="light grey", relief="flat", width=39, height=38)
         text.insert(index=0.0, chars=text_to_show)
         scrollbar = Scrollbar(master=self, command=text.yview)
         text.config(state="disabled", yscrollcommand=scrollbar.set)

@@ -89,6 +89,8 @@ class GameLoader(PieceMoveChecker):
         # value: name of the captured piece
         self.captured_piece_names = {}
 
+        self.captured_diff_per_round = [{"p": 0, "n": 0, "b": 0, "r": 0, "q": 0}]
+
         # list of booleans for sound playing
         # if False a move sound is played, else a capture sound (first round initialized as False)
         self.captures_per_round = [False]
@@ -217,5 +219,11 @@ class GameLoader(PieceMoveChecker):
             piece_name (str):
                 name of the captured piece
         """
-        if piece_name != "   ":
-            self.captured_piece_names[self.round_cnt + 1] = piece_name[:2]
+        self.captured_diff_per_round.append(self.captured_diff_per_round[-1].copy())
+        if piece_name[1] == "w":
+            self.captured_diff_per_round[-1][piece_name[0]] += 1
+            return
+
+        if piece_name[1] == "b":
+            self.captured_diff_per_round[-1][piece_name[0]] -= 1
+            return

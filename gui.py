@@ -6,7 +6,7 @@ from tkinter.messagebox import askyesno, showinfo
 from pygame import mixer
 from my_exceptions import PositionReached
 from info_frame_for_gui import InfoFrame
-from captured_piece_frame import CapturedPieceFrame
+from captured_pieces import CapturedPieces
 
 
 class GUI(Tk):
@@ -198,7 +198,7 @@ class GUI(Tk):
 
         # creation of 2D board with labels
         self.board = [[Label(self.board_frame, image=self.blank, bd=7) for _col in range(8)] for _row in range(8)]
-        self.__board_config()
+        self.board_config()
 
         # auxiliary variables
         self.__starting_move = True
@@ -217,66 +217,55 @@ class GUI(Tk):
         self.button_next = Button(self.button_frame,
                                   text="---->",
                                   state="disabled",
-                                  font=("consolas", 12, "bold"),
+                                  font=("consolas", 13, "bold"),
                                   background="light green",
                                   activebackground="green",
-                                  width=8,
+                                  width=12,
                                   command=self.load_next)
 
         self.button_prev = Button(self.button_frame,
                                   text="<----",
                                   state="disabled",
-                                  font=("consolas", 12, "bold"),
+                                  font=("consolas", 13, "bold"),
                                   background="light green",
                                   activebackground="green",
-                                  width=8,
+                                  width=12,
                                   command=self.load_previous)
 
         self.button_restart = Button(self.button_frame,
-                                     text="||<--",
+                                     text="||<---",
                                      state="disabled",
-                                     font=("consolas", 12, "bold"),
+                                     font=("consolas", 13, "bold"),
                                      background="light green",
                                      activebackground="green",
-                                     width=8,
+                                     width=10,
                                      command=self.restart_game)
 
-        self.button_start = Button(self.button_frame,
-                                   text="start game",
-                                   font=("consolas", 12, "bold"),
-                                   background="light green",
-                                   activebackground="green",
-                                   command=self.start_game)
-
         # next move display label initialization -----------------------------------------------------------------------
-        self.__next_move_display = Label(self.button_frame,
-                                         text="'start game' to continue",
-                                         background="light blue",
-                                         font=("consolas", 12, "bold"),
-                                         width=28)
+        self.label_frame = Frame(master=self, bg="light grey")
+        self.next_move_display = Label(self.label_frame,
+                                       background="light grey",
+                                       font=("consolas", 12, "bold"),
+                                       width=28, height=2)
 
         # initialization of InfoFrame with the game info ---------------------------------------------------------------
-        self.info_frame = InfoFrame(master=self, info_dictionary=game_dict)
+        self.info_frame = InfoFrame(self, game_dict)
 
         # initialization of CapturedPieceFrame with captured pieces ----------------------------------------------------
-        self.cap_frame = CapturedPieceFrame(master=self, blank_image=self.blank,
-                                            captured_piece_dictionary=self.game_loader.captured_piece_names,
-                                            rw_image=self.rw_image, nw_image=self.nw_image, bw_image=self.bw_image,
-                                            qw_image=self.qw_image, pw_image=self.pw_image, pb_image=self.pb_image,
-                                            rb_image=self.rb_image, nb_image=self.nb_image, bb_image=self.bb_image,
-                                            qb_image=self.qb_image)
+        self.captured_pieces = CapturedPieces(self, self.game_loader.captured_diff_per_round)
 
         # widget packing -----------------------------------------------------------------------------------------------
-        self.__pack_widgets()
+        self.pack_widgets()
 
         # yes/no window for exit confirmation
         self.protocol("WM_DELETE_WINDOW", self.exit)
 
         # window configuration and mainloop
+        self.start_game()
         self.config(menu=menubar, background="light grey")
         self.mainloop()
 
-    def __board_config(self) -> None:
+    def board_config(self) -> None:
         """
         Configures the board by adding background colours as well as file and rank indexes for side squares
         """
@@ -397,12 +386,12 @@ class GUI(Tk):
         self.__update_gui_board()
 
         # next move display gets updated
-        self.__next_move_display.config(text=self.text_config(),
-                                        width=28,
-                                        fg="red" if self.__ending_move else "black")
+        self.next_move_display.config(text=self.text_config(),
+                                      width=28,
+                                      fg="red" if self.__ending_move else "black")
 
         # cap frame gets updated
-        self.cap_frame.next_round()
+        self.captured_pieces.forward_captured_piece_frames()
 
     def load_previous(self):
         """
@@ -433,10 +422,10 @@ class GUI(Tk):
         self.__update_gui_board()
 
         # next move display gets updated
-        self.__next_move_display.config(text=self.text_config(), width=28, fg="black")
+        self.next_move_display.config(text=self.text_config(), width=28, fg="black")
 
         # cap frame gets updated
-        self.cap_frame.previous_round()
+        self.captured_pieces.backwards_captured_piece_frames()
 
     def start_game(self):
         """
@@ -450,14 +439,13 @@ class GUI(Tk):
 
         # activation of next move button and autoplay checkbutton
         self.button_next.config(state="normal")
-        self.button_start.config(state="disabled")
         self.file_menu.entryconfig(index=0, state="normal")
 
         # board gets updated
         self.__update_gui_board()
 
         # next move display gets updated
-        self.__next_move_display.config(text=self.text_config(), width=28, fg="black")
+        self.next_move_display.config(text=self.text_config(), fg="black")
 
     def restart_game(self):
         """
@@ -483,10 +471,10 @@ class GUI(Tk):
         self.__update_gui_board()
 
         # next move display gets updated
-        self.__next_move_display.config(text=self.text_config(), width=28, fg="black")
+        self.next_move_display.config(text=self.text_config(), width=28, fg="black")
 
         # cap frame gets updated
-        self.cap_frame.reset()
+        self.captured_pieces.restart_captured_piece_frames()
 
     def autoplay(self):
         """
@@ -584,22 +572,26 @@ class GUI(Tk):
             self.checkbutton_var.set(1)
             self.autoplay()
 
-    def __pack_widgets(self) -> None:
+    def pack_widgets(self) -> None:
         """
         Packs the widgets in the window
         """
         # packing buttons in button frame
-        self.button_next.pack(side="right")
-        self.button_prev.pack(side="right")
-        self.button_restart.pack(side="right")
-        self.button_start.pack(side="left")
-        # packing label in button frame
-        self.__next_move_display.pack(side="right", fill="both")
+        self.button_next.pack(side="right", fill="both")
+        self.button_prev.pack(side="right", fill="both")
+        self.button_restart.pack(side="left", fill="both")
+        # button frame gets placed on grid
+        self.button_frame.grid(row=2, column=1, sticky="news")
+
+        # label placement
+        self.next_move_display.pack(fill="both")
+        self.label_frame.grid(row=1, column=1, sticky="ews")
 
         # chess board gets placed on grid
-        self.board_frame.grid(row=0, column=0)
-        # button frame gets placed on grid
-        self.button_frame.grid(row=1, column=0, sticky="ew")
+        self.board_frame.grid(row=1, column=0)
+
+        # captured pieces frames placed on grid
+        self.captured_pieces.white_pawns_frame.grid(row=0, column=0, sticky="ew")
+        self.captured_pieces.black_pawns_frame.grid(row=2, column=0, sticky="ew")
         # rest of frames placed on grid
-        self.info_frame.grid(row=0, column=1, sticky="n")
-        self.cap_frame.grid(row=0, column=1, rowspan=2, sticky="sw")
+        self.info_frame.grid(row=0, column=1, rowspan=2, sticky="n")
