@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------------------------------------------------- #
-# captured_piece_frame.py: includes class CapturedPieceFrame                                                           #
+# captured_piece_frame.py: includes class CapturedPieceFrame (not used since last update)                                                          #
 # -------------------------------------------------------------------------------------------------------------------- #
 from tkinter import Frame, Label
 
