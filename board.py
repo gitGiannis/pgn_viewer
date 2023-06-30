@@ -33,10 +33,10 @@ class Board:
 
     Methods:
     --------
-        __update_squares(self):
+        update_squares(self):
             updates the "squares" dictionary
 
-        update_self(self):
+        update_board(self):
             loops on the pieces and updates the board with the new positions
 
         move_piece(self, src: str, dest: str) -> str:
@@ -85,8 +85,10 @@ class Board:
             r -= 1
 
         # initialization of the chess board ----------------------------------------------------------------------------
-        # 2D board 8x8
-        self.board = [[None for _ in range(8)] for __ in range(8)]
+        # 2D board 8x8 (only used for printing the board in the console)
+        # self.board = [[None for _ in range(8)] for __ in range(8)]
+        # pieces are set on the board
+        # self.update_board()
 
         # dictionary containing the kings for easier access
         self.kings = {"w": king_w, "b": king_b}
@@ -95,38 +97,27 @@ class Board:
         # key: square name (e.g. "a8")
         # value: True if the square contains an active piece, False if it contains a decoy
         self.squares = {}
+        self.update_squares()
 
         # boolean value to show same colour capture (not allowed)
         self.friendly_capture: bool = False
 
-        # pieces are set on the board
-        self.update_board()
-
-    def __update_squares(self, piece):
+    def update_squares(self):
         """
-        Updates the squares dictionary
+        Loops over the piece list and updates the squares dictionary
         If a square contains an active piece, it is set as True
         Else it is set as False
-
-        ...
-
-        Parameters:
-        -----------
-            piece (Piece):
-                current piece from the loop in update_board method
         """
-        if piece.state:
-            self.squares[piece.pos] = True
-        else:
-            self.squares[piece.pos] = False
+        for piece in self.pieces:
+            self.squares[piece.pos] = piece.state
 
     def update_board(self):
         """
         Loops over the piece list and updates the board with the new positions
         """
         for piece in self.pieces:
-            self.__update_squares(piece)
-            self.board[piece.row][piece.col] = piece
+            # self.board[piece.row][piece.col] = piece
+            pass
 
     def move_piece(self, src: str, dest: str) -> str:
         """
@@ -176,5 +167,11 @@ class Board:
                         # captured piece becomes empty (decoy)
                         piece_dest.name = "   "
                         piece_dest.state = False
+
+                        # update the squares dictionary after move is performed
+                        self.update_squares()
+
+                        # updates the board with new piece positions (only used for console printing)
+                        # self.update_board()
 
                         return captured_piece_name_to_return

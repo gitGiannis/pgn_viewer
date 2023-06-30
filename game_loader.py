@@ -80,6 +80,9 @@ class GameLoader(PieceMoveChecker):
         # initialization of parent class PieceMoveChecker
         super().__init__(list_of_moves)
 
+        # current half move counter
+        self.round = 0
+
         # list with the captured pieces difference per round
         self.captured_diff_per_round = [{"p": 0, "n": 0, "b": 0, "r": 0, "q": 0, "advantage": 0}]
         # value of each piece
@@ -95,9 +98,6 @@ class GameLoader(PieceMoveChecker):
         # if None no mate is active, else "w"/"b" to show which king has mate (first round initialized as None)
         self.check_per_round = [None]
 
-        # current half move counter
-        self.round = 0
-
         # 'screenshot' storing -----------------------------------------------------------------------------------------
         # temporary list variable
         current_screenshot = []
@@ -112,12 +112,8 @@ class GameLoader(PieceMoveChecker):
 
         # loop through each round to create the screenshot of the chess board
         for i in range(self.moves_length):
-            # temporary list variable
-            current_round = []
             # next move is loaded and the captured piece name is stored temporarily
             captured_piece_name = self.load_next_move()
-            # update the board with the new piece positions
-            self.update_board()
 
             # load_next_move() method returned None
             if captured_piece_name is None:
