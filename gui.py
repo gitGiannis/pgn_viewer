@@ -274,7 +274,7 @@ class GUI(Tk):
         """
         Updates the chess board after every move
         """
-        # the info_dictionaries_per_round list attribute of game_loader contains lists with the positions of each piece
+        # the screenshots_per_round list attribute of game_loader contains lists with the positions of each piece
         # for each round
         # each dictionary is looped through and the board gets updated with the new piece positions
         for piece in self.game_loader.screenshots_per_round[self.game_loader.round]:
