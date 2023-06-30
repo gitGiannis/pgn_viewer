@@ -118,12 +118,12 @@ class CapturedPieces:
         adv = self.captured_list[self.round]['advantage']
         # values label update
         if adv > 0:
-            self.white_array[0].config(text=f"-{adv}")
-            self.black_array[0].config(text=f"+{adv}")
+            self.white_array[0].config(text=f"-{adv:<3}")
+            self.black_array[0].config(text=f"+{adv:<3}")
             return
         if adv < 0:
-            self.white_array[0].config(text=f"+{adv * (-1)}")
-            self.black_array[0].config(text=f"{adv}")
+            self.white_array[0].config(text=f"+{adv * (-1):<3}")
+            self.black_array[0].config(text=f"{adv:<3}")
             return
 
     def backwards_captured_piece_frames(self) -> None:
@@ -201,8 +201,8 @@ class CapturedPieces:
         Method that processes and fills the arrays with labels
         """
         # appending one label for showing difference in piece (arithmetic value)
-        self.white_array.append(Label(master=self.white_pawns_frame, bg="orange", text=""))
-        self.black_array.append(Label(master=self.black_pawns_frame, bg="orange", text=""))
+        self.white_array.append(Label(master=self.white_pawns_frame, bg="orange", font="consolas"))
+        self.black_array.append(Label(master=self.black_pawns_frame, bg="orange", font="consolas"))
         self.white_array[0].grid(row=0, column=0)
         self.black_array[0].grid(row=0, column=0)
         for _ in range(1, 16):
