@@ -47,7 +47,10 @@ class GUI(Tk):
             frames with captured pieces
 
         checkbutton_var (IntVar):
-            variable for autoplay checkbutton
+            variable for autoplay (de)activation
+
+        radiobutton_var (IntVar):
+            variable for autoplay speed
 
         file_menu (Menu):
             drop down file menu
@@ -134,7 +137,7 @@ class GUI(Tk):
         # initialization of window -------------------------------------------------------------------------------------
         self.focus_force()
         # title and icon
-        self.title(f"Chess Match: W: {game_dict['White']} vs B: {game_dict['Black']} - ({game_dict['Result']})")
+        self.title(f"[Chess Game] {game_dict['White']} vs {game_dict['Black']} - ({game_dict['Result']})")
         self.iconbitmap("icons\\stonk.ico")
 
         # non-resizable window
@@ -147,6 +150,8 @@ class GUI(Tk):
 
         # menu-bar initialization --------------------------------------------------------------------------------------
         menubar = Menu(self)
+        # window configuration
+        self.config(menu=menubar, background="light grey")
 
         # File sub-menu
         self.file_menu = Menu(menubar, tearoff=0)
@@ -154,6 +159,9 @@ class GUI(Tk):
         menubar.add_cascade(label="  File  ", menu=self.file_menu)
         # options
         self.file_menu.add_checkbutton(label="Autoplay", command=self.autoplay)
+        self.file_menu.add_radiobutton(label="2 moves/s", value=600)
+        self.file_menu.add_radiobutton(label="1 moves/s", value=1200)
+        self.file_menu.add_radiobutton(label="0.5 moves/s", value=2100)
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Exit", command=self.exit)
 
@@ -209,6 +217,12 @@ class GUI(Tk):
         # string that stores the self.after() method identifier to cancel if necessary
         self.__identifier_for_after_method = ""
 
+        # initialization of radiobutton variable
+        self.radiobutton_var = IntVar(master=self.file_menu, value=1200)
+        self.file_menu.entryconfig(1, variable=self.radiobutton_var)
+        self.file_menu.entryconfig(2, variable=self.radiobutton_var)
+        self.file_menu.entryconfig(3, variable=self.radiobutton_var)
+
         # initialization of button frame and buttons -------------------------------------------------------------------
         self.button_frame = Frame(master=self, bg="light blue")
 
@@ -252,64 +266,9 @@ class GUI(Tk):
         # initialization of CapturedPieceFrame with captured pieces ----------------------------------------------------
         self.captured_pieces = CapturedPieces(self, self.game_loader.captured_diff_per_round)
 
-        # widget packing -----------------------------------------------------------------------------------------------
+        # widget packing and game start --------------------------------------------------------------------------------
         self.pack_widgets()
-
-        # yes/no window for exit confirmation
-        self.protocol("WM_DELETE_WINDOW", self.exit)
-
-        # window configuration and mainloop
         self.start_game()
-        self.config(menu=menubar, background="light grey")
-        self.mainloop()
-
-    def board_config(self) -> None:
-        """
-        Configures the board by adding background colours as well as file and rank indexes for side squares
-        """
-        # colour setting for background
-        for row in range(8):
-            for col in range(8):
-                self.board[row][col].grid(row=row, column=col)
-                if (row + col) % 2 == 0:
-                    self.board[row][col].config(bg="#EEEED2")
-                else:
-                    self.board[row][col].config(bg="#47473C")
-
-        # file and rank indexes for side squares
-        letters = self.game_loader.files
-        numbers = self.game_loader.ranks
-        # pixel index in frame
-        position = 0
-        for num in range(8):
-            if num % 2 == 0:
-                # label with rank
-                Label(master=self.board_frame,
-                      bg="#47473C",
-                      fg="#EEEED2",
-                      font=("consolas", 10, "bold"),
-                      text=numbers[7 - num]).place(relx=0.97, y=position)
-                # label with file
-                Label(master=self.board_frame,
-                      bg="#47473C",
-                      fg="#EEEED2",
-                      font=("consolas", 10, "bold"),
-                      text=letters[num]).place(x=position, rely=0.96)
-            else:
-                # label with rank
-                Label(master=self.board_frame,
-                      bg="#EEEED2",
-                      fg="#47473C",
-                      font=("consolas", 10, "bold"),
-                      text=numbers[7 - num]).place(relx=0.97, y=position)
-                # label with file
-                Label(master=self.board_frame,
-                      bg="#EEEED2",
-                      fg="#47473C",
-                      font=("consolas", 10, "bold"),
-                      text=letters[num]).place(x=position, rely=0.96)
-            # pixel position index gets added 74 pixels (60 pixels for the image and 7+7 for the padding)
-            position += 74
 
     def update_gui_board(self):
         """
@@ -320,37 +279,37 @@ class GUI(Tk):
         # each dictionary is looped through and the board gets updated with the new piece positions
         for piece in self.game_loader.info_dictionaries_per_round[self.game_loader.round]:
             if piece["name"] == "  ":
-                self.board[piece["row"]][piece["col"]].config(image=self.blank, compound="center")
+                self.board[piece["row"]][piece["col"]].config(image=self.blank)
             elif piece["name"] == "pb":
-                self.board[piece["row"]][piece["col"]].config(image=self.pb_image, compound="center")
+                self.board[piece["row"]][piece["col"]].config(image=self.pb_image)
             elif piece["name"] == "pw":
-                self.board[piece["row"]][piece["col"]].config(image=self.pw_image, compound="center")
+                self.board[piece["row"]][piece["col"]].config(image=self.pw_image)
             elif piece["name"] == "rb":
-                self.board[piece["row"]][piece["col"]].config(image=self.rb_image, compound="center")
+                self.board[piece["row"]][piece["col"]].config(image=self.rb_image)
             elif piece["name"] == "nb":
-                self.board[piece["row"]][piece["col"]].config(image=self.nb_image, compound="center")
+                self.board[piece["row"]][piece["col"]].config(image=self.nb_image)
             elif piece["name"] == "bb":
-                self.board[piece["row"]][piece["col"]].config(image=self.bb_image, compound="center")
+                self.board[piece["row"]][piece["col"]].config(image=self.bb_image)
             elif piece["name"] == "qb":
-                self.board[piece["row"]][piece["col"]].config(image=self.qb_image, compound="center")
+                self.board[piece["row"]][piece["col"]].config(image=self.qb_image)
             elif piece["name"] == "rw":
-                self.board[piece["row"]][piece["col"]].config(image=self.rw_image, compound="center")
+                self.board[piece["row"]][piece["col"]].config(image=self.rw_image)
             elif piece["name"] == "nw":
-                self.board[piece["row"]][piece["col"]].config(image=self.nw_image, compound="center")
+                self.board[piece["row"]][piece["col"]].config(image=self.nw_image)
             elif piece["name"] == "bw":
-                self.board[piece["row"]][piece["col"]].config(image=self.bw_image, compound="center")
+                self.board[piece["row"]][piece["col"]].config(image=self.bw_image)
             elif piece["name"] == "qw":
-                self.board[piece["row"]][piece["col"]].config(image=self.qw_image, compound="center")
+                self.board[piece["row"]][piece["col"]].config(image=self.qw_image)
             elif piece["name"] == "kb":
                 if self.game_loader.check_per_round[self.game_loader.round] == "b":
-                    self.board[piece["row"]][piece["col"]].config(image=self.kb_checked, compound="center")
+                    self.board[piece["row"]][piece["col"]].config(image=self.kb_checked)
                 else:
-                    self.board[piece["row"]][piece["col"]].config(image=self.kb_image, compound="center")
+                    self.board[piece["row"]][piece["col"]].config(image=self.kb_image)
             elif piece["name"] == "kw":
                 if self.game_loader.check_per_round[self.game_loader.round] == "w":
-                    self.board[piece["row"]][piece["col"]].config(image=self.kw_checked, compound="center")
+                    self.board[piece["row"]][piece["col"]].config(image=self.kw_checked)
                 else:
-                    self.board[piece["row"]][piece["col"]].config(image=self.kw_image, compound="center")
+                    self.board[piece["row"]][piece["col"]].config(image=self.kw_image)
 
     def load_next(self):
         """
@@ -420,30 +379,10 @@ class GUI(Tk):
         self.update_gui_board()
 
         # next move display gets updated
-        self.next_move_display.config(text=self.text_config(), width=28, fg="black")
+        self.next_move_display.config(text=self.text_config(), fg="black")
 
         # cap frame gets updated
         self.captured_pieces.backwards_captured_piece_frames()
-
-    def start_game(self):
-        """
-        Starts the game and initializes the key-bindings for buttons
-        """
-        # key-bindings initialization
-        self.bind(sequence='<Right>', func=self.right_key_bind)
-        self.bind(sequence='<Left>', func=self.left_key_bind)
-        self.bind(sequence="<Down>", func=self.down_key_bind)
-        self.bind(sequence="<Up>", func=self.up_key_bind)
-
-        # activation of next move button and autoplay checkbutton
-        self.button_next.config(state="normal")
-        self.file_menu.entryconfig(index=0, state="normal")
-
-        # board gets updated
-        self.update_gui_board()
-
-        # next move display gets updated
-        self.next_move_display.config(text=self.text_config(), fg="black")
 
     def restart_game(self):
         """
@@ -483,7 +422,7 @@ class GUI(Tk):
             # ... the next move is performed ...
             self.load_next()
             # ... and then again after 1200 milliseconds
-            self.__identifier_for_after_method = self.after(1200, self.autoplay)
+            self.__identifier_for_after_method = self.after(self.radiobutton_var.get(), self.autoplay)
         # if checkbutton is off and an after() method is active, it gets canceled
         elif self.__identifier_for_after_method:
             self.after_cancel(self.__identifier_for_after_method)
@@ -514,12 +453,11 @@ class GUI(Tk):
         """
         showinfo(master=self,
                  title="Help",
-                 message="Press \"start game\" to start the game\n"
-                         "Right arrow (---->) button or <Right-Key> for next move\n"
+                 message="Right arrow (---->) button or <Right-Key> for next move\n"
                          "Left arrow (<----) button or <Left-Key> for previous move\n"
                          "Reset arrow (||<--) button or <Down-Key>  to reset the board\n",
                  detail="You can also toggle autoplay (on/off) from the File menu\n"
-                        "or by using the <Up-Key>")
+                        "or by using the <Up-Key> (speed selection also available)")
 
     def exit(self):
         """
@@ -570,6 +508,54 @@ class GUI(Tk):
             self.checkbutton_var.set(1)
             self.autoplay()
 
+    def board_config(self) -> None:
+        """
+        Configures the board by adding background colours as well as file and rank indexes for side squares
+        """
+        # colour setting for background
+        for row in range(8):
+            for col in range(8):
+                self.board[row][col].grid(row=row, column=col)
+                if (row + col) % 2 == 0:
+                    self.board[row][col].config(bg="#EEEED2")
+                else:
+                    self.board[row][col].config(bg="#47473C")
+
+        # file and rank indexes for side squares
+        letters = self.game_loader.files
+        numbers = self.game_loader.ranks
+        # pixel index in frame
+        position = 0
+        for num in range(8):
+            if num % 2 == 0:
+                # label with rank
+                Label(master=self.board_frame,
+                      bg="#47473C",
+                      fg="#EEEED2",
+                      font=("consolas", 10, "bold"),
+                      text=numbers[7 - num]).place(relx=0.97, y=position)
+                # label with file
+                Label(master=self.board_frame,
+                      bg="#47473C",
+                      fg="#EEEED2",
+                      font=("consolas", 10, "bold"),
+                      text=letters[num]).place(x=position, rely=0.96)
+            else:
+                # label with rank
+                Label(master=self.board_frame,
+                      bg="#EEEED2",
+                      fg="#47473C",
+                      font=("consolas", 10, "bold"),
+                      text=numbers[7 - num]).place(relx=0.97, y=position)
+                # label with file
+                Label(master=self.board_frame,
+                      bg="#EEEED2",
+                      fg="#47473C",
+                      font=("consolas", 10, "bold"),
+                      text=letters[num]).place(x=position, rely=0.96)
+            # pixel position index gets added 74 pixels (60 pixels for the image and 7+7 for the padding)
+            position += 74
+
     def pack_widgets(self) -> None:
         """
         Packs the widgets in the window
@@ -593,3 +579,28 @@ class GUI(Tk):
         self.captured_pieces.black_pawns_frame.grid(row=2, column=0, sticky="ew")
         # rest of frames placed on grid
         self.info_frame.grid(row=0, column=1, rowspan=2, sticky="n")
+
+    def start_game(self):
+        """
+        Starts the game and initializes the key-bindings for buttons
+        """
+        # key-bindings initialization
+        self.bind(sequence='<Right>', func=self.right_key_bind)
+        self.bind(sequence='<Left>', func=self.left_key_bind)
+        self.bind(sequence="<Down>", func=self.down_key_bind)
+        self.bind(sequence="<Up>", func=self.up_key_bind)
+
+        # activation of next move button and autoplay checkbutton
+        self.button_next.config(state="normal")
+        self.file_menu.entryconfig(index=0, state="normal")
+
+        # board gets updated
+        self.update_gui_board()
+
+        # next move display gets updated
+        self.next_move_display.config(text=self.text_config(), fg="black")
+
+        # yes/no window for exit confirmation
+        self.protocol("WM_DELETE_WINDOW", self.exit)
+        # window mainloop
+        self.mainloop()
