@@ -86,11 +86,7 @@ class CapturedPieces:
         self.round = 0
 
         # call signs list for each piece (placed by priority)
-        self.call_signs = ('q', 'r', 'b', 'n', 'p')
-
-        # value of pieces for each player
-        self.captured_white_piece_value: int = 0
-        self.captured_black_piece_value: int = 0
+        self.call_signs = ('q', 'r', 'n', 'b', 'p')
 
         # indexes for lists
         self.w_index: int = 1
@@ -147,11 +143,8 @@ class CapturedPieces:
         # indexes reset
         self.w_index = 1
         self.b_index = 1
-        # values reset
-        self.captured_white_piece_value = 0
-        self.captured_black_piece_value = 0
-        self.white_array[0].config(text="")
-        self.black_array[0].config(text="")
+        self.white_array[0].config(text=f"{'':4}")
+        self.black_array[0].config(text=f"{'':4}")
         # lists reset
         for i in range(1, 16):
             self.white_array[i].config(image=self.images["blank"])
