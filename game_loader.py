@@ -80,10 +80,6 @@ class GameLoader(PieceMoveChecker):
         # initialization of parent class PieceMoveChecker
         super().__init__(list_of_moves)
 
-        # initialization of structures for storing information ---------------------------------------------------------
-        # list that stores the dictionaries for each round
-        self.info_dictionaries_per_round = []
-
         # list with the captured pieces difference per round
         self.captured_diff_per_round = [{"p": 0, "n": 0, "b": 0, "r": 0, "q": 0, "advantage": 0}]
         # value of each piece
@@ -104,11 +100,12 @@ class GameLoader(PieceMoveChecker):
 
         # 'screenshot' storing -----------------------------------------------------------------------------------------
         # temporary list variable
-        current_round = []
+        current_screenshot = []
         # information storing for initial position
         for piece in self.pieces:
-            current_round.append({"name": piece.name[:2], "row": piece.row, "col": piece.col})
-        self.info_dictionaries_per_round.append(current_round)
+            current_screenshot.append({"name": piece.name[:2], "row": piece.row, "col": piece.col})
+        # list that stores the dictionaries for each round (initialized with original piece positions)
+        self.screenshots_per_round = [current_screenshot]
 
         if self.moves_length == 0:
             raise NoMovesFound
@@ -119,6 +116,8 @@ class GameLoader(PieceMoveChecker):
             current_round = []
             # next move is loaded and the captured piece name is stored temporarily
             captured_piece_name = self.load_next_move()
+            # update the board with the new piece positions
+            self.update_board()
 
             # load_next_move() method returned None
             if captured_piece_name is None:
@@ -128,15 +127,17 @@ class GameLoader(PieceMoveChecker):
             if self.friendly_capture:
                 raise FriendlyCapture(f"{self.round_cnt//2 + 1}. {self.moves[self.round_cnt]}")
 
+            # temporary list variable
+            current_screenshot = []
             # information storing for current round
             for piece in self.pieces:
-                current_round.append({"name": piece.name[:2], "row": piece.row, "col": piece.col})
+                current_screenshot.append({"name": piece.name[:2], "row": piece.row, "col": piece.col})
                 try:
                     # current board advantage gets stored
                     adv += values[piece.name[:2]]
                 except KeyError:
                     pass
-            self.info_dictionaries_per_round.append(current_round)
+            self.screenshots_per_round.append(current_screenshot)
 
             # captured_piece_names update
             self.__update_captured_piece_dict(captured_piece_name, adv)

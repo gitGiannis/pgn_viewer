@@ -203,7 +203,7 @@ class GUI(Tk):
         self.board_frame = Frame(self, bd=10, relief="raised")
 
         # creation of 2D board with labels
-        self.board = [[Label(self.board_frame, image=self.blank, bd=7) for _col in range(8)] for _row in range(8)]
+        self.board = [[Label(self.board_frame, bd=7) for _col in range(8)] for _row in range(8)]
         self.board_config()
 
         # auxiliary variables
@@ -277,7 +277,7 @@ class GUI(Tk):
         # the info_dictionaries_per_round list attribute of game_loader contains lists with the positions of each piece
         # for each round
         # each dictionary is looped through and the board gets updated with the new piece positions
-        for piece in self.game_loader.info_dictionaries_per_round[self.game_loader.round]:
+        for piece in self.game_loader.screenshots_per_round[self.game_loader.round]:
             if piece["name"] == "  ":
                 self.board[piece["row"]][piece["col"]].config(image=self.blank)
             elif piece["name"] == "pb":
