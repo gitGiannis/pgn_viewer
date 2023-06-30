@@ -3,7 +3,7 @@ import PyInstaller.__main__
 
 def install_using_pyinstaller():
     """
-    Install a file using PyInstaller
+    Install app using PyInstaller
     """
     PyInstaller.__main__.run([
         # source py file
