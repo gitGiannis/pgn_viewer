@@ -132,6 +132,7 @@ class GUI(Tk):
         # initialization of parent class (Tk)
         super().__init__()
         # initialization of window -------------------------------------------------------------------------------------
+        self.focus_force()
         # title and icon
         self.title(f"Chess Match: W: {game_dict['White']} vs B: {game_dict['Black']} - ({game_dict['Result']})")
         self.iconbitmap("icons\\stonk.ico")
