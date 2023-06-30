@@ -142,8 +142,6 @@ class PieceMoveChecker(Board):
 
         # increase of the counter value
         self.round_cnt += 1
-        # update the board with the new piece positions
-        self.update_board()
         # switching between colour tag of the current player to play ('w' for white, 'b' for black)
         if self.round_cnt % 2 == 0:
             tag = "w"
