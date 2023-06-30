@@ -19,9 +19,6 @@ class CapturedPieces:
         *_index (int):
             index for arrays
 
-        captured_*_piece_value (int):
-            value of captured pieces for each colour
-
         *_pawns_frame (Frame):
             frames for each array
 
