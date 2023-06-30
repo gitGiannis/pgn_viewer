@@ -75,17 +75,15 @@ class Board:
         # initialization of empty squares
         # assuming every board square contains a piece, empty squares contain invisible decoys
         # these are used to simplify the position transitions of the pieces
-        r = 5
-        for cnt in range(3, 7):
-            self.pieces.append(Piece(" " * 3, f"a{cnt}", state=False, row=r, col=0))
-            self.pieces.append(Piece(" " * 3, f"b{cnt}", state=False, row=r, col=1))
-            self.pieces.append(Piece(" " * 3, f"c{cnt}", state=False, row=r, col=2))
-            self.pieces.append(Piece(" " * 3, f"d{cnt}", state=False, row=r, col=3))
-            self.pieces.append(Piece(" " * 3, f"e{cnt}", state=False, row=r, col=4))
-            self.pieces.append(Piece(" " * 3, f"f{cnt}", state=False, row=r, col=5))
-            self.pieces.append(Piece(" " * 3, f"g{cnt}", state=False, row=r, col=6))
-            self.pieces.append(Piece(" " * 3, f"h{cnt}", state=False, row=r, col=7))
-            r -= 1
+        for rank, row in enumerate(range(5, 1, -1), start=3):
+            self.pieces.append(Piece(" " * 3, f"a{rank}", state=False, row=row, col=0))
+            self.pieces.append(Piece(" " * 3, f"b{rank}", state=False, row=row, col=1))
+            self.pieces.append(Piece(" " * 3, f"c{rank}", state=False, row=row, col=2))
+            self.pieces.append(Piece(" " * 3, f"d{rank}", state=False, row=row, col=3))
+            self.pieces.append(Piece(" " * 3, f"e{rank}", state=False, row=row, col=4))
+            self.pieces.append(Piece(" " * 3, f"f{rank}", state=False, row=row, col=5))
+            self.pieces.append(Piece(" " * 3, f"g{rank}", state=False, row=row, col=6))
+            self.pieces.append(Piece(" " * 3, f"h{rank}", state=False, row=row, col=7))
 
         # initialization of the chess board ----------------------------------------------------------------------------
         # 2D board 8x8 (only used for printing the board in the console)
