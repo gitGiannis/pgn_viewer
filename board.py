@@ -39,8 +39,11 @@ class Board:
         update_board(self):
             loops on the pieces and updates the board with the new positions
 
-        move_piece(self, src: str, dest: str) -> str:
+        move_piece_by_position(self, src: str, dest: str) -> str:
             moves a piece from src square to dest square and returns the name of the captured piece
+
+        move_piece(self, src: str, dest: str) -> str:
+            moves the piece to dest and returns the captured piece name
     """
     def __init__(self):
         """
@@ -119,7 +122,7 @@ class Board:
             # self.board[piece.row][piece.col] = piece
             pass
 
-    def move_piece(self, src: str, dest: str) -> str:
+    def move_piece_by_position(self, src: str, dest: str) -> str:
         """
         Moves the piece from src to dest and returns the captured piece name
 
@@ -159,19 +162,67 @@ class Board:
                         piece_src.col, piece_dest.col = piece_dest.col, piece_src.col
 
                         # position swap between src and dest
-                        piece_dest.pos = src
-                        piece_src.pos = dest
+                        piece_src.pos, piece_dest.pos = piece_dest.pos, piece_src.pos
 
                         # temporary assignment of the captured piece name
                         captured_piece_name_to_return = piece_dest.name
                         # captured piece becomes empty (decoy)
-                        piece_dest.name = "   "
-                        piece_dest.state = False
+                        piece_dest.got_captured()
 
                         # update the squares dictionary after move is performed
                         self.update_squares()
-
                         # updates the board with new piece positions (only used for console printing)
                         # self.update_board()
 
                         return captured_piece_name_to_return
+
+    def move_piece(self, piece_src: Piece, dest: str) -> str:
+        """
+        Moves the piece to dest and returns the captured piece name
+
+        ...
+
+        Parameters:
+        -----------
+            piece_src (Piece):
+                piece to move
+
+            dest (str):
+                position to be moved to
+
+        Returns:
+        --------
+            captured_piece_name_to_return (str):
+                the name of the captured piece
+        """
+        # initialization of variable
+        self.friendly_capture = False
+
+        # loop through pieces list to find the piece at destination (piece_dest)
+        for piece_dest in self.pieces:
+            if piece_dest.pos == dest:
+                # dest piece has been found
+
+                # colour check (if True, game_loader.GameLoader raises exception)
+                if piece_src.name[1] == piece_dest.name[1]:
+                    self.friendly_capture = True
+
+                # coordinates swap
+                piece_src.row, piece_dest.row = piece_dest.row, piece_src.row
+                piece_src.col, piece_dest.col = piece_dest.col, piece_src.col
+
+                # position swap between src and dest
+                piece_dest.pos = piece_src.pos
+                piece_src.pos = dest
+
+                # temporary assignment of the captured piece name
+                captured_piece_name_to_return = piece_dest.name
+                # captured piece becomes empty (decoy)
+                piece_dest.got_captured()
+
+                # update the squares dictionary after move is performed
+                self.update_squares()
+                # updates the board with new piece positions (only used for console printing)
+                # self.update_board()
+
+                return captured_piece_name_to_return

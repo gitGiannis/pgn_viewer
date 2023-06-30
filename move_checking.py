@@ -176,23 +176,23 @@ class PieceMoveChecker(Board):
                     if tag == "w":
                         # white king castles
                         if move == "O-O":
-                            self.move_piece(piece.pos, "g1")
-                            self.move_piece("h1", "f1")
+                            self.move_piece(piece, "g1")
+                            self.move_piece_by_position("h1", "f1")
                             return "   "
                         if move == "O-O-O":
-                            self.move_piece(piece.pos, "c1")
-                            self.move_piece("a1", "d1")
+                            self.move_piece(piece, "c1")
+                            self.move_piece_by_position("a1", "d1")
                             return "   "
 
                     elif tag == "b":
                         # black king castles
                         if move == "O-O":
-                            self.move_piece(piece.pos, "g8")
-                            self.move_piece("h8", "f8")
+                            self.move_piece(piece, "g8")
+                            self.move_piece_by_position("h8", "f8")
                             return "   "
                         if move == "O-O-O":
-                            self.move_piece(piece.pos, "c8")
-                            self.move_piece("a8", "d8")
+                            self.move_piece(piece, "c8")
+                            self.move_piece_by_position("a8", "d8")
                             return "   "
 
         # pawn promotion
@@ -252,7 +252,7 @@ class PieceMoveChecker(Board):
                         if pawn_promotion:
                             # the pawn promotes and gets assigned a new name
                             piece.name = promotion + tag + "+"
-                        return self.move_piece(piece.pos, move)
+                        return self.move_piece(piece, move)
 
             # pawn captures (e.g. dxe4)
             elif len(move) == 4 and move[0].islower() and move[1] == "x":
@@ -280,7 +280,7 @@ class PieceMoveChecker(Board):
                                 # temporary move
                                 temporary_move = move[2] + str(temporary_rank)
                                 # secret move to capture the enemy pawn
-                                en_passant = self.move_piece(piece.pos, temporary_move)
+                                en_passant = self.move_piece(piece, temporary_move)
 
                             elif tag == "b":
                                 # a black pawn performed "en passant"
@@ -289,7 +289,7 @@ class PieceMoveChecker(Board):
                                 # temporary move
                                 temporary_move = move[2] + str(temporary_rank)
                                 # secret move to capture the enemy pawn
-                                en_passant = self.move_piece(piece.pos, temporary_move)
+                                en_passant = self.move_piece(piece, temporary_move)
 
                         # promotion check
                         if pawn_promotion:
@@ -297,7 +297,7 @@ class PieceMoveChecker(Board):
                             piece.name = promotion + tag + "+"
 
                         # pawn moves to its new position
-                        captured_piece_name = self.move_piece(piece.pos, move[2:])
+                        captured_piece_name = self.move_piece(piece, move[2:])
                         # there was a capture in this move, so a captured piece name must be returned
                         if captured_piece_name != "   ":
                             return captured_piece_name
@@ -319,7 +319,7 @@ class PieceMoveChecker(Board):
                     # check if the move is valid
                     if self.__king_move_is_valid(piece.pos, move[1:]):
                         # king gets moved
-                        return self.move_piece(piece.pos, move[1:])
+                        return self.move_piece(piece, move[1:])
 
         # queen gets moved (Queen Q) ----------------------------------------------------------------------------------
         elif move[0] == "Q":
@@ -340,7 +340,7 @@ class PieceMoveChecker(Board):
                             # check if the queen is not pinned to the king
                             if self.__piece_is_not_pinned(src=piece.pos, dest=move[-2:], tag=tag):
                                 # queen gets moved
-                                return self.move_piece(piece.pos, move[1:])
+                                return self.move_piece(piece, move[1:])
 
             # case Q___: (e.g. Qcb4 or Q3b4)
             if len(move) == 4:
@@ -356,7 +356,7 @@ class PieceMoveChecker(Board):
                                 # check if the queen is not pinned to the king
                                 if self.__piece_is_not_pinned(src=piece.pos, dest=move[-2:], tag=tag):
                                     # queen gets moved
-                                    return self.move_piece(piece.pos, move[2:])
+                                    return self.move_piece(piece, move[2:])
 
             # case Q____: (e.g. Qb1b4)
             elif len(move) == 5:
@@ -370,7 +370,7 @@ class PieceMoveChecker(Board):
                             # check if the queen is not pinned to the king
                             if self.__piece_is_not_pinned(src=piece.pos, dest=move[-2:], tag=tag):
                                 # queen gets moved
-                                return self.move_piece(piece.pos, move[3:])
+                                return self.move_piece(piece, move[3:])
 
         # knight gets moved (knight N) ---------------------------------------------------------------------------------
         elif move[0] == "N":
@@ -390,7 +390,7 @@ class PieceMoveChecker(Board):
                             # check if the knight is not pinned to the king
                             if self.__piece_is_not_pinned(src=piece.pos, dest=move[-2:], tag=tag):
                                 # knight gets moved
-                                return self.move_piece(piece.pos, move[1:])
+                                return self.move_piece(piece, move[1:])
 
             # case N___: (e.g. Nfb4 or N1b4)
             elif len(move) == 4:
@@ -405,7 +405,7 @@ class PieceMoveChecker(Board):
                                 # check if the knight is not pinned to the king
                                 if self.__piece_is_not_pinned(src=piece.pos, dest=move[-2:], tag=tag):
                                     # knight gets moved
-                                    return self.move_piece(piece.pos, move[2:])
+                                    return self.move_piece(piece, move[2:])
 
             # case N____: (e.g. Nd3b5)
             elif len(move) == 5:
@@ -418,7 +418,7 @@ class PieceMoveChecker(Board):
                             # check if the knight is not pinned to the king
                             if self.__piece_is_not_pinned(src=piece.pos, dest=move[-2:], tag=tag):
                                 # knight gets moved
-                                return self.move_piece(piece.pos, move[3:])
+                                return self.move_piece(piece, move[3:])
 
         # bishop gets moved (bishop B) ---------------------------------------------------------------------------------
         elif move[0] == "B":
@@ -438,7 +438,7 @@ class PieceMoveChecker(Board):
                             # check if the bishop is not pinned to the king
                             if self.__piece_is_not_pinned(src=piece.pos, dest=move[-2:], tag=tag):
                                 # bishop gets moved
-                                return self.move_piece(piece.pos, move[1:])
+                                return self.move_piece(piece, move[1:])
 
             # case B___: (e.g. Bcb4 or B3b4)
             elif len(move) == 4:
@@ -453,7 +453,7 @@ class PieceMoveChecker(Board):
                                 # check if the bishop is not pinned to the king
                                 if self.__piece_is_not_pinned(src=piece.pos, dest=move[-2:], tag=tag):
                                     # bishop gets moved
-                                    return self.move_piece(piece.pos, move[2:])
+                                    return self.move_piece(piece, move[2:])
 
             # case B____: (e.g. Bb1e4)
             elif len(move) == 5:
@@ -466,7 +466,7 @@ class PieceMoveChecker(Board):
                             # check if the bishop is not pinned to the king
                             if self.__piece_is_not_pinned(src=piece.pos, dest=move[-2:], tag=tag):
                                 # bishop gets moved
-                                return self.move_piece(piece.pos, move[3:])
+                                return self.move_piece(piece, move[3:])
 
         # rook gets moved (rook R) -------------------------------------------------------------------------------------
         elif move[0] == "R":
@@ -486,7 +486,7 @@ class PieceMoveChecker(Board):
                             # check if the rook is not pinned to the king
                             if self.__piece_is_not_pinned(src=piece.pos, dest=move[-2:], tag=tag):
                                 # rook gets moved
-                                return self.move_piece(piece.pos, move[1:])
+                                return self.move_piece(piece, move[1:])
 
             # case R___: (e.g. Rbb4 or R4b4)
             elif len(move) == 4:
@@ -501,7 +501,7 @@ class PieceMoveChecker(Board):
                                 # check if the rook is not pinned to the king
                                 if self.__piece_is_not_pinned(src=piece.pos, dest=move[-2:], tag=tag):
                                     # rook gets moved
-                                    return self.move_piece(piece.pos, move[2:])
+                                    return self.move_piece(piece, move[2:])
 
             # case R____: (e.g. Rb1b4)
             elif len(move) == 5:
@@ -514,7 +514,7 @@ class PieceMoveChecker(Board):
                             # check if the rook is not pinned to the king
                             if self.__piece_is_not_pinned(src=piece.pos, dest=move[-2:], tag=tag):
                                 # rook gets moved
-                                return self.move_piece(piece.pos, move[1:3])
+                                return self.move_piece(piece, move[1:3])
 
         if move == " ":
             return "   "

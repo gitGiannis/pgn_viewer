@@ -25,13 +25,21 @@ class Piece:
 
         col (int):
             column (0~7) on the board (used in gui.GUI)
+
+    Methods:
+    --------
+        got_captured(self) -> None:
+            turns a piece into a captured decoy
     """
 
     def __init__(self, name: str, pos: str, state: bool = True, row=-1, col=-1):
         """
         Initializes the object
 
+        ...
+
         Parameters:
+        -----------
             name (str):
                 name of the piece (e.g. rbl= rook black left etc.)
 
@@ -54,6 +62,13 @@ class Piece:
         # coordinates used in the graphical representation of the pieces on the board (see class gui.GUI)
         self.row = row  # row (0~7) on the board (used in gui.GUI)
         self.col = col  # column (0~7) on the board (used in gui.GUI)
+
+    def got_captured(self) -> None:
+        """
+        Turns a piece into a captured decoy
+        """
+        self.name = "   "
+        self.state = False
 
     def __repr__(self):
         """
