@@ -118,8 +118,9 @@ class CapturedPieces:
             self.black_array[0].config(text=f"+{adv:<3}")
             return
         if adv < 0:
-            self.white_array[0].config(text=f"+{adv * (-1):<3}")
-            self.black_array[0].config(text=f"{adv:<3}")
+            adv *= (-1)
+            self.white_array[0].config(text=f"+{adv:<3}")
+            self.black_array[0].config(text=f"-{adv:<3}")
             return
 
     def backwards_captured_piece_frames(self) -> None:
