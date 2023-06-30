@@ -4,5 +4,6 @@
 from main_program import MainProgram
 
 
-# inception of main window
-MainProgram()
+if __name__ == "__main__":
+    # main window mainloop
+    MainProgram()
