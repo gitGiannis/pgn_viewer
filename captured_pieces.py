@@ -37,9 +37,6 @@ class CapturedPieces:
         round (int):
             current round index
 
-        values (dict):
-            dictionary with values of each piece
-
     Methods:
     --------
         forward_captured_piece_frames(self) -> None:
@@ -91,9 +88,6 @@ class CapturedPieces:
         # call signs list for each piece (placed by priority)
         self.call_signs = ('q', 'r', 'b', 'n', 'p')
 
-        # values of pieces
-        self.values = {'q': 9, 'r': 5, 'b': 3, 'n': 3, 'p': 1}
-
         # value of pieces for each player
         self.captured_white_piece_value: int = 0
         self.captured_black_piece_value: int = 0
@@ -121,15 +115,15 @@ class CapturedPieces:
             # pieces get updated by priority
             self.update_item(call_sign, self.captured_list[self.round][call_sign])
 
+        adv = self.captured_list[self.round]['advantage']
         # values label update
-        diff_in_value = self.captured_white_piece_value - self.captured_black_piece_value
-        if diff_in_value > 0:
-            self.white_array[0].config(text=f"+{diff_in_value}")
-            self.black_array[0].config(text=f"{diff_in_value * (-1)}")
+        if adv > 0:
+            self.white_array[0].config(text=f"-{adv}")
+            self.black_array[0].config(text=f"+{adv}")
             return
-        if diff_in_value < 0:
-            self.white_array[0].config(text=f"{diff_in_value}")
-            self.black_array[0].config(text=f"+{diff_in_value * (-1)}")
+        if adv < 0:
+            self.white_array[0].config(text=f"+{adv * (-1)}")
+            self.black_array[0].config(text=f"{adv}")
             return
 
     def backwards_captured_piece_frames(self) -> None:
@@ -185,8 +179,6 @@ class CapturedPieces:
             # adding the right amount of pieces captured
             for i in range(self.w_index, diff):
                 self.white_array[i].config(image=self.images[call_sign])
-                # value update
-                self.captured_white_piece_value += self.values[call_sign]
             # index gets updated for following pieces
             self.w_index = diff
             return
@@ -200,8 +192,6 @@ class CapturedPieces:
             # adding the right amount of pieces captured
             for i in range(self.b_index, diff):
                 self.black_array[i].config(image=self.images[call_sign])
-                # value update
-                self.captured_black_piece_value += self.values[call_sign]
             # index gets updated for following pieces
             self.b_index = diff
             return

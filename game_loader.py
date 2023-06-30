@@ -84,12 +84,12 @@ class GameLoader(PieceMoveChecker):
         # list that stores the dictionaries for each round
         self.info_dictionaries_per_round = []
 
-        # dictionary that stores as:
-        # key: round a captured happens
-        # value: name of the captured piece
-        self.captured_piece_names = {}
-
-        self.captured_diff_per_round = [{"p": 0, "n": 0, "b": 0, "r": 0, "q": 0}]
+        # list with the captured pieces difference per round
+        self.captured_diff_per_round = [{"p": 0, "n": 0, "b": 0, "r": 0, "q": 0, "advantage": 0}]
+        # value of each piece
+        values = {'qw': 9, 'qb': -9, 'rw': 5, 'rb': -5, 'bw': 3, 'bb': -3, 'nw': 3, 'nb': -3, 'pw': 1, 'pb': -1}
+        # variable for temporary storing of the current advantage
+        adv: int = 0
 
         # list of booleans for sound playing
         # if False a move sound is played, else a capture sound (first round initialized as False)
@@ -107,11 +107,7 @@ class GameLoader(PieceMoveChecker):
         current_round = []
         # information storing for initial position
         for piece in self.pieces:
-            current_round.append({
-                "name": piece.name[:2],
-                "row": piece.row,
-                "col": piece.col
-            })
+            current_round.append({"name": piece.name[:2], "row": piece.row, "col": piece.col})
         self.info_dictionaries_per_round.append(current_round)
 
         if self.moves_length == 0:
@@ -132,18 +128,19 @@ class GameLoader(PieceMoveChecker):
             if self.friendly_capture:
                 raise FriendlyCapture(f"{self.round_cnt//2 + 1}. {self.moves[self.round_cnt]}")
 
-            # captured_piece_names update
-            self.__update_captured_piece_dict(captured_piece_name)
-
             # information storing for current round
-            for line in self.board:
-                for sqr in line:
-                    current_round.append({
-                        "name": sqr.name[:2],
-                        "row": sqr.row,
-                        "col": sqr.col
-                        })
+            for piece in self.pieces:
+                current_round.append({"name": piece.name[:2], "row": piece.row, "col": piece.col})
+                try:
+                    # current board advantage gets stored
+                    adv += values[piece.name[:2]]
+                except KeyError:
+                    pass
             self.info_dictionaries_per_round.append(current_round)
+
+            # captured_piece_names update
+            self.__update_captured_piece_dict(captured_piece_name, adv)
+            adv = 0
 
             # captures_per_round list update
             self.captures_per_round.append(self.capture)
@@ -206,11 +203,10 @@ class GameLoader(PieceMoveChecker):
         """
         self.round = 0
 
-    def __update_captured_piece_dict(self, piece_name: str) -> None:
+    def __update_captured_piece_dict(self, piece_name: str, advantage: int) -> None:
         """
-        Updates the dictionary that stores the captured piece's names per round
-        This method stores the round (int) in with the piece was captured as key and the piece's name as value
-        This only happened if the name is not "   ", which implies an empty square (decoy)
+        Updates the dictionary that stores the captured piece difference for each piece type per round
+        Also updates the overall advantage of the current half move
 
         ...
 
@@ -218,8 +214,12 @@ class GameLoader(PieceMoveChecker):
         -----------
             piece_name (str):
                 name of the captured piece
+
+            advantage (int):
+                numeric difference in piece value
         """
         self.captured_diff_per_round.append(self.captured_diff_per_round[-1].copy())
+        self.captured_diff_per_round[-1]['advantage'] = advantage
         if piece_name[1] == "w":
             self.captured_diff_per_round[-1][piece_name[0]] += 1
             return
