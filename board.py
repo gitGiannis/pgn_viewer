@@ -99,6 +99,9 @@ class Board:
         # boolean value to show same colour capture (not allowed)
         self.friendly_capture: bool = False
 
+        # pieces are set on the board
+        self.update_board()
+
     def __update_squares(self, piece):
         """
         Updates the squares dictionary
