@@ -163,7 +163,7 @@ class ManualGameSelector(Frame):
                                        f'({game_dictionary["Result"]})')
                 # showing results by 100, if many games were loaded
                 if i % 100 == 0:
-                    self.update()
+                    self.listbox.update()
 
     def __pack_widgets(self):
         """
