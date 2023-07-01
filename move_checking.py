@@ -142,6 +142,7 @@ class PieceMoveChecker(Board):
 
         # increase of the counter value
         self.round_cnt += 1
+
         # switching between colour tag of the current player to play ('w' for white, 'b' for black)
         if self.round_cnt % 2 == 0:
             tag = "w"
@@ -196,8 +197,6 @@ class PieceMoveChecker(Board):
         pawn_promotion = False
         # variable to store the pawn promotion type ("q"=promotes to queen, "r"=promotes to rook etc.)
         promotion = ""
-        # temporary variable to store the name of the captured piece if en-passant is performed
-        en_passant = ""
 
         if "=" in move:
             # if the move contains the '=' character, it means a pawn is to be promoted (e.g. e8=Q or fxe8=R etc.)
@@ -208,9 +207,11 @@ class PieceMoveChecker(Board):
             move = move[:len(move) - 2]
 
         # pawn gets moved ----------------------------------------------------------------------------------------------
-        if len(move) == 2 or (len(move) == 4 and move[0].islower() and move[1] == "x"):
+        pawn_is_moved = len(move) == 2
+        pawn__is_moved_and_captures = len(move) == 4 and move[0].islower() and move[1] == "x"
+        if pawn_is_moved or pawn__is_moved_and_captures:
             # simple forward move (e.g. e4)
-            if len(move) == 2:
+            if pawn_is_moved:
                 # loop through the pieces list to find the pawn to move
                 for piece in self.pieces:
                     # check whether it's a suitable colour and position pawn (same file)
@@ -248,10 +249,12 @@ class PieceMoveChecker(Board):
                         if pawn_promotion:
                             # the pawn promotes and gets assigned a new name
                             piece.name = promotion + tag + "+"
+
+                        # pawn is found and moves
                         return self.move_piece(piece, move)
 
             # pawn captures (e.g. dxe4)
-            elif len(move) == 4 and move[0].islower() and move[1] == "x":
+            if pawn__is_moved_and_captures:
                 # loop through the pieces list to find the pawn to move
                 for piece in self.pieces:
                     # # check whether it's a suitable colour and position pawn
@@ -294,13 +297,13 @@ class PieceMoveChecker(Board):
                         # as an argument and will trigger a capture on the enemy pawn
                         return self.move_piece(piece, move[-2:], passant=enemy_pawn_pos)
 
-        # king gets moved (king K) -------------------------------------------------------------------------------------
-        elif move[0] == "K":
-            # a piece has been captured
-            if "x" in move:
-                x = move.find("x")
-                move = move[:x] + move[x + 1:]
+        # a piece is to be captured (this information is not need from now on)
+        if "x" in move:
+            x = move.find("x")
+            move = move[:x] + move[x + 1:]
 
+        # king gets moved (king K) -------------------------------------------------------------------------------------
+        if move[0] == "K":
             # loop through the pieces list to find the king
             for piece in self.pieces:
                 # check if suitable colour king
@@ -311,12 +314,7 @@ class PieceMoveChecker(Board):
                         return self.move_piece(piece, move[-2:])
 
         # queen gets moved (Queen Q) ----------------------------------------------------------------------------------
-        elif move[0] == "Q":
-            # a piece has been captured
-            if "x" in move:
-                x = move.find("x")
-                move = move[:x] + move[x + 1:]
-
+        if move[0] == "Q":
             # case Q__: (e.g. Qf3)
             if len(move) == 3:
                 # loop through the pieces list to find the queen to move
@@ -348,7 +346,7 @@ class PieceMoveChecker(Board):
                                     return self.move_piece(piece, move[-2:])
 
             # case Q____: (e.g. Qb1b4)
-            elif len(move) == 5:
+            if len(move) == 5:
                 # loop through the pieces list to find the queen to move
                 for piece in self.pieces:
                     # check if suitable colour and position queen
@@ -362,12 +360,7 @@ class PieceMoveChecker(Board):
                                 return self.move_piece(piece, move[-2:])
 
         # knight gets moved (knight N) ---------------------------------------------------------------------------------
-        elif move[0] == "N":
-            # a piece has been captured
-            if "x" in move:
-                x = move.find("x")
-                move = move[:x] + move[x + 1:]
-
+        if move[0] == "N":
             # case N__: (e.g. Nf3)
             if len(move) == 3:
                 # loop through the pieces list to find the knight to move
@@ -382,7 +375,7 @@ class PieceMoveChecker(Board):
                                 return self.move_piece(piece, move[-2:])
 
             # case N___: (e.g. Nfb4 or N1b4)
-            elif len(move) == 4:
+            if len(move) == 4:
                 # loop through the pieces list to find the knight to move
                 for piece in self.pieces:
                     # check if suitable colour knight
@@ -397,7 +390,7 @@ class PieceMoveChecker(Board):
                                     return self.move_piece(piece, move[-2:])
 
             # case N____: (e.g. Nd3b5)
-            elif len(move) == 5:
+            if len(move) == 5:
                 # loop through the pieces list to find the knight to move
                 for piece in self.pieces:
                     # check if suitable colour and position knight
@@ -410,12 +403,7 @@ class PieceMoveChecker(Board):
                                 return self.move_piece(piece, move[-2:])
 
         # bishop gets moved (bishop B) ---------------------------------------------------------------------------------
-        elif move[0] == "B":
-            # a piece has been captured
-            if "x" in move:
-                x = move.find("x")
-                move = move[:x] + move[x + 1:]
-
+        if move[0] == "B":
             # case B__: (e.g. Bf3)
             if len(move) == 3:
                 # loop through the pieces list to find the bishop to move
@@ -430,7 +418,7 @@ class PieceMoveChecker(Board):
                                 return self.move_piece(piece, move[-2:])
 
             # case B___: (e.g. Bcb4 or B3b4)
-            elif len(move) == 4:
+            if len(move) == 4:
                 # loop through the pieces list to find the bishop to move
                 for piece in self.pieces:
                     # check if suitable colour bishop
@@ -445,7 +433,7 @@ class PieceMoveChecker(Board):
                                     return self.move_piece(piece, move[-2:])
 
             # case B____: (e.g. Bb1e4)
-            elif len(move) == 5:
+            if len(move) == 5:
                 # loop through the pieces list to find the bishop to move
                 for piece in self.pieces:
                     # check if suitable colour and position bishop
@@ -459,11 +447,6 @@ class PieceMoveChecker(Board):
 
         # rook gets moved (rook R) -------------------------------------------------------------------------------------
         elif move[0] == "R":
-            # a piece has been captured
-            if "x" in move:
-                x = move.find("x")
-                move = move[:x] + move[x + 1:]
-
             # case R__: (e.g. Rf3)
             if len(move) == 3:
                 # loop through the pieces list to find the rook to move
@@ -478,7 +461,7 @@ class PieceMoveChecker(Board):
                                 return self.move_piece(piece, move[-2:])
 
             # case R___: (e.g. Rbb4 or R4b4)
-            elif len(move) == 4:
+            if len(move) == 4:
                 # loop through the pieces list to find the rook to move
                 for piece in self.pieces:
                     # check if suitable colour rook
@@ -493,7 +476,7 @@ class PieceMoveChecker(Board):
                                     return self.move_piece(piece, move[-2:])
 
             # case R____: (e.g. Rb1b4)
-            elif len(move) == 5:
+            if len(move) == 5:
                 # loop through the pieces list to find the rook to move
                 for piece in self.pieces:
                     # check if suitable colour and position rook
@@ -505,6 +488,7 @@ class PieceMoveChecker(Board):
                                 # rook gets moved
                                 return self.move_piece(piece, move[-2:])
 
+        # game is ok, but no moves where performed
         if move == " ":
             return "   "
 
@@ -538,6 +522,7 @@ class PieceMoveChecker(Board):
         # initialization of auxiliary var
         # gets set to True if checking between src and dest
         in_range_flag = False
+
         # loop through the diagonals to find the one containing both the src and dest positions
         for diag in self.diags:
             if src in diag and dest in diag:
@@ -554,6 +539,7 @@ class PieceMoveChecker(Board):
                         # the second time it is set to False as the loop gets out of the move range
                         in_range_flag = not in_range_flag
                         continue
+
                     # the squares are checked while the flag is True
                     if in_range_flag:
                         # if a square is active, the path is blocked and the False value is returned
@@ -666,6 +652,7 @@ class PieceMoveChecker(Board):
         # the difference is converted to integer by finding their positions on the list (file, rank)
         distance_by_file = self.files.index(src[0]) - self.files.index(dest[0])
         distance_by_rank = self.ranks.index(src[1]) - self.ranks.index(dest[1])
+
         # if the tuple is contained in the knight_moves list, the move is valid
         if (distance_by_file, distance_by_rank) in self.knight_moves:
             return True
