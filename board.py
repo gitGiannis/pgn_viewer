@@ -231,6 +231,7 @@ class Board:
                 # updates the board with new piece positions (only used for console printing)
                 # self.update_board()
 
+                # appending new background tracers
                 self.background_tracers.append(((piece_src.row, piece_src.col), (piece_dest.row, piece_dest.col)))
 
                 # check if passant arg is != ''
