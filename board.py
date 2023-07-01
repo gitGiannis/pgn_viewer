@@ -100,6 +100,11 @@ class Board:
         self.squares = {}
         self.update_squares()
 
+        # list with background tracers per round (first two initialized as empty)
+        self.background_tracers = []
+        self.background_tracers.append(tuple())
+        self.background_tracers.append(tuple())
+
         # boolean value to show same colour capture (not allowed)
         self.friendly_capture: bool = False
 
@@ -174,7 +179,7 @@ class Board:
 
                         return captured_piece_name_to_return
 
-    def move_piece(self, piece_src: Piece, dest: str) -> str:
+    def move_piece(self, piece_src: Piece, dest: str, passant: str = '') -> str:
         """
         Moves the piece to dest and returns the captured piece name
 
@@ -187,6 +192,9 @@ class Board:
 
             dest (str):
                 position to be moved to
+
+            passant (str) default='':
+                if an enemy pawn is captured through en passant, its position is passed as argument and it gets captured
 
         Returns:
         --------
@@ -222,5 +230,14 @@ class Board:
                 self.update_squares()
                 # updates the board with new piece positions (only used for console printing)
                 # self.update_board()
+
+                self.background_tracers.append(((piece_src.row, piece_src.col), (piece_dest.row, piece_dest.col)))
+
+                # check if passant arg is != ''
+                if passant:
+                    for piece in self.pieces:
+                        if piece.pos == passant:
+                            captured_piece_name_to_return = piece.name
+                            piece.got_captured()
 
                 return captured_piece_name_to_return
