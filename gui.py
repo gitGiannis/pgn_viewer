@@ -1,7 +1,7 @@
 # -------------------------------------------------------------------------------------------------------------------- #
 # gui.py: includes class GUI                                                                                           #
 # -------------------------------------------------------------------------------------------------------------------- #
-from tkinter import Tk, Menu, PhotoImage, Frame, Label, Button, IntVar
+from tkinter import Tk, Menu, PhotoImage, Frame, Label, Button, IntVar, BooleanVar
 from tkinter.messagebox import askyesno, showinfo
 from pygame import mixer
 from my_exceptions import PositionReached
@@ -77,6 +77,15 @@ class GUI(Tk):
 
         update_gui_board(self):
             updates the chess board
+
+        show_traces(self, backwards: bool = False) -> None:
+            show traces of the piece that is to move
+
+        remove_old_traces(self) -> None:
+            removes old traces from the board and sets the background back to original colours
+
+        invert_tracer_var(self) -> None:
+            inverts the tracer variable for the 'Hide Traces' check-button in file sub-menu
 
         load_next(self):
             continues to next move
@@ -163,6 +172,8 @@ class GUI(Tk):
         self.file_menu.add_radiobutton(label="1 moves/s", value=1200)
         self.file_menu.add_radiobutton(label="0.5 moves/s", value=2100)
         self.file_menu.add_separator()
+        self.file_menu.add_checkbutton(label="Hide Traces", command=self.invert_tracer_var)
+        self.file_menu.add_separator()
         self.file_menu.add_command(label="Exit", command=self.exit)
 
         # Help sub-menu
@@ -202,9 +213,15 @@ class GUI(Tk):
         # chess board initialization -----------------------------------------------------------------------------------
         self.board_frame = Frame(self, bd=10, relief="raised")
 
+        # lists with the file and rank indexes
+        self.__col_labels = []
+        self.__row_labels = []
         # creation of 2D board with labels
         self.board = [[Label(self.board_frame, bd=7) for _col in range(8)] for _row in range(8)]
         self.board_config()
+
+        # variable to control whether the move traces are shown or not
+        self.show_traces_var = BooleanVar(self, value=True)
 
         # auxiliary variables
         self.__starting_move = True
@@ -213,7 +230,7 @@ class GUI(Tk):
         # autoplay options ---------------------------------------------------------------------------------------------
         # initialization of checkbutton variable
         self.checkbutton_var = IntVar(master=self.file_menu)
-        self.file_menu.entryconfig(0, variable=self.checkbutton_var, state="disabled")
+        self.file_menu.entryconfig(0, variable=self.checkbutton_var)
         # string that stores the self.after() method identifier to cancel if necessary
         self.__identifier_for_after_method = ""
 
@@ -228,7 +245,7 @@ class GUI(Tk):
 
         self.button_next = Button(self.button_frame,
                                   text="---->",
-                                  state="disabled",
+                                  state="normal",
                                   font=("consolas", 13, "bold"),
                                   background="light green",
                                   activebackground="green",
@@ -266,8 +283,7 @@ class GUI(Tk):
         # initialization of CapturedPieceFrame with captured pieces ----------------------------------------------------
         self.captured_pieces = CapturedPieces(self, self.game_loader.captured_diff_per_round)
 
-        # widget packing and game start --------------------------------------------------------------------------------
-        self.pack_widgets()
+        # window start -------------------------------------------------------------------------------------------------
         self.start_game()
 
     def update_gui_board(self):
@@ -311,10 +327,80 @@ class GUI(Tk):
                 else:
                     self.board[piece["row"]][piece["col"]].config(image=self.kw_image)
 
+    def show_traces(self, backwards: bool = False) -> None:
+        """
+        Show the traces of the piece that is to move, if going to previous move, the backwards arg must be activated
+
+        ...
+
+        Parameters:
+        -----------
+            backwards (bool) default=False:
+                if True, the traces of previous move will be shown
+        """
+        # only show traces if the traces var is set as true
+        if self.show_traces_var.get():
+            # removing old traces from board
+            self.remove_old_traces()
+            # if going backwards, the traces shown must be from previous round
+            index_ = 0 if backwards else 2
+            # colours for dest and source square
+            colour = ('purple', 'violet')
+            # index (used to change colour)
+            i = 0
+            try:
+                for tuple_ in self.game_loader.background_tracers[self.game_loader.round + index_]:
+                    row = tuple_[0]
+                    col = tuple_[1]
+                    self.board[row][col].config(bg=colour[i])
+                    if row == 7:
+                        self.__row_labels[col].config(bg=colour[i])
+                    if col == 7:
+                        self.__col_labels[row].config(bg=colour[i])
+                    i += 1
+            except IndexError:
+                # index error is raised when going backwards to first move, where no traces can be retrieved from
+                # previous rounds (because there are not any)
+                pass
+
+    def remove_old_traces(self) -> None:
+        """
+        Removes old traces from the board and sets the background back to original colours
+        """
+        # self.game_loader.background_tracers[self.game_loader.round + 1] is a tuple containing tuples with src and dest
+        # co-ordinates of the piece that moved
+        # the co-ordinates of the previous move are set back to original colours
+        for tuple_ in self.game_loader.background_tracers[self.game_loader.round + 1]:
+            row = tuple_[0]
+            col = tuple_[1]
+            if (row + col) % 2 == 0:
+                self.board[row][col].config(bg="#EEEED2")
+                # if file and rank indexes were changed, they get their original colour, too
+                if col == 7:
+                    self.__col_labels[row].config(bg="#EEEED2")
+                if row == 7:
+                    self.__row_labels[col].config(bg="#EEEED2")
+            else:
+                self.board[row][col].config(bg="#47473C")
+                # if file and rank indexes were changed, they get their original colour, too
+                if col == 7:
+                    self.__col_labels[row].config(bg="#47473C")
+                if row == 7:
+                    self.__row_labels[col].config(bg="#47473C")
+
+    def invert_tracer_var(self) -> None:
+        """
+        Inverts the tracer variable for the 'Hide Traces' check-button in file sub-menu
+        """
+        self.show_traces_var.set(not self.show_traces_var.get())
+        self.remove_old_traces()
+
     def load_next(self):
         """
         Continues to the next move and enables/disables control buttons based on the current round
         """
+        # showing new tracers on the board
+        self.show_traces()
         # previous move and restart buttons get activated (if previously disabled)
         self.button_prev.config(state="normal")
         self.button_restart.config(state="normal")
@@ -354,6 +440,7 @@ class GUI(Tk):
         """
         Goes back to previous move and enables/disables control buttons based on the current round
         """
+        self.show_traces(backwards=True)
         # next move button and autoplay checkbutton get activated (if previously disabled)
         self.button_next.config(state="normal")
         self.file_menu.entryconfig(index=0, state="normal")
@@ -388,6 +475,7 @@ class GUI(Tk):
         """
         Restarts the game and enables/disables control buttons based on the current round
         """
+        self.remove_old_traces()
         # round gets set to zero
         self.game_loader.restart_game()
 
@@ -511,6 +599,7 @@ class GUI(Tk):
     def board_config(self) -> None:
         """
         Configures the board by adding background colours as well as file and rank indexes for side squares
+        The labels containing the indexes for side squares are also added in lists for further modification
         """
         # colour setting for background
         for row in range(8):
@@ -529,30 +618,37 @@ class GUI(Tk):
         for num in range(8):
             if num % 2 == 0:
                 # label with rank
-                Label(master=self.board_frame,
-                      bg="#47473C",
-                      fg="#EEEED2",
-                      font=("consolas", 10, "bold"),
-                      text=numbers[7 - num]).place(relx=0.97, y=position)
+                col_l = Label(master=self.board_frame,
+                              bg="#47473C",
+                              fg="#EEEED2",
+                              font=("consolas", 10, "bold"),
+                              text=numbers[7 - num])
+                col_l.place(relx=0.97, y=position)
                 # label with file
-                Label(master=self.board_frame,
-                      bg="#47473C",
-                      fg="#EEEED2",
-                      font=("consolas", 10, "bold"),
-                      text=letters[num]).place(x=position, rely=0.96)
+                row_l = Label(master=self.board_frame,
+                              bg="#47473C",
+                              fg="#EEEED2",
+                              font=("consolas", 10, "bold"),
+                              text=letters[num])
+                row_l.place(x=position, rely=0.96)
             else:
                 # label with rank
-                Label(master=self.board_frame,
-                      bg="#EEEED2",
-                      fg="#47473C",
-                      font=("consolas", 10, "bold"),
-                      text=numbers[7 - num]).place(relx=0.97, y=position)
+                col_l = Label(master=self.board_frame,
+                              bg="#EEEED2",
+                              fg="#47473C",
+                              font=("consolas", 10, "bold"),
+                              text=numbers[7 - num])
+                col_l.place(relx=0.97, y=position)
                 # label with file
-                Label(master=self.board_frame,
-                      bg="#EEEED2",
-                      fg="#47473C",
-                      font=("consolas", 10, "bold"),
-                      text=letters[num]).place(x=position, rely=0.96)
+                row_l = Label(master=self.board_frame,
+                              bg="#EEEED2",
+                              fg="#47473C",
+                              font=("consolas", 10, "bold"),
+                              text=letters[num])
+                row_l.place(x=position, rely=0.96)
+            # appending labels with ranks and files to lists
+            self.__col_labels.append(col_l)
+            self.__row_labels.append(row_l)
             # pixel position index gets added 74 pixels (60 pixels for the image and 7+7 for the padding)
             position += 74
 
@@ -600,6 +696,8 @@ class GUI(Tk):
         # next move display gets updated
         self.next_move_display.config(text=self.text_config(), fg="black")
 
+        # widget packing
+        self.pack_widgets()
         # yes/no window for exit confirmation
         self.protocol("WM_DELETE_WINDOW", self.exit)
         # window mainloop
