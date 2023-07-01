@@ -226,6 +226,13 @@ class Board:
                 # captured piece becomes empty (decoy)
                 piece_dest.got_captured()
 
+                # check if passant arg is != ''
+                if passant:
+                    for piece in self.pieces:
+                        if piece.pos == passant:
+                            captured_piece_name_to_return = piece.name
+                            piece.got_captured()
+
                 # update the squares dictionary after move is performed
                 self.update_squares()
                 # updates the board with new piece positions (only used for console printing)
@@ -233,12 +240,5 @@ class Board:
 
                 # appending new background tracers
                 self.background_tracers.append(((piece_src.row, piece_src.col), (piece_dest.row, piece_dest.col)))
-
-                # check if passant arg is != ''
-                if passant:
-                    for piece in self.pieces:
-                        if piece.pos == passant:
-                            captured_piece_name_to_return = piece.name
-                            piece.got_captured()
 
                 return captured_piece_name_to_return
