@@ -1,4 +1,4 @@
-# PGN VIEWER
+# PGN Viewer
 My first project using python.
 Simple application that represents chess games in a simple 2D gui board
 using the tkinter lib.
