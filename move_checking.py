@@ -270,40 +270,33 @@ class PieceMoveChecker(Board):
                             continue
 
                         # check if the captured square is empty (en-passant performed)
+                        enemy_pawn_pos = ''
                         if not self.squares[move[2:]]:
-                            # the pawn will secretly move to each side to capture the enemy pawn and then move to its
-                            # final destination
+                            # the pawn does not place itself on the enemy pawn's square, yet the enemy pawn gets
+                            # captured
+                            # the position of the enemy pawn is stored and is used as parameter in the move_piece method
                             if tag == "w":
                                 # a white pawn performed "en passant"
-                                # temporary new rank
-                                temporary_rank = int(move[3]) - 1
-                                # temporary move
-                                temporary_move = move[2] + str(temporary_rank)
-                                # secret move to capture the enemy pawn
-                                en_passant = self.move_piece(piece, temporary_move)
+                                # enemy pawn rank
+                                enemy_pawn_rank = int(move[3]) - 1
+                                # enemy pawn position
+                                enemy_pawn_pos = move[2] + str(enemy_pawn_rank)
 
                             elif tag == "b":
                                 # a black pawn performed "en passant"
-                                # temporary new rank
-                                temporary_rank = int(move[3]) + 1
-                                # temporary move
-                                temporary_move = move[2] + str(temporary_rank)
-                                # secret move to capture the enemy pawn
-                                en_passant = self.move_piece(piece, temporary_move)
+                                # enemy pawn rank
+                                enemy_pawn_rank = int(move[3]) + 1
+                                # enemy pawn position
+                                enemy_pawn_pos = move[2] + str(enemy_pawn_rank)
 
                         # promotion check
                         if pawn_promotion:
                             # the pawn promotes and gets assigned a new name
                             piece.name = promotion + tag + "+"
 
-                        # pawn moves to its new position
-                        captured_piece_name = self.move_piece(piece, move[2:])
-                        # there was a capture in this move, so a captured piece name must be returned
-                        if captured_piece_name != "   ":
-                            return captured_piece_name
-                        if en_passant:
-                            # if en_passant != "", a piece was captured by en-passant
-                            return en_passant
+                        # pawn moves to its new position, if en_passant was performed, the enemy pawn position is used
+                        # as an argument and will trigger a capture on the enemy pawn
+                        return self.move_piece(piece, move[2:], passant=enemy_pawn_pos)
 
         # king gets moved (king K) -------------------------------------------------------------------------------------
         elif move[0] == "K":
