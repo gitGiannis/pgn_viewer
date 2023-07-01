@@ -8,7 +8,7 @@ from the main window.
 After a selection is made, a new window is opened with the board and various
 information about the game.
 You can then watch the game by going forward and backwards through the moves.
-## Dependencies
+### Dependencies
 pygame library needed in order to run the app
 ```bash
 pip install pygame
