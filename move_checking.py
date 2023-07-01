@@ -72,12 +72,10 @@ class PieceMoveChecker(Board):
             list_of_moves (list):
                 list with the moves of the game stripped of extra information (round indexes, comments etc.)
         """
-        # initialization of the parent class Board ---------------------------------------------------------------------
+        # initialization of the parent class Board
         super().__init__()
-
         # list of moves of the game
         self.moves = list_of_moves
-
         # length of the moves list
         self.moves_length = len(self.moves)
 
@@ -490,6 +488,8 @@ class PieceMoveChecker(Board):
 
         # game is ok, but no moves where performed
         if move == " ":
+            # appending new empty background tracer
+            self.background_tracers.append(())
             return "   "
 
         # no move could be performed (the file might not be correct)
