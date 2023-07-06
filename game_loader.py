@@ -22,7 +22,7 @@ class GameLoader(PieceMoveChecker):
         round (int):
             counter of current half move (ply)
 
-        info_dictionaries_per_round (list):
+        screenshots_per_round (list):
             list that stores the 'screenshots' of each round
 
         check_per_round (list):
@@ -31,8 +31,8 @@ class GameLoader(PieceMoveChecker):
         captures_per_round (list):
             list that stores whether the current half move has a captured or not
 
-        captured_piece_names (dict):
-            dictionary that stores the round of a capture and the name of the captured piece
+        captured_diff_per_round (list[dict]):
+            list with the captured pieces difference per round
 
     Methods:
     --------
@@ -45,7 +45,7 @@ class GameLoader(PieceMoveChecker):
         restart_game(self):
             restarts the game
 
-        __update_captured_piece_dict(self, piece_name: str):
+        __update_captured_piece_dict(self, piece_name: str, advantage: int) -> None:
             updates dictionary with captured pieces
 
     Raises:
