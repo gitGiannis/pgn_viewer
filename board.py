@@ -88,8 +88,6 @@ class Board:
         # initialization of the chess board ----------------------------------------------------------------------------
         # 2D board 8x8 (only used for printing the board in the console)
         # self.board = [[None for _ in range(8)] for __ in range(8)]
-        # pieces are set on the board
-        # self.update_board()
 
         # dictionary containing the kings for easier access
         self.kings = {"w": king_w, "b": king_b}
@@ -116,14 +114,21 @@ class Board:
         """
         for piece in self.pieces:
             self.squares[piece.pos] = piece.state
+            # self.update_board(piece)
 
-    def update_board(self):
+    def update_board(self, piece):
         """
-        Loops over the piece list and updates the board with the new positions
+        Updates the board with the new positions of each piece passed as argument
+
+        ...
+
+        Parameters:
+        -----------
+            piece (Piece):
+                current piece from the loop
         """
-        for piece in self.pieces:
-            # self.board[piece.row][piece.col] = piece
-            pass
+        # self.board[piece.row][piece.col] = piece
+        pass
 
     def move_piece_by_position(self, src: str, dest: str) -> str:
         """
@@ -174,8 +179,6 @@ class Board:
 
                         # update the squares dictionary after move is performed
                         self.update_squares()
-                        # updates the board with new piece positions (only used for console printing)
-                        # self.update_board()
 
                         return captured_piece_name_to_return
 
@@ -235,8 +238,6 @@ class Board:
 
                 # update the squares dictionary after move is performed
                 self.update_squares()
-                # updates the board with new piece positions (only used for console printing)
-                # self.update_board()
 
                 # appending new background tracers
                 self.background_tracers.append(((piece_src.row, piece_src.col), (piece_dest.row, piece_dest.col)))
