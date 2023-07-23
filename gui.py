@@ -136,10 +136,10 @@ class GUI(Tk):
         Parameters:
         -----------
             game_loader_obj (game_loader.GameLoader):
-                αντικείμενο με τα στιγμιότυπα του αγώνα, καθώς και άλλες πληροφορίες
+                object with the game screenshots and other useful stored information
 
             game_dict (dict):
-                λεξικό με τις πληροφορίες του αγώνα
+                dictionary containing the basic game information (player names, event name, result etc. and the moves)
         """
         # initialization of parent class (Tk)
         super().__init__()
