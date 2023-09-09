@@ -294,38 +294,39 @@ class GUI(Tk):
         # for each round
         # each dictionary is looped through and the board gets updated with the new piece positions
         for piece in self.game_loader.screenshots_per_round[self.game_loader.round]:
-            if piece["name"] == "  ":
-                self.board[piece["row"]][piece["col"]].config(image=self.blank)
-            elif piece["name"] == "pb":
-                self.board[piece["row"]][piece["col"]].config(image=self.pb_image)
-            elif piece["name"] == "pw":
-                self.board[piece["row"]][piece["col"]].config(image=self.pw_image)
-            elif piece["name"] == "rb":
-                self.board[piece["row"]][piece["col"]].config(image=self.rb_image)
-            elif piece["name"] == "nb":
-                self.board[piece["row"]][piece["col"]].config(image=self.nb_image)
-            elif piece["name"] == "bb":
-                self.board[piece["row"]][piece["col"]].config(image=self.bb_image)
-            elif piece["name"] == "qb":
-                self.board[piece["row"]][piece["col"]].config(image=self.qb_image)
-            elif piece["name"] == "rw":
-                self.board[piece["row"]][piece["col"]].config(image=self.rw_image)
-            elif piece["name"] == "nw":
-                self.board[piece["row"]][piece["col"]].config(image=self.nw_image)
-            elif piece["name"] == "bw":
-                self.board[piece["row"]][piece["col"]].config(image=self.bw_image)
-            elif piece["name"] == "qw":
-                self.board[piece["row"]][piece["col"]].config(image=self.qw_image)
-            elif piece["name"] == "kb":
-                if self.game_loader.check_per_round[self.game_loader.round] == "b":
-                    self.board[piece["row"]][piece["col"]].config(image=self.kb_checked)
-                else:
-                    self.board[piece["row"]][piece["col"]].config(image=self.kb_image)
-            elif piece["name"] == "kw":
-                if self.game_loader.check_per_round[self.game_loader.round] == "w":
-                    self.board[piece["row"]][piece["col"]].config(image=self.kw_checked)
-                else:
-                    self.board[piece["row"]][piece["col"]].config(image=self.kw_image)
+            match piece["name"]:
+                case "  ":
+                    self.board[piece["row"]][piece["col"]].config(image=self.blank)
+                case "pb":
+                    self.board[piece["row"]][piece["col"]].config(image=self.pb_image)
+                case "pw":
+                    self.board[piece["row"]][piece["col"]].config(image=self.pw_image)
+                case "rb":
+                    self.board[piece["row"]][piece["col"]].config(image=self.rb_image)
+                case "nb":
+                    self.board[piece["row"]][piece["col"]].config(image=self.nb_image)
+                case "bb":
+                    self.board[piece["row"]][piece["col"]].config(image=self.bb_image)
+                case "qb":
+                    self.board[piece["row"]][piece["col"]].config(image=self.qb_image)
+                case "rw":
+                    self.board[piece["row"]][piece["col"]].config(image=self.rw_image)
+                case "nw":
+                    self.board[piece["row"]][piece["col"]].config(image=self.nw_image)
+                case "bw":
+                    self.board[piece["row"]][piece["col"]].config(image=self.bw_image)
+                case "qw":
+                    self.board[piece["row"]][piece["col"]].config(image=self.qw_image)
+                case "kb":
+                    if self.game_loader.check_per_round[self.game_loader.round] == "b":
+                        self.board[piece["row"]][piece["col"]].config(image=self.kb_checked)
+                    else:
+                        self.board[piece["row"]][piece["col"]].config(image=self.kb_image)
+                case "kw":
+                    if self.game_loader.check_per_round[self.game_loader.round] == "w":
+                        self.board[piece["row"]][piece["col"]].config(image=self.kw_checked)
+                    else:
+                        self.board[piece["row"]][piece["col"]].config(image=self.kw_image)
 
     def show_traces(self, backwards: bool = False) -> None:
         """
