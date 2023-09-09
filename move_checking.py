@@ -750,7 +750,7 @@ class PieceMoveChecker(Board):
                 True: piece is not pinned
                 False: piece is pinned
         """
-        # storing of the kings current position using the dictionary kings from the board.Board class
+        # storing the kings current position using the dictionary kings from the board.Board class
         king_pos = self.kings[tag].pos
 
         # --- horizontal check ---
