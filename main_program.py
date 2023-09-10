@@ -98,7 +98,8 @@ class MainProgram(Tk):
         self.main_frame = Frame(master=self, bg="light blue")
         # main label with image for background
         chess_image = PhotoImage(master=self.main_frame, file="icons\\chess.png")
-        Label(master=self.main_frame, image=chess_image, width=550, background="light yellow").pack()
+        Label(master=self.main_frame, image=chess_image, anchor="s", width=550, height=320, background="light yellow"
+              ).pack()
 
         # initialization and placing of buttons ------------------------------------------------------------------------
         Button(self.main_frame,
