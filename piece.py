@@ -15,7 +15,7 @@ class Piece:
             name of the piece (e.g. rbl= rook black left etc.)
 
         pos (str):
-            position of the piece (e.g. a8= column a, row 8 etc.)
+            position of the piece (e.g. a8= column a row 8 etc.)
 
         state (bool):
             state of the piece (True if active, False if captured)
@@ -44,7 +44,7 @@ class Piece:
                 name of the piece (e.g. rbl= rook black left etc.)
 
             pos (str):
-                position of the piece (e.g. a8= column a, row 8 etc.)
+                position of the piece (e.g. a8= column a row 8 etc.)
 
             state (bool):
                 state of the piece (True if active, False if captured)
@@ -56,7 +56,7 @@ class Piece:
                 column (0~7) on the board (used in gui.GUI)
         """
         self.name = name    # name of the piece (e.g. rbl= rook black left etc.)
-        self.pos = pos      # position of the piece (e.g. a8= column a, row 8 etc.)
+        self.pos = pos      # position of the piece (e.g. a8= column a row 8 etc.)
         self.state = state  # state of the piece (True if active, False if captured)
 
         # coordinates used in the graphical representation of the pieces on the board (see class gui.GUI)
