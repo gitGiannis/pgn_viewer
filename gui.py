@@ -93,9 +93,6 @@ class GUI(Tk):
         load_previous(self):
             goes back to previous move
 
-        start_game(self):
-            starts the game
-
         restart_game(self):
             restarts the game
 
@@ -123,8 +120,14 @@ class GUI(Tk):
         up_key_bind(self, event):
             auto-plays next move using key event <up-arrow>
 
+        image_config(self, image_name) -> PhotoImage:
+            configures the image of each piece object
+
         pack_widgets(self) -> None:
-            Packs the widgets in the window
+            packs the widgets in the window
+
+        start_game(self):
+            starts the game and initializes the key-bindings for buttons
     """
 
     def __init__(self, game_loader_obj, game_dict: dict):
@@ -188,27 +191,27 @@ class GUI(Tk):
 
         # image initialization -----------------------------------------------------------------------------------------
         # blank image for empty squares
-        self.blank = PhotoImage(master=self, file="icons\\piece_icons\\BLANK_ICON.png")
+        self.blank = self.image_config(image_name="BLANK_ICON")
 
         # images for black pieces
-        self.rb_image = PhotoImage(master=self, file="icons\\piece_icons\\rb.png")
-        self.nb_image = PhotoImage(master=self, file="icons\\piece_icons\\nb.png")
-        self.bb_image = PhotoImage(master=self, file="icons\\piece_icons\\bb.png")
-        self.qb_image = PhotoImage(master=self, file="icons\\piece_icons\\qb.png")
-        self.kb_image = PhotoImage(master=self, file="icons\\piece_icons\\kb.png")
-        self.pb_image = PhotoImage(master=self, file="icons\\piece_icons\\pb.png")
+        self.rb_image = self.image_config(image_name="rb")
+        self.nb_image = self.image_config(image_name="nb")
+        self.bb_image = self.image_config(image_name="bb")
+        self.qb_image = self.image_config(image_name="qb")
+        self.kb_image = self.image_config(image_name="kb")
+        self.pb_image = self.image_config(image_name="pb")
 
         # images for white pieces
-        self.rw_image = PhotoImage(master=self, file="icons\\piece_icons\\rw.png")
-        self.nw_image = PhotoImage(master=self, file="icons\\piece_icons\\nw.png")
-        self.bw_image = PhotoImage(master=self, file="icons\\piece_icons\\bw.png")
-        self.qw_image = PhotoImage(master=self, file="icons\\piece_icons\\qw.png")
-        self.kw_image = PhotoImage(master=self, file="icons\\piece_icons\\kw.png")
-        self.pw_image = PhotoImage(master=self, file="icons\\piece_icons\\pw.png")
+        self.rw_image = self.image_config(image_name="rw")
+        self.nw_image = self.image_config(image_name="nw")
+        self.bw_image = self.image_config(image_name="bw")
+        self.qw_image = self.image_config(image_name="qw")
+        self.kw_image = self.image_config(image_name="kw")
+        self.pw_image = self.image_config(image_name="pw")
 
         # checked king images
-        self.kb_checked = PhotoImage(master=self, file="icons\\piece_icons\\kb_checked.png")
-        self.kw_checked = PhotoImage(master=self, file="icons\\piece_icons\\kw_checked.png")
+        self.kb_checked = self.image_config(image_name="kb_checked")
+        self.kw_checked = self.image_config(image_name="kw_checked")
 
         # chess board initialization -----------------------------------------------------------------------------------
         self.board_frame = Frame(self, bd=10, relief="raised")
@@ -652,6 +655,12 @@ class GUI(Tk):
             self.__row_labels.append(row_l)
             # pixel position index gets added 74 pixels (60 pixels for the image and 7+7 for the padding)
             position += 74
+
+    def image_config(self, image_name) -> PhotoImage:
+        """
+        Configures the image of each piece object
+        """
+        return PhotoImage(master=self, file=f"icons\\piece_icons\\{image_name}.png")
 
     def pack_widgets(self) -> None:
         """
