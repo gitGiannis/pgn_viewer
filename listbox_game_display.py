@@ -169,7 +169,11 @@ class ListboxGameDisplay(Frame):
             event (<<ListboxSelect>>):
                 method gets called when a listbox item is selected
         """
-        if self.pgn_listbox.curselection():
+        # storing current selection
+        cur_selection = self.pgn_listbox.curselection()
+        # the <<ListboxSelect>> event is triggered when a listbox item is dis-selected, too
+        # so if the current selection is empty, this method will not do anything
+        if cur_selection:
             # clearing listbox and dictionary from previous selection
             self.game_dict_collection.clear()
             self.game_listbox.delete(0, "end")
@@ -188,6 +192,14 @@ class ListboxGameDisplay(Frame):
             else:
                 # games get added to the listbox
                 for i, num in enumerate(file.index_of_games):
+                    # showing results by 100, if many games were loaded
+                    if i % 100 == 0:
+                        self.game_listbox.update()
+                    if cur_selection != self.pgn_listbox.curselection():
+                        # if another game is selected from the pgn_listbox and the loading of the previous game has not
+                        # yet been finished, the loop has to be broken in order to avoid games from the previous pgn to
+                        # be loaded at the end of the new selected game
+                        break
                     # dictionary creation through the get_info method
                     game_dictionary = file.get_info(num)
                     # dictionary gets added to the collection
@@ -195,9 +207,6 @@ class ListboxGameDisplay(Frame):
                     self.game_listbox.insert(i, f'{str(i + 1) + ".":4}{game_dictionary["White"]} vs '
                                                 f'{game_dictionary["Black"]} '
                                                 f'({game_dictionary["Result"]})')
-                    # showing results by 100, if many games were loaded
-                    if i % 100 == 0:
-                        self.game_listbox.update()
 
     def __pack_widgets(self):
         """
