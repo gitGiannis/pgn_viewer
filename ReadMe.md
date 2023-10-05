@@ -18,7 +18,7 @@ pip install pygame
 python main.py
 ```
 ## Interface
-The main user interface offers two options for viewing pgn files
+The main user interface offers two options for viewing pgn files\n
 ![main window](icons/markdown/image.png)
 ### Show Files
 When the "Show Files" option is selected, pgn files within a pre-selected folder are shown in the screen. User can then
