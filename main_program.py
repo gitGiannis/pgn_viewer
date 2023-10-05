@@ -45,6 +45,9 @@ class MainProgram(Tk):
         open_file(self):
             loads al the pgn files found in the pre-selected folder inside the app files
 
+        submenus_config(self):
+            configures the options of file and help sub-menus
+
         submit_fb(self):
             reception of user feedback
 
@@ -76,23 +79,8 @@ class MainProgram(Tk):
         self.help_menu = Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="  Help  ", menu=self.help_menu)
 
-        # file sub-menu options
-        self.file_menu.add_command(label="Show Files", command=self.show_files)
-        self.file_menu.add_command(label="Select File", command=self.select_file)
-        self.file_menu.add_separator()
-        self.file_menu.add_command(label="Copy Path", command=self.copy_path)
-        self.file_menu.add_separator()
-        self.file_menu.add_command(label="Back", state="disabled")
-        self.file_menu.add_command(label="Exit", command=self.exit)
-
-        # help sub-menu options
-        self.help_menu.add_command(label="Help", command=show_help)
-        self.help_menu.add_separator()
-        self.help_menu.add_command(label="About PGN", command=show_info)
-        self.help_menu.add_command(label="App Info", command=about)
-        self.help_menu.add_command(label="Show Credits", command=show_credits)
-        self.help_menu.add_separator()
-        self.help_menu.add_command(label="Submit Feedback", command=self.submit_fb)
+        # configuring of the sub-menus options
+        self.submenus_config()
 
         # main frame to include the widgets ----------------------------------------------------------------------------
         self.main_frame = Frame(master=self, bg="light blue")
@@ -197,6 +185,28 @@ class MainProgram(Tk):
             self.warning_label.config(text="No Files Found!")
             self.warning_label.pack(fill="both")
             self.warning_label.after(2000, self.warning_label.pack_forget)
+
+    def submenus_config(self):
+        """
+        Configures the options of file and help sub-menus
+        """
+        # file sub-menu options
+        self.file_menu.add_command(label="Show Files", command=self.show_files)
+        self.file_menu.add_command(label="Select File", command=self.select_file)
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label="Copy Path", command=self.copy_path)
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label="Back", state="disabled")
+        self.file_menu.add_command(label="Exit", command=self.exit)
+
+        # help sub-menu options
+        self.help_menu.add_command(label="Help", command=show_help)
+        self.help_menu.add_separator()
+        self.help_menu.add_command(label="About PGN", command=show_info)
+        self.help_menu.add_command(label="App Info", command=about)
+        self.help_menu.add_command(label="Show Credits", command=show_credits)
+        self.help_menu.add_separator()
+        self.help_menu.add_command(label="Submit Feedback", command=self.submit_fb)
 
     def submit_fb(self):
         """
