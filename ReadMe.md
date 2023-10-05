@@ -13,7 +13,7 @@ pygame library needed in order to run the app
 ```bash
 pip install pygame
 ```
-### Running the app
+### Running the app (python3.10 or later)
 ```bash
 python main.py
 ```
